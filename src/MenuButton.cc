@@ -38,15 +38,6 @@ MenuButton::MenuButton(Decoration *decoration, QObject *parent)
         [this] {
             update();
         });
-
-    connect(this, &MenuButton::hoveredChanged, this,
-        [this] {
-            update();
-        });
-
-    const int titleBarHeight = decoration->titleBarHeight();
-    const QSize size(qRound(titleBarHeight * 1.33), titleBarHeight);
-    setGeometry(QRect(QPoint(0, 0), size));
 }
 
 MenuButton::~MenuButton()
