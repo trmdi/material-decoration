@@ -110,8 +110,19 @@ QColor CommonButton::foregroundColor() const
     if (!deco) {
         return {};
     }
-    
-    return deco->titleBarForegroundColor();
+
+    if (isPressed()) {
+        return deco->titleBarForegroundColor();
+    }
+
+    if (isHovered()) {
+        return deco->titleBarForegroundColor();
+    }
+
+    return KColorUtils::mix(
+        deco->titleBarBackgroundColor(),
+        deco->titleBarForegroundColor(),
+        0.8);
 }
 
 } // namespace Material
