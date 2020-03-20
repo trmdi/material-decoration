@@ -68,14 +68,17 @@ void ApplicationMenuButton::paint(QPainter *painter, const QRect &repaintRegion)
     painter->drawRect(buttonRect);
 
     // Foreground.
-    painter->setPen(foregroundColor());
+    QPen pen(foregroundColor());
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+    const qreal PenWidth_Symbol = 1.01; // https://github.com/KDE/breeze/blob/master/kstyle/breeze.h#L164
+    pen.setWidthF(PenWidth_Symbol * 1.75);
+    painter->setPen(pen);
     painter->setBrush(Qt::NoBrush);
-
-    const auto stepSize = menuRect.height() / 2;
     
-    for (int i = 0; i < 3; ++i) {
-        const QPointF left { menuRect.left(), menuRect.top() + i * stepSize };
-        const QPointF right { menuRect.right(), menuRect.top() + i * stepSize };
+    for (int i = -1; i <= 1; ++i) {
+        const QPointF left { menuRect.left(), menuRect.center().y() + i * 4 };
+        const QPointF right { menuRect.right(), menuRect.center().y() + i * 4 };
 
         painter->drawLine(left, right);
     }
