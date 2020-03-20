@@ -66,23 +66,27 @@ void KeepAboveButton::paint(QPainter *painter, const QRect &repaintRegion)
     painter->setBrush(backgroundColor());
     painter->drawRect(buttonRect);
 
-    if (isChecked()) {
-        const auto *deco = qobject_cast<Decoration *>(decoration());
-        auto *decoratedClient = deco->client().toStrongRef().data();
-
-        painter->setPen( decoratedClient->color(
-            KDecoration2::ColorGroup::Warning,
-            KDecoration2::ColorRole::Foreground
-        ));
-    } else {
-        painter->setPen(foregroundColor());
-    }
-
+    // Foreground.
+    QPen pen(foregroundColor());
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+    const qreal PenWidth_Symbol = 1.01; // https://github.com/KDE/breeze/blob/master/kstyle/breeze.h#L164
+    pen.setWidthF(PenWidth_Symbol * 1.25);
+    painter->setPen(pen);
     painter->setBrush(Qt::NoBrush);
 
-    const QPointF topMiddle {keepAboveRect.center().x(), keepAboveRect.top()};
-    painter->drawLine(keepAboveRect.bottomLeft(), topMiddle);
-    painter->drawLine(topMiddle, keepAboveRect.bottomRight());
+    painter->translate( keepAboveRect.topLeft() );
+    painter->drawPolyline(  QVector<QPointF> {
+        QPointF( 0.5, 4.75 ),
+        QPointF( 5.0, 0.25 ),
+        QPointF( 9.5, 4.75 )
+    });
+
+    painter->drawPolyline(  QVector<QPointF> {
+        QPointF( 0.5, 9.75 ),
+        QPointF( 5.0, 5.25 ),
+        QPointF( 9.5, 9.75 )
+    });
 
     painter->restore();
 }
@@ -94,21 +98,36 @@ QColor KeepAboveButton::backgroundColor() const
         return {};
     }
 
-    if (isPressed()) {
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.3);
+    if (isChecked()) {
+        if (isPressed()) {
+            return KColorUtils::mix(
+                deco->titleBarBackgroundColor(),
+                deco->titleBarForegroundColor(),
+                0.7);
+        }
+        if (isHovered()) {
+            return KColorUtils::mix(
+                deco->titleBarBackgroundColor(),
+                deco->titleBarForegroundColor(),
+                0.8);
+        }
+        return deco->titleBarForegroundColor();
+    } else {
+        if (isPressed()) {
+            return KColorUtils::mix(
+                deco->titleBarBackgroundColor(),
+                deco->titleBarForegroundColor(),
+                0.3);
+        }
+        if (isHovered()) {
+            return KColorUtils::mix(
+                deco->titleBarBackgroundColor(),
+                deco->titleBarForegroundColor(),
+                0.2);
+        }
+        return Qt::transparent;
     }
 
-    if (isHovered()) {
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.2);
-    }
-
-    return Qt::transparent;
 }
 
 QColor KeepAboveButton::foregroundColor() const
@@ -118,7 +137,11 @@ QColor KeepAboveButton::foregroundColor() const
         return {};
     }
 
-    return deco->titleBarForegroundColor();
+    if (isChecked()) {
+        return deco->titleBarBackgroundColor();
+    } else {
+        return deco->titleBarForegroundColor();
+    }
 }
 
 } // namespace Material
