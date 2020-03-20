@@ -17,15 +17,15 @@
 
 #pragma once
 
-// KDecoration
-#include <KDecoration2/DecorationButton>
+// own
+#include "CommonButton.h"
 
 namespace Material
 {
 
 class Decoration;
 
-class MaximizeButton : public KDecoration2::DecorationButton
+class MaximizeButton : public CommonButton
 {
     Q_OBJECT
 
@@ -33,11 +33,7 @@ public:
     MaximizeButton(Decoration *decoration, QObject *parent = nullptr);
     ~MaximizeButton() override;
 
-    void paint(QPainter *painter, const QRect &repaintRegion) override;
-
-private:
-    QColor backgroundColor() const;
-    QColor foregroundColor() const;
+    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
 };
 
 } // namespace Material

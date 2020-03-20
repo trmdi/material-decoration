@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
  * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,12 +16,14 @@
  */
 
 // own
-#include "MenuButton.h"
 #include "CommonButton.h"
 #include "Decoration.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
+
+// KF
+#include <KColorUtils>
 
 // Qt
 #include <QPainter>
@@ -30,16 +31,10 @@
 namespace Material
 {
 
-MenuButton::MenuButton(Decoration *decoration, QObject *parent)
-    : CommonButton(KDecoration2::DecorationButtonType::Menu, decoration, parent)
+CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent)
+    : DecorationButton(type, decoration, parent)
 {
-    auto *decoratedClient = decoration->client().toStrongRef().data();
-    connect(decoratedClient, &KDecoration2::DecoratedClient::iconChanged, this,
-        [this] {
-            update();
-        });
-
-    connect(this, &MenuButton::hoveredChanged, this,
+    connect(this, &CommonButton::hoveredChanged, this,
         [this] {
             update();
         });
@@ -49,16 +44,16 @@ MenuButton::MenuButton(Decoration *decoration, QObject *parent)
     setGeometry(QRect(QPoint(0, 0), size));
 }
 
-MenuButton::~MenuButton()
+CommonButton::~CommonButton()
 {
 }
 
-void MenuButton::paint(QPainter *painter, const QRect &repaintRegion)
+void CommonButton::paint(QPainter *painter, const QRect &repaintRegion)
 {
     Q_UNUSED(repaintRegion)
 
     const QRectF buttonRect = geometry();
-    QRectF iconRect = QRectF(0, 0, 16, 16);
+    QRectF iconRect = QRectF(0, 0, 10, 10);
     iconRect.moveCenter(buttonRect.center().toPoint());
 
     painter->save();
@@ -70,12 +65,53 @@ void MenuButton::paint(QPainter *painter, const QRect &repaintRegion)
     painter->setBrush(backgroundColor());
     painter->drawRect(buttonRect);
 
-    // Icon
-    auto *decoratedClient = decoration()->client().toStrongRef().data();
-    decoratedClient->icon().paint(painter, iconRect.toRect());
+    // Foreground.
+    painter->setPen(foregroundColor());
+    painter->setBrush(Qt::NoBrush);
 
+    paintIcon(painter, iconRect);
+    
     painter->restore();
 }
 
+void CommonButton::paintIcon(QPainter *painter, const QRectF &iconRect)
+{
+    Q_UNUSED(painter)
+    Q_UNUSED(iconRect)
+}
+
+QColor CommonButton::backgroundColor() const
+{
+    const auto *deco = qobject_cast<Decoration *>(decoration());
+    if (!deco) {
+        return {};
+    }
+
+    if (isPressed()) {
+        return KColorUtils::mix(
+            deco->titleBarBackgroundColor(),
+            deco->titleBarForegroundColor(),
+            0.3);
+    }
+
+    if (isHovered()) {
+        return KColorUtils::mix(
+            deco->titleBarBackgroundColor(),
+            deco->titleBarForegroundColor(),
+            0.2);
+    }
+
+    return Qt::transparent;
+}
+
+QColor CommonButton::foregroundColor() const
+{
+    const auto *deco = qobject_cast<Decoration *>(decoration());
+    if (!deco) {
+        return {};
+    }
+    
+    return deco->titleBarForegroundColor();
+}
 
 } // namespace Material

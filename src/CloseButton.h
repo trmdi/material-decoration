@@ -17,15 +17,15 @@
 
 #pragma once
 
-// KDecoration
-#include <KDecoration2/DecorationButton>
+// own
+#include "CommonButton.h"
 
 namespace Material
 {
 
 class Decoration;
 
-class CloseButton : public KDecoration2::DecorationButton
+class CloseButton : public CommonButton
 {
     Q_OBJECT
 
@@ -33,11 +33,10 @@ public:
     CloseButton(Decoration *decoration, QObject *parent = nullptr);
     ~CloseButton() override;
 
-    void paint(QPainter *painter, const QRect &repaintRegion) override;
+    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
 
-private:
-    QColor backgroundColor() const;
-    QColor foregroundColor() const;
+protected:
+    QColor backgroundColor() const override;
 };
 
 } // namespace Material

@@ -17,13 +17,11 @@
 
 // own
 #include "MaximizeButton.h"
+#include "CommonButton.h"
 #include "Decoration.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
-
-// KF
-#include <KColorUtils>
 
 // Qt
 #include <QPainter>
@@ -32,20 +30,12 @@ namespace Material
 {
 
 MaximizeButton::MaximizeButton(Decoration *decoration, QObject *parent)
-    : DecorationButton(KDecoration2::DecorationButtonType::Maximize, decoration, parent)
+    : CommonButton(KDecoration2::DecorationButtonType::Maximize, decoration, parent)
 {
     auto *decoratedClient = decoration->client().toStrongRef().data();
     connect(decoratedClient, &KDecoration2::DecoratedClient::maximizeableChanged,
             this, &MaximizeButton::setVisible);
 
-    connect(this, &MaximizeButton::hoveredChanged, this,
-        [this] {
-            update();
-        });
-
-    const int titleBarHeight = decoration->titleBarHeight();
-    const QSize size(qRound(titleBarHeight * 1.33), titleBarHeight);
-    setGeometry(QRect(QPoint(0, 0), size));
     setVisible(decoratedClient->isMaximizeable());
 }
 
@@ -53,81 +43,26 @@ MaximizeButton::~MaximizeButton()
 {
 }
 
-void MaximizeButton::paint(QPainter *painter, const QRect &repaintRegion)
+void MaximizeButton::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
-    Q_UNUSED(repaintRegion)
-
-    const QRectF buttonRect = geometry();
-    QRectF maximizeRect = QRectF(0, 0, 10, 10);
-    maximizeRect.moveCenter(buttonRect.center().toPoint());
-
-    painter->save();
-
-    painter->setRenderHints(QPainter::Antialiasing, false);
-
-    // Background.
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(backgroundColor());
-    painter->drawRect(buttonRect);
-
-    // Foreground.
-    painter->setPen(foregroundColor());
-    painter->setBrush(Qt::NoBrush);
-
     if (isChecked()) {
         painter->drawPolygon(QVector<QPointF> {
-            maximizeRect.bottomLeft(),
-            maximizeRect.topLeft() + QPoint(0, 2),
-            maximizeRect.topRight() + QPointF(-2, 2),
-            maximizeRect.bottomRight() + QPointF(-2, 0)
+            iconRect.bottomLeft(),
+            iconRect.topLeft() + QPoint(0, 2),
+            iconRect.topRight() + QPointF(-2, 2),
+            iconRect.bottomRight() + QPointF(-2, 0)
         });
 
         painter->drawPolyline(QVector<QPointF> {
-            maximizeRect.topLeft() + QPointF(2, 2),
-            maximizeRect.topLeft() + QPointF(2, 0),
-            maximizeRect.topRight(),
-            maximizeRect.bottomRight() + QPointF(0, -2),
-            maximizeRect.bottomRight() + QPointF(-2, -2)
+            iconRect.topLeft() + QPointF(2, 2),
+            iconRect.topLeft() + QPointF(2, 0),
+            iconRect.topRight(),
+            iconRect.bottomRight() + QPointF(0, -2),
+            iconRect.bottomRight() + QPointF(-2, -2)
         });
     } else {
-        painter->drawRect(maximizeRect);
+        painter->drawRect(iconRect);
     }
-
-    painter->restore();
-}
-
-QColor MaximizeButton::backgroundColor() const
-{
-    const auto *deco = qobject_cast<Decoration *>(decoration());
-    if (!deco) {
-        return {};
-    }
-
-    if (isPressed()) {
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.3);
-    }
-
-    if (isHovered()) {
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.2);
-    }
-
-    return Qt::transparent;
-}
-
-QColor MaximizeButton::foregroundColor() const
-{
-    const auto *deco = qobject_cast<Decoration *>(decoration());
-    if (!deco) {
-        return {};
-    }
-
-    return deco->titleBarForegroundColor();
 }
 
 } // namespace Material

@@ -17,6 +17,7 @@
 
 // own
 #include "CloseButton.h"
+#include "CommonButton.h"
 #include "Decoration.h"
 
 // KDecoration
@@ -29,20 +30,12 @@ namespace Material
 {
 
 CloseButton::CloseButton(Decoration *decoration, QObject *parent)
-    : DecorationButton(KDecoration2::DecorationButtonType::Close, decoration, parent)
+    : CommonButton(KDecoration2::DecorationButtonType::Close, decoration, parent)
 {
     auto *decoratedClient = decoration->client().toStrongRef().data();
     connect(decoratedClient, &KDecoration2::DecoratedClient::closeableChanged,
             this, &CloseButton::setVisible);
 
-    connect(this, &CloseButton::hoveredChanged, this,
-        [this] {
-            update();
-        });
-
-    const int titleBarHeight = decoration->titleBarHeight();
-    const QSize size(qRound(titleBarHeight * 1.33), titleBarHeight);
-    setGeometry(QRect(QPoint(0, 0), size));
     setVisible(decoratedClient->isCloseable());
 }
 
@@ -50,30 +43,10 @@ CloseButton::~CloseButton()
 {
 }
 
-void CloseButton::paint(QPainter *painter, const QRect &repaintRegion)
+void CloseButton::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
-    Q_UNUSED(repaintRegion)
-
-    const QRectF buttonRect = geometry();
-    QRectF crossRect = QRectF(0, 0, 10, 10);
-    crossRect.moveCenter(buttonRect.center().toPoint());
-
-    painter->save();
-
-    painter->setRenderHints(QPainter::Antialiasing, false);
-
-    // Background.
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(backgroundColor());
-    painter->drawRect(buttonRect);
-
-    // Foreground.
-    painter->setPen(foregroundColor());
-    painter->setBrush(Qt::NoBrush);
-    painter->drawLine(crossRect.topLeft(), crossRect.bottomRight());
-    painter->drawLine(crossRect.topRight(), crossRect.bottomLeft());
-
-    painter->restore();
+    painter->drawLine(iconRect.topLeft(), iconRect.bottomRight());
+    painter->drawLine(iconRect.topRight(), iconRect.bottomLeft());
 }
 
 QColor CloseButton::backgroundColor() const
@@ -100,16 +73,6 @@ QColor CloseButton::backgroundColor() const
     }
 
     return Qt::transparent;
-}
-
-QColor CloseButton::foregroundColor() const
-{
-    const auto *deco = qobject_cast<Decoration *>(decoration());
-    if (!deco) {
-        return {};
-    }
-
-    return deco->titleBarForegroundColor();
 }
 
 } // namespace Material

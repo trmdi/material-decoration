@@ -16,6 +16,7 @@ set (decoration_SRCS
     ApplicationMenuButton.cc
     BoxShadowHelper.cc
     CloseButton.cc
+    CommonButton.cc
     Decoration.cc
     KeepAboveButton.cc
     MaximizeButton.cc

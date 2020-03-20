@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2019 Zain Ahmad <zain.x.ahmad@gmail.com>
+ * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
+ * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +18,28 @@
 
 #pragma once
 
-// own
-#include "CommonButton.h"
+// KDecoration
+#include <KDecoration2/DecorationButton>
 
 namespace Material
 {
 
 class Decoration;
 
-class ApplicationMenuButton : public CommonButton
+class CommonButton : public KDecoration2::DecorationButton
 {
     Q_OBJECT
 
 public:
-    ApplicationMenuButton(Decoration *decoration, QObject *parent = nullptr);
-    ~ApplicationMenuButton() override;
+    CommonButton(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent = nullptr);
+    ~CommonButton() override;
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+    void paint(QPainter *painter, const QRect &repaintRegion) override;
+    virtual void paintIcon(QPainter *painter, const QRectF &iconRect);
+
+protected:
+    virtual QColor backgroundColor() const;
+    virtual QColor foregroundColor() const;
 };
 
 } // namespace Material

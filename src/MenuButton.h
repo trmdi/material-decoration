@@ -18,15 +18,15 @@
 
 #pragma once
 
-// KDecoration
-#include <KDecoration2/DecorationButton>
+// own
+#include "CommonButton.h"
 
 namespace Material
 {
 
 class Decoration;
 
-class MenuButton : public KDecoration2::DecorationButton
+class MenuButton : public CommonButton
 {
     Q_OBJECT
 
@@ -35,10 +35,6 @@ public:
     ~MenuButton() override;
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
-
-private:
-    QColor backgroundColor() const;
-    QColor foregroundColor() const;
 };
 
 } // namespace Material

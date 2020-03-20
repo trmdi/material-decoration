@@ -67,6 +67,7 @@ private:
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
 
+    friend class CommonButton;
     friend class MenuButton;
     friend class ApplicationMenuButton;
     friend class KeepAboveButton;
