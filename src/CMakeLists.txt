@@ -13,6 +13,7 @@ find_package (KF5 REQUIRED COMPONENTS
 )
 
 set (decoration_SRCS
+    ApplicationMenuButton.cc
     BoxShadowHelper.cc
     CloseButton.cc
     Decoration.cc
