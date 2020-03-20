@@ -282,7 +282,7 @@ int Decoration::titleBarHeight() const
 {
     const QFontMetrics fontMetrics(settings()->font());
     const int baseUnit = settings()->gridUnit();
-    return qRound(1.5 * baseUnit) + fontMetrics.height();
+    return qRound(0.6 * baseUnit) + fontMetrics.height();
 }
 
 void Decoration::paintFrameBackground(QPainter *painter, const QRect &repaintRegion) const
