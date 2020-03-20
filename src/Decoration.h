@@ -27,6 +27,7 @@
 namespace Material
 {
 
+class MenuButton;
 class CloseButton;
 class MaximizeButton;
 class MinimizeButton;
@@ -64,6 +65,7 @@ private:
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
 
+    friend class MenuButton;
     friend class CloseButton;
     friend class MaximizeButton;
     friend class MinimizeButton;

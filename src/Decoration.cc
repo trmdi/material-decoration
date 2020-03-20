@@ -18,6 +18,7 @@
 // own
 #include "Decoration.h"
 #include "BoxShadowHelper.h"
+#include "MenuButton.h"
 #include "CloseButton.h"
 #include "MaximizeButton.h"
 #include "MinimizeButton.h"
@@ -138,6 +139,9 @@ void Decoration::init()
         Q_UNUSED(decoration)
 
         switch (type) {
+        case KDecoration2::DecorationButtonType::Menu:
+            return new MenuButton(this, parent);
+
         case KDecoration2::DecorationButtonType::Close:
             return new CloseButton(this, parent);
 
