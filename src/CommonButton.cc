@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
  * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -111,11 +112,7 @@ QColor CommonButton::foregroundColor() const
         return {};
     }
 
-    if (isPressed()) {
-        return deco->titleBarForegroundColor();
-    }
-
-    if (isHovered()) {
+    if (isPressed() || isHovered()) {
         return deco->titleBarForegroundColor();
     }
 
