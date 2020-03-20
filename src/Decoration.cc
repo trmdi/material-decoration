@@ -19,6 +19,7 @@
 #include "Decoration.h"
 #include "BoxShadowHelper.h"
 #include "MenuButton.h"
+#include "KeepAboveButton.h"
 #include "CloseButton.h"
 #include "MaximizeButton.h"
 #include "MinimizeButton.h"
@@ -141,6 +142,9 @@ void Decoration::init()
         switch (type) {
         case KDecoration2::DecorationButtonType::Menu:
             return new MenuButton(this, parent);
+
+        case KDecoration2::DecorationButtonType::KeepAbove:
+            return new KeepAboveButton(this, parent);
 
         case KDecoration2::DecorationButtonType::Close:
             return new CloseButton(this, parent);
