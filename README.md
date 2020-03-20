@@ -1,4 +1,4 @@
-![Demo](data/window.png)
+![Demo](data/preview.png)
 
 ## material-decoration
 
@@ -9,6 +9,12 @@ Material-ish window decoration theme for KWin.
 ##### Prerequisites
 
 * KDecoration2
+
+The following command should probably install all the build dependency libraries.
+
+```
+sudo apt build-dep breeze
+```
 
 ##### Building from source
 
