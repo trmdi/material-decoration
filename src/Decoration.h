@@ -71,7 +71,9 @@ private:
     friend class CommonToggleButton;
     friend class MenuButton;
     friend class ApplicationMenuButton;
+    friend class OnAllDesktopsButton;
     friend class KeepAboveButton;
+    friend class KeepBelowButton;
     friend class CloseButton;
     friend class MaximizeButton;
     friend class MinimizeButton;

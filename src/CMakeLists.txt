@@ -20,9 +20,11 @@ set (decoration_SRCS
     CommonToggleButton.cc
     Decoration.cc
     KeepAboveButton.cc
+    KeepBelowButton.cc
     MaximizeButton.cc
     MenuButton.cc
     MinimizeButton.cc
+    OnAllDesktopsButton.cc
     plugin.cc
 )
 

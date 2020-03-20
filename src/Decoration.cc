@@ -20,7 +20,9 @@
 #include "BoxShadowHelper.h"
 #include "MenuButton.h"
 #include "ApplicationMenuButton.h"
+#include "OnAllDesktopsButton.h"
 #include "KeepAboveButton.h"
+#include "KeepBelowButton.h"
 #include "CloseButton.h"
 #include "MaximizeButton.h"
 #include "MinimizeButton.h"
@@ -147,8 +149,14 @@ void Decoration::init()
         case KDecoration2::DecorationButtonType::ApplicationMenu:
             return new ApplicationMenuButton(this, parent);
 
+        case KDecoration2::DecorationButtonType::OnAllDesktops:
+            return new OnAllDesktopsButton(this, parent);
+
         case KDecoration2::DecorationButtonType::KeepAbove:
             return new KeepAboveButton(this, parent);
+
+        case KDecoration2::DecorationButtonType::KeepBelow:
+            return new KeepBelowButton(this, parent);
 
         case KDecoration2::DecorationButtonType::Close:
             return new CloseButton(this, parent);
