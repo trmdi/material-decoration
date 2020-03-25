@@ -26,6 +26,7 @@
 #include "CloseButton.h"
 #include "MaximizeButton.h"
 #include "MinimizeButton.h"
+#include "TextButton.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -182,6 +183,11 @@ void Decoration::init()
         this,
         buttonCreator);
 
+    m_menuButtons = new KDecoration2::DecorationButtonGroup(this);
+
+    TextButton *b = new TextButton(this, m_menuButtons);
+    m_menuButtons->addButton(QPointer<KDecoration2::DecorationButton>(b));
+
     updateButtonsGeometry();
 
     // For some reason, the shadow should be installed the last. Otherwise,
@@ -225,6 +231,11 @@ void Decoration::updateButtonsGeometry()
     if (!m_rightButtons->buttons().isEmpty()) {
         m_rightButtons->setPos(QPointF(size().width() - m_rightButtons->geometry().width(), 0));
         m_rightButtons->setSpacing(0);
+    }
+
+    if (!m_menuButtons->buttons().isEmpty()) {
+        m_menuButtons->setPos(QPointF(m_leftButtons->geometry().width() + settings()->smallSpacing(), 0));
+        m_menuButtons->setSpacing(0);
     }
 
     update();
@@ -299,6 +310,12 @@ int Decoration::titleBarHeight() const
     const QFontMetrics fontMetrics(settings()->font());
     const int baseUnit = settings()->gridUnit();
     return qRound(0.6 * baseUnit) + fontMetrics.height();
+}
+
+int Decoration::getTextWidth(const QString text) const
+{
+    const QFontMetrics fontMetrics(settings()->font());
+    return fontMetrics.boundingRect(text).width();
 }
 
 void Decoration::paintFrameBackground(QPainter *painter, const QRect &repaintRegion) const
@@ -403,6 +420,7 @@ void Decoration::paintButtons(QPainter *painter, const QRect &repaintRegion) con
 {
     m_leftButtons->paint(painter, repaintRegion);
     m_rightButtons->paint(painter, repaintRegion);
+    m_menuButtons->paint(painter, repaintRegion);
 }
 
 } // namespace Material

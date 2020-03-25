@@ -55,6 +55,7 @@ private:
     void updateShadow();
 
     int titleBarHeight() const;
+    int getTextWidth(const QString text) const;
 
     QColor titleBarBackgroundColor() const;
     QColor titleBarForegroundColor() const;
@@ -66,6 +67,7 @@ private:
 
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
+    KDecoration2::DecorationButtonGroup *m_menuButtons;
 
     friend class CommonButton;
     friend class CommonToggleButton;
@@ -77,6 +79,7 @@ private:
     friend class CloseButton;
     friend class MaximizeButton;
     friend class MinimizeButton;
+    friend class TextButton;
 };
 
 } // namespace Material

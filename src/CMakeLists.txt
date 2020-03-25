@@ -25,6 +25,7 @@ set (decoration_SRCS
     MenuButton.cc
     MinimizeButton.cc
     OnAllDesktopsButton.cc
+    TextButton.cc
     plugin.cc
 )
 
