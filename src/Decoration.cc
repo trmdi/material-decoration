@@ -117,7 +117,7 @@ void Decoration::paint(QPainter *painter, const QRect &repaintRegion)
     }
 
     paintTitleBarBackground(painter, repaintRegion);
-    paintCaption(painter, repaintRegion);
+    // paintCaption(painter, repaintRegion);
     paintButtons(painter, repaintRegion);
 }
 
