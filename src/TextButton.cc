@@ -72,4 +72,31 @@ QSize TextButton::getTextSize()
     return size;
 }
 
+int TextButton::horzPadding() const
+{
+    return m_horzPadding;
+}
+
+void TextButton::setHorzPadding(int set)
+{
+    if (m_horzPadding != set) {
+        m_horzPadding = set;
+        emit horzPaddingChanged();
+    }
+}
+
+QString TextButton::text() const
+{
+    return m_text;
+}
+
+void TextButton::setText(const QString set)
+{
+    if (m_text != set) {
+        m_text = set;
+        emit textChanged();
+    }
+}
+
+
 } // namespace Material

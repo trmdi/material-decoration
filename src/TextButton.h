@@ -33,8 +33,21 @@ public:
     TextButton(Decoration *decoration, QObject *parent = nullptr);
     ~TextButton() override;
 
+    Q_PROPERTY(int horzPadding READ horzPadding WRITE setHorzPadding NOTIFY horzPaddingChanged)
+    Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
+
     void paintIcon(QPainter *painter, const QRectF &iconRect) override;
     QSize getTextSize();
+
+    int horzPadding() const;
+    void setHorzPadding(int set);
+
+    QString text() const;
+    void setText(const QString set);
+
+signals:
+    void horzPaddingChanged();
+    void textChanged();
 
 private:
     int m_horzPadding;
