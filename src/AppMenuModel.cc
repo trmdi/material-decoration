@@ -78,7 +78,7 @@ AppMenuModel::AppMenuModel(QObject *parent)
         onActiveWindowChanged(m_winId.toUInt());
     });
 
-    connect(KWindowSystem::self(), &KWindowSystem::activeWindowChanged, this, &AppMenuModel::onActiveWindowChanged);
+    // connect(KWindowSystem::self(), &KWindowSystem::activeWindowChanged, this, &AppMenuModel::onActiveWindowChanged);
     connect(KWindowSystem::self()
             , static_cast<void (KWindowSystem::*)(WId)>(&KWindowSystem::windowChanged)
             , this
