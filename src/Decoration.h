@@ -24,6 +24,9 @@
 // Qt
 #include <QVariant>
 
+// own
+#include "AppMenuModel.h"
+
 namespace Material
 {
 
@@ -48,6 +51,7 @@ public slots:
     void init() override;
 
 private:
+    void updateAppMenuModel();
     void updateBorders();
     void updateResizeBorders();
     void updateTitleBar();
@@ -68,6 +72,8 @@ private:
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
     KDecoration2::DecorationButtonGroup *m_menuButtons;
+
+    AppMenuModel *m_appMenuModel;
 
     friend class CommonButton;
     friend class CommonToggleButton;

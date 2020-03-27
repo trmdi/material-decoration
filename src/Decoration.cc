@@ -34,8 +34,11 @@
 #include <KDecoration2/DecorationShadow>
 
 // Qt
+#include <QDebug>
+#include <QLoggingCategory>
 #include <QPainter>
 #include <QSharedPointer>
+#include <QX11Info>
 
 namespace Material
 {
@@ -91,6 +94,7 @@ static qreal s_titleBarOpacityInactive = 0.85;
 
 Decoration::Decoration(QObject *parent, const QVariantList &args)
     : KDecoration2::Decoration(parent, args)
+    , m_appMenuModel(nullptr)
 {
     ++s_decoCount;
 }
@@ -184,15 +188,53 @@ void Decoration::init()
         buttonCreator);
 
     m_menuButtons = new KDecoration2::DecorationButtonGroup(this);
-
-    TextButton *b = new TextButton(this, m_menuButtons);
-    m_menuButtons->addButton(QPointer<KDecoration2::DecorationButton>(b));
+    updateAppMenuModel();
+    connect(decoratedClient, &KDecoration2::DecoratedClient::captionChanged,
+            this, &Decoration::updateAppMenuModel);
 
     updateButtonsGeometry();
 
     // For some reason, the shadow should be installed the last. Otherwise,
     // the Window Decorations KCM crashes.
     updateShadow();
+}
+
+void Decoration::updateAppMenuModel()
+{
+    QLoggingCategory category("kdecoration.material");
+    qCDebug(category) << "test";
+    if (m_appMenuModel) {
+        qCDebug(category) << "AppMenuModel" << m_appMenuModel;
+        
+        // Reset
+        m_menuButtons->removeButton(KDecoration2::DecorationButtonType::Custom);
+
+        // Populate
+        for (int row = 0; row < m_appMenuModel->rowCount(); row++) {
+            const QString itemLabel = m_appMenuModel->data(m_appMenuModel->index(row, 0), AppMenuModel::MenuRole).toString();
+            qCDebug(category) << "    " << itemLabel;
+
+            TextButton *b = new TextButton(this, m_menuButtons);
+            b->setText(itemLabel);
+            m_menuButtons->addButton(QPointer<KDecoration2::DecorationButton>(b));
+        }
+
+        // Update
+        updateButtonsGeometry();
+    } else {
+        auto *decoratedClient = client().toStrongRef().data();
+        qCDebug(category) << "windowId" << decoratedClient->windowId();
+        WId windowId = decoratedClient->windowId();
+        if (windowId != 0) {
+            m_appMenuModel = new AppMenuModel(this);
+            connect(m_appMenuModel, &AppMenuModel::modelReset,
+                this, &Decoration::updateAppMenuModel);
+
+            qCDebug(category) << "AppMenuModel" << m_appMenuModel;
+            m_appMenuModel->setWinId(windowId);
+            qCDebug(category) << "AppMenuModel" << m_appMenuModel;
+        }
+    }
 }
 
 void Decoration::updateBorders()
