@@ -131,11 +131,15 @@ void TextButton::trigger() {
         qCDebug(category) << "    menu" << menu;
     }
 
-    // if (menu && m_decorationPalette) {
-    //     menu->setPalette(m_decorationPalette->palette());
+    // const auto *deco = qobject_cast<Decoration *>(decoration());
+    // if (menu && deco) {
+    //     auto *decoratedClient = deco->client().toStrongRef().data();
+    //     menu->setPalette(decoratedClient->palette());
     // }
 
-    menu->popup(QPoint(0, 0));
+    if (menu) {
+        menu->popup(QPoint(0, 0));
+    }
 }
 
 
