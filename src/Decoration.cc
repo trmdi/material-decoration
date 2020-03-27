@@ -151,8 +151,8 @@ void Decoration::init()
         case KDecoration2::DecorationButtonType::Menu:
             return new MenuButton(this, parent);
 
-        case KDecoration2::DecorationButtonType::ApplicationMenu:
-            return new ApplicationMenuButton(this, parent);
+        // case KDecoration2::DecorationButtonType::ApplicationMenu:
+        //     return new ApplicationMenuButton(this, parent);
 
         case KDecoration2::DecorationButtonType::OnAllDesktops:
             return new OnAllDesktopsButton(this, parent);
