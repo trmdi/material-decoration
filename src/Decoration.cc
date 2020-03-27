@@ -117,8 +117,8 @@ void Decoration::paint(QPainter *painter, const QRect &repaintRegion)
     }
 
     paintTitleBarBackground(painter, repaintRegion);
-    // paintCaption(painter, repaintRegion);
     paintButtons(painter, repaintRegion);
+    paintCaption(painter, repaintRegion);
 }
 
 void Decoration::init()
@@ -467,7 +467,25 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
 
     painter->save();
     painter->setFont(settings()->font());
-    painter->setPen(titleBarForegroundColor());
+
+    int x1 = textRect.left();
+    int x2 = m_menuButtons->geometry().right();
+    if (x1 < x2) { // menuButtons covers caption
+        int fadeWidth = 10; // TODO: scale by dpi
+        int x3 = qMin(x2+fadeWidth, textRect.right());
+        // int x4 = textRect.right();
+        float x2Ratio = (float)(x2-x1) / (float)textRect.width();
+        float x3Ratio = (float)(x3-x1) / (float)textRect.width();
+        QLinearGradient gradient(textRect.topLeft(), textRect.bottomRight());
+        gradient.setColorAt(x2Ratio, Qt::transparent);
+        gradient.setColorAt(x3Ratio, titleBarForegroundColor());
+        QBrush brush(gradient);
+        QPen pen(brush, 1);
+        painter->setPen(pen);
+    } else {
+        painter->setPen(titleBarForegroundColor());
+    }
+
     painter->drawText(captionRect, alignment, caption);
     painter->restore();
 }
