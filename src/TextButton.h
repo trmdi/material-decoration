@@ -37,6 +37,7 @@ public:
     QSize getTextSize();
 
 private:
+    int m_horzPadding;
     QString m_text;
 };
 

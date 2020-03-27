@@ -32,6 +32,7 @@ namespace Material
 
 TextButton::TextButton(Decoration *decoration, QObject *parent)
     : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    , m_horzPadding(4) // TODO: Scale by DPI
     , m_text(QStringLiteral("Menu"))
 {
     setVisible(true);
@@ -45,7 +46,8 @@ void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
     Q_UNUSED(iconRect)
 
-    const QSize size = getTextSize();
+    const QSize textSize = getTextSize();
+    const QSize size = textSize + QSize(m_horzPadding * 2, 0);
     const QRect rect(geometry().topLeft().toPoint(), size);
     setGeometry(rect);
 
