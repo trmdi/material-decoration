@@ -468,22 +468,31 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
     painter->save();
     painter->setFont(settings()->font());
 
-    int x1 = textRect.left();
-    int x2 = m_menuButtons->geometry().right();
-    if (x1 < x2) { // menuButtons covers caption
-        int fadeWidth = 10; // TODO: scale by dpi
-        int x3 = qMin(x2+fadeWidth, textRect.right());
-        // int x4 = textRect.right();
-        float x2Ratio = (float)(x2-x1) / (float)textRect.width();
-        float x3Ratio = (float)(x3-x1) / (float)textRect.width();
-        QLinearGradient gradient(textRect.topLeft(), textRect.bottomRight());
-        gradient.setColorAt(x2Ratio, Qt::transparent);
-        gradient.setColorAt(x3Ratio, titleBarForegroundColor());
-        QBrush brush(gradient);
-        QPen pen(brush, 1);
-        painter->setPen(pen);
-    } else {
+    if (m_menuButtons->buttons().isEmpty()) {
         painter->setPen(titleBarForegroundColor());
+    } else { // menuButtons is visible
+        const int menuRight = m_menuButtons->geometry().right();
+        const int textLeft = textRect.left();
+        const int textRight = textRect.right();
+        // qCDebug(category) << "textLeft" << textLeft << "menuRight" << menuRight;
+        if (textRight < menuRight) { // menuButtons completely coveres caption
+            painter->setPen(Qt::transparent);
+        } else if (textLeft < menuRight) { // menuButtons covers caption
+            const int fadeWidth = 10; // TODO: scale by dpi
+            const int x1 = menuRight;
+            const int x2 = qMin(x1+fadeWidth, textRight);
+            const float x1Ratio = (float)(x1-textLeft) / (float)textWidth;
+            const float x2Ratio = (float)(x2-textLeft) / (float)textWidth;
+            // qCDebug(category) << "    " << "x2" << x2 << "x1R" << x1Ratio << "x2R" << x2Ratio;
+            QLinearGradient gradient(textRect.topLeft(), textRect.bottomRight());
+            gradient.setColorAt(x1Ratio, Qt::transparent);
+            gradient.setColorAt(x2Ratio, titleBarForegroundColor());
+            QBrush brush(gradient);
+            QPen pen(brush, 1);
+            painter->setPen(pen);
+        } else { // caption is not covered by menuButtons
+            painter->setPen(titleBarForegroundColor());
+        }
     }
 
     painter->drawText(captionRect, alignment, caption);
