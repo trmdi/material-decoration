@@ -60,7 +60,8 @@ void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect)
     const QRect rect(geometry().topLeft().toPoint(), size);
     setGeometry(rect);
 
-    painter->drawText(rect, Qt::AlignCenter, m_text);
+    // TODO: Use Qt::TextShowMnemonic when Alt is pressed
+    painter->drawText(rect, Qt::TextHideMnemonic | Qt::AlignCenter, m_text);
 }
 
 QSize TextButton::getTextSize()
