@@ -30,6 +30,7 @@
 #include <QFontMetrics>
 #include <QMenu>
 #include <QPainter>
+#include <QX11Info>
 
 namespace Material
 {
@@ -119,6 +120,9 @@ void TextButton::setText(const QString set)
     }
 }
 
+//* scoped pointer convenience typedef
+template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
+
 void TextButton::trigger() {
     QLoggingCategory category("kdecoration.material");
     qCDebug(category) << "TextButton::trigger" << m_action;
@@ -131,14 +135,50 @@ void TextButton::trigger() {
         qCDebug(category) << "    menu" << menu;
     }
 
-    // const auto *deco = qobject_cast<Decoration *>(decoration());
+    const auto *deco = qobject_cast<Decoration *>(decoration());
     // if (menu && deco) {
     //     auto *decoratedClient = deco->client().toStrongRef().data();
     //     menu->setPalette(decoratedClient->palette());
     // }
 
-    if (menu) {
-        menu->popup(QPoint(0, 0));
+    if (menu && deco) {
+        QPoint pos = geometry().topLeft().toPoint();
+        qCDebug(category) << "    geometry" << geometry();
+        qCDebug(category) << "    botLeft" << pos;
+        // pos += deco->rect().topLeft();
+        // qCDebug(category) << "    rect" << deco->rect();
+        // qCDebug(category) << "    pos" << pos;
+
+        auto *decoratedClient = deco->client().toStrongRef().data();
+        WId windowId = decoratedClient->windowId();
+        qCDebug(category) << "windowId" << windowId;
+
+        //--- From: BreezeSizeGrip.cpp
+        /*
+        get root position matching position
+        need to use xcb because the embedding of the widget
+        breaks QT's mapToGlobal and other methods
+        */
+        auto connection( QX11Info::connection() );
+        xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
+        ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
+        if (reply) {
+            // translate coordinates
+            xcb_translate_coordinates_cookie_t coordCookie( xcb_translate_coordinates(
+                connection, windowId, reply.data()->root,
+                -reply.data()->border_width,
+                -reply.data()->border_width ) );
+
+            ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
+
+            if (coordReply) {
+                pos.rx() += coordReply.data()->dst_x;
+                pos.ry() += coordReply.data()->dst_y;
+            }
+        }
+        //---
+
+        menu->popup(pos);
     }
 }
 
