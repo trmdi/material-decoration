@@ -40,6 +40,8 @@
 #include <QSharedPointer>
 #include <QX11Info>
 
+static const QLoggingCategory category("kdecoration.material");
+
 namespace Material
 {
 
@@ -201,7 +203,13 @@ void Decoration::init()
 
 void Decoration::updateAppMenuModel()
 {
-    QLoggingCategory category("kdecoration.material");
+    auto *decoratedClient = client().toStrongRef().data();
+
+    // Don't display AppMenu in modal windows.
+    if (decoratedClient->isModal()) {
+        return;
+    }
+
     if (m_appMenuModel) {
         qCDebug(category) << "AppMenuModel" << m_appMenuModel;
         
@@ -229,7 +237,6 @@ void Decoration::updateAppMenuModel()
         // Update
         updateButtonsGeometry();
     } else {
-        auto *decoratedClient = client().toStrongRef().data();
         qCDebug(category) << "windowId" << decoratedClient->windowId();
         WId windowId = decoratedClient->windowId();
         if (windowId != 0) {
