@@ -10,6 +10,8 @@ This `lim` branch hides the AppMenu icon button and draws the menu in the titleb
 
 ![](https://i.imgur.com/R3qHgaN.png)
 
+Make sure you add the AppMenu button in System Settings > Application Style > Window Decorations > Buttons Tab.
+
 More discussion in the KDE Bug report: https://bugs.kde.org/show_bug.cgi?id=375951#c27
 
 TODO/Bugs:
