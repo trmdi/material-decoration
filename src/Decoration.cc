@@ -202,7 +202,6 @@ void Decoration::init()
 void Decoration::updateAppMenuModel()
 {
     QLoggingCategory category("kdecoration.material");
-    qCDebug(category) << "test";
     if (m_appMenuModel) {
         qCDebug(category) << "AppMenuModel" << m_appMenuModel;
         
@@ -211,12 +210,20 @@ void Decoration::updateAppMenuModel()
 
         // Populate
         for (int row = 0; row < m_appMenuModel->rowCount(); row++) {
-            const QString itemLabel = m_appMenuModel->data(m_appMenuModel->index(row, 0), AppMenuModel::MenuRole).toString();
-            qCDebug(category) << "    " << itemLabel;
+            const QModelIndex index = m_appMenuModel->index(row, 0);
+            const QString itemLabel = m_appMenuModel->data(index, AppMenuModel::MenuRole).toString();
+
+            // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
+            const QVariant data = m_appMenuModel->data(index, AppMenuModel::ActionRole);
+            QAction *itemAction = (QAction *)data.value<void *>();
+
+            qCDebug(category) << "    " << itemAction;
 
             TextButton *b = new TextButton(this, m_menuButtons);
             b->setText(itemLabel);
+            b->setAction(itemAction);
             m_menuButtons->addButton(QPointer<KDecoration2::DecorationButton>(b));
+
         }
 
         // Update

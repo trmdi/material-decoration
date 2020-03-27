@@ -20,6 +20,9 @@
 // own
 #include "CommonButton.h"
 
+// Qt
+#include <QAction>
+
 namespace Material
 {
 
@@ -33,11 +36,16 @@ public:
     TextButton(Decoration *decoration, QObject *parent = nullptr);
     ~TextButton() override;
 
+    Q_PROPERTY(QAction* action READ action WRITE setAction NOTIFY actionChanged)
     Q_PROPERTY(int horzPadding READ horzPadding WRITE setHorzPadding NOTIFY horzPaddingChanged)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
     void paintIcon(QPainter *painter, const QRectF &iconRect) override;
     QSize getTextSize();
+
+
+    QAction* action() const;
+    void setAction(QAction *set);
 
     int horzPadding() const;
     void setHorzPadding(int set);
@@ -46,10 +54,15 @@ public:
     void setText(const QString set);
 
 signals:
+    void actionChanged();
     void horzPaddingChanged();
     void textChanged();
 
+public slots:
+    void trigger();
+
 private:
+    QAction *m_action;
     int m_horzPadding;
     QString m_text;
 };

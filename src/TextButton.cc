@@ -24,18 +24,26 @@
 #include <KDecoration2/DecoratedClient>
 
 // Qt
-#include <QPainter>
+#include <QDebug>
+#include <QLoggingCategory>
+#include <QAction>
 #include <QFontMetrics>
+#include <QMenu>
+#include <QPainter>
 
 namespace Material
 {
 
 TextButton::TextButton(Decoration *decoration, QObject *parent)
     : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    , m_action(nullptr)
     , m_horzPadding(4) // TODO: Scale by DPI
     , m_text(QStringLiteral("Menu"))
 {
     setVisible(true);
+
+    connect(this, &TextButton::clicked,
+        this, &TextButton::trigger);
 }
 
 TextButton::~TextButton()
@@ -72,6 +80,19 @@ QSize TextButton::getTextSize()
     return size;
 }
 
+QAction* TextButton::action() const
+{
+    return m_action;
+}
+
+void TextButton::setAction(QAction *set)
+{
+    if (m_action != set) {
+        m_action = set;
+        emit actionChanged();
+    }
+}
+
 int TextButton::horzPadding() const
 {
     return m_horzPadding;
@@ -96,6 +117,25 @@ void TextButton::setText(const QString set)
         m_text = set;
         emit textChanged();
     }
+}
+
+void TextButton::trigger() {
+    QLoggingCategory category("kdecoration.material");
+    qCDebug(category) << "TextButton::trigger" << m_action;
+
+    // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
+    QMenu *menu = nullptr;
+
+    if (m_action) {
+        menu = m_action->menu();
+        qCDebug(category) << "    menu" << menu;
+    }
+
+    // if (menu && m_decorationPalette) {
+    //     menu->setPalette(m_decorationPalette->palette());
+    // }
+
+    menu->popup(QPoint(0, 0));
 }
 
 
