@@ -395,8 +395,14 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
     const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
 
     const QRect availableRect = titleBarRect.adjusted(
-        m_leftButtons->geometry().width() + settings()->smallSpacing(), 0,
-        -(m_rightButtons->geometry().width() + settings()->smallSpacing()), 0
+        m_leftButtons->geometry().width()
+            + settings()->smallSpacing()
+            + m_menuButtons->geometry().width()
+            + settings()->smallSpacing(),
+        0,
+        -m_rightButtons->geometry().width()
+            - settings()->smallSpacing(),
+        0
     );
 
     QRect captionRect;
