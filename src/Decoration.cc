@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
  * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 
 // own
 #include "Decoration.h"
+#include "AppMenuButtonGroup.h"
 #include "BoxShadowHelper.h"
 #include "MenuButton.h"
 #include "ApplicationMenuButton.h"
@@ -96,7 +98,6 @@ static qreal s_titleBarOpacityInactive = 0.85;
 
 Decoration::Decoration(QObject *parent, const QVariantList &args)
     : KDecoration2::Decoration(parent, args)
-    , m_appMenuModel(nullptr)
 {
     ++s_decoCount;
 }
@@ -189,66 +190,16 @@ void Decoration::init()
         this,
         buttonCreator);
 
-    m_menuButtons = new KDecoration2::DecorationButtonGroup(this);
-    updateAppMenuModel();
-    connect(decoratedClient, &KDecoration2::DecoratedClient::captionChanged,
-            this, &Decoration::updateAppMenuModel);
+    m_menuButtons = new AppMenuButtonGroup(this);
+    connect(m_menuButtons, &AppMenuButtonGroup::menuUpdated,
+            this, &Decoration::updateButtonsGeometry);
+    m_menuButtons->updateAppMenuModel();
 
     updateButtonsGeometry();
 
     // For some reason, the shadow should be installed the last. Otherwise,
     // the Window Decorations KCM crashes.
     updateShadow();
-}
-
-void Decoration::updateAppMenuModel()
-{
-    auto *decoratedClient = client().toStrongRef().data();
-
-    // Don't display AppMenu in modal windows.
-    if (decoratedClient->isModal()) {
-        return;
-    }
-
-    if (m_appMenuModel) {
-        qCDebug(category) << "AppMenuModel" << m_appMenuModel;
-        
-        // Reset
-        m_menuButtons->removeButton(KDecoration2::DecorationButtonType::Custom);
-
-        // Populate
-        for (int row = 0; row < m_appMenuModel->rowCount(); row++) {
-            const QModelIndex index = m_appMenuModel->index(row, 0);
-            const QString itemLabel = m_appMenuModel->data(index, AppMenuModel::MenuRole).toString();
-
-            // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
-            const QVariant data = m_appMenuModel->data(index, AppMenuModel::ActionRole);
-            QAction *itemAction = (QAction *)data.value<void *>();
-
-            qCDebug(category) << "    " << itemAction;
-
-            TextButton *b = new TextButton(this, m_menuButtons);
-            b->setText(itemLabel);
-            b->setAction(itemAction);
-            m_menuButtons->addButton(QPointer<KDecoration2::DecorationButton>(b));
-
-        }
-
-        // Update
-        updateButtonsGeometry();
-    } else {
-        qCDebug(category) << "windowId" << decoratedClient->windowId();
-        WId windowId = decoratedClient->windowId();
-        if (windowId != 0) {
-            m_appMenuModel = new AppMenuModel(this);
-            connect(m_appMenuModel, &AppMenuModel::modelReset,
-                this, &Decoration::updateAppMenuModel);
-
-            qCDebug(category) << "AppMenuModel" << m_appMenuModel;
-            m_appMenuModel->setWinId(windowId);
-            qCDebug(category) << "AppMenuModel" << m_appMenuModel;
-        }
-    }
 }
 
 void Decoration::updateBorders()

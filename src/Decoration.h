@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
  * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,15 +18,16 @@
 
 #pragma once
 
+// own
+#include "AppMenuModel.h"
+#include "AppMenuButtonGroup.h"
+
 // KDecoration
 #include <KDecoration2/Decoration>
 #include <KDecoration2/DecorationButtonGroup>
 
 // Qt
 #include <QVariant>
-
-// own
-#include "AppMenuModel.h"
 
 namespace Material
 {
@@ -51,7 +53,6 @@ public slots:
     void init() override;
 
 private:
-    void updateAppMenuModel();
     void updateBorders();
     void updateResizeBorders();
     void updateTitleBar();
@@ -71,9 +72,7 @@ private:
 
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
-    KDecoration2::DecorationButtonGroup *m_menuButtons;
-
-    AppMenuModel *m_appMenuModel;
+    AppMenuButtonGroup *m_menuButtons;
 
     friend class CommonButton;
     friend class CommonToggleButton;
