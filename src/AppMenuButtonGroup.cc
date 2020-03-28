@@ -90,6 +90,11 @@ void AppMenuButtonGroup::updateAppMenuModel()
 
             qCDebug(category) << "    " << itemAction;
 
+            // Skip items with empty labels (The first item in a Gtk app)
+            if (itemLabel.isEmpty()) {
+                continue;
+            }
+
             TextButton *b = new TextButton(deco, this);
             b->setText(itemLabel);
             b->setAction(itemAction);
