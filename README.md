@@ -42,6 +42,17 @@ sudo apt build-dep breeze
 
 ##### Building from source
 
+First download and checkout the `lim` branch.
+
+```
+cd ~/Downloads
+git clone https://github.com/Zren/material-decoration.git
+cd material-decoration
+git checkout lim
+```
+
+Then compile the decoration, and install it.
+
 ```
 mkdir build
 cd build
@@ -50,7 +61,9 @@ make
 sudo make install
 ```
 
-To test, restart `kwin_x11` with:
+Select Material in System Settings > Application Style > Window Decorations.
+
+To test changes, restart `kwin_x11` with:
 
 ```
 QT_LOGGING_RULES="*=false;kdecoration.material=true" kstart5 -- kwin_x11 --replace
