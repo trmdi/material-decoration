@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
+ * Copyright (C) 2016 Kai Uwe Broulik <kde@privat.broulik.de>
+ * Copyright (C) 2014 by Hugo Pereira Da Costa <hugo.pereira@free.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +24,15 @@
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
+#include <KDecoration2/DecorationButton>
 #include <KDecoration2/DecorationButtonGroup>
 
 // Qt
 #include <QDebug>
 #include <QLoggingCategory>
+#include <QMenu>
 #include <QPainter>
+#include <QX11Info>
 
 static const QLoggingCategory category("kdecoration.material");
 
@@ -132,6 +137,113 @@ void AppMenuButtonGroup::updateAppMenuModel()
             qCDebug(category) << "AppMenuModel" << m_appMenuModel;
         }
     }
+}
+
+
+//* scoped pointer convenience typedef
+template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
+
+
+void AppMenuButtonGroup::trigger(int buttonIndex, KDecoration2::DecorationButton* button) {
+    qCDebug(category) << "AppMenuButtonGroup::trigger" << buttonIndex;
+
+    // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
+    QMenu *actionMenu = nullptr;
+
+    const QModelIndex modelIndex = m_appMenuModel->index(buttonIndex, 0);
+    const QVariant data = m_appMenuModel->data(modelIndex, AppMenuModel::ActionRole);
+    QAction *itemAction = (QAction *)data.value<void *>();
+    qCDebug(category) << "    action" << itemAction;
+
+    if (itemAction) {
+        actionMenu = itemAction->menu();
+        qCDebug(category) << "    menu" << actionMenu;
+    }
+
+    const auto *deco = qobject_cast<Decoration *>(decoration());
+    // if (actionMenu && deco) {
+    //     auto *decoratedClient = deco->client().toStrongRef().data();
+    //     actionMenu->setPalette(decoratedClient->palette());
+    // }
+
+    if (actionMenu && deco) {
+        QRectF buttonRect = button ? button->geometry() : geometry();
+        QPoint position = buttonRect.topLeft().toPoint();
+        qCDebug(category) << "    geometry" << geometry();
+        qCDebug(category) << "    position" << position;
+
+        auto *decoratedClient = deco->client().toStrongRef().data();
+        WId windowId = decoratedClient->windowId();
+        qCDebug(category) << "    windowId" << windowId;
+
+        //--- From: BreezeSizeGrip.cpp
+        /*
+        get root position matching position
+        need to use xcb because the embedding of the widget
+        breaks QT's mapToGlobal and other methods
+        */
+        QPoint rootPosition(position);
+        auto connection( QX11Info::connection() );
+        xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
+        ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
+        if (reply) {
+            // translate coordinates
+            xcb_translate_coordinates_cookie_t coordCookie( xcb_translate_coordinates(
+                connection, windowId, reply.data()->root,
+                -reply.data()->border_width,
+                -reply.data()->border_width ) );
+
+            ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
+
+            if (coordReply) {
+                rootPosition.rx() += coordReply.data()->dst_x;
+                rootPosition.ry() += coordReply.data()->dst_y;
+            }
+        }
+        qCDebug(category) << "    rootPosition" << rootPosition;
+
+        // button release event
+        // xcb_button_release_event_t releaseEvent;
+        // memset(&releaseEvent, 0, sizeof(releaseEvent));
+
+        // releaseEvent.response_type = XCB_BUTTON_RELEASE;
+        // releaseEvent.event =  windowId;
+        // releaseEvent.child = XCB_WINDOW_NONE;
+        // releaseEvent.root = QX11Info::appRootWindow();
+        // releaseEvent.event_x = position.x();
+        // releaseEvent.event_y = position.y();
+        // releaseEvent.root_x = rootPosition.x();
+        // releaseEvent.root_y = rootPosition.y();
+        // releaseEvent.detail = XCB_BUTTON_INDEX_1;
+        // releaseEvent.state = XCB_BUTTON_MASK_1;
+        // releaseEvent.time = XCB_CURRENT_TIME;
+        // releaseEvent.same_screen = true;
+        // xcb_send_event( connection, false, windowId, XCB_EVENT_MASK_BUTTON_RELEASE, reinterpret_cast<const char*>(&releaseEvent));
+
+        // xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
+        //---
+
+        actionMenu->popup(rootPosition);
+
+        QMenu *oldMenu = m_currentMenu;
+        m_currentMenu = actionMenu;
+
+        if (oldMenu && oldMenu != actionMenu) {
+            // Don't reset the currentIndex when another menu is already shown
+            disconnect(oldMenu, &QMenu::aboutToHide, this, &AppMenuButtonGroup::onMenuAboutToHide);
+            oldMenu->hide();
+        }
+
+        setCurrentIndex(buttonIndex);
+
+        // FIXME TODO connect only once
+        connect(actionMenu, &QMenu::aboutToHide, this, &AppMenuButtonGroup::onMenuAboutToHide, Qt::UniqueConnection);
+    }
+}
+
+void AppMenuButtonGroup::onMenuAboutToHide()
+{
+    setCurrentIndex(-1);
 }
 
 } // namespace Material

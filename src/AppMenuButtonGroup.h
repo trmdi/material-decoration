@@ -22,7 +22,11 @@
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
+#include <KDecoration2/DecorationButton>
 #include <KDecoration2/DecorationButtonGroup>
+
+// Qt
+#include <QMenu>
 
 namespace Material
 {
@@ -44,6 +48,8 @@ public:
 
 public slots:
     void updateAppMenuModel();
+    void trigger(int index, KDecoration2::DecorationButton* button = nullptr);
+    void onMenuAboutToHide();
 
 signals:
     void menuUpdated();
@@ -55,6 +61,7 @@ private:
 
     AppMenuModel *m_appMenuModel;
     int m_currentIndex;
+    QPointer<QMenu> m_currentMenu;
 };
 
 } // namespace Material
