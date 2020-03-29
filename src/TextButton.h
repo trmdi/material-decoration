@@ -22,6 +22,7 @@
 
 // Qt
 #include <QAction>
+#include <QMouseEvent>
 
 namespace Material
 {
@@ -60,6 +61,9 @@ signals:
 
 public slots:
     void trigger();
+
+protected:
+    virtual void mousePressEvent(QMouseEvent *event) override;
 
 private:
     QAction *m_action;

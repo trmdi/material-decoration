@@ -29,8 +29,11 @@
 #include <QAction>
 #include <QFontMetrics>
 #include <QMenu>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QX11Info>
+
+static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {
@@ -125,7 +128,6 @@ void TextButton::setText(const QString set)
 template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
 
 void TextButton::trigger() {
-    QLoggingCategory category("kdecoration.material");
     qCDebug(category) << "TextButton::trigger" << m_action;
 
     // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
@@ -143,12 +145,9 @@ void TextButton::trigger() {
     // }
 
     if (menu && deco) {
-        QPoint pos = geometry().topLeft().toPoint();
+        QPoint position = geometry().topLeft().toPoint();
         qCDebug(category) << "    geometry" << geometry();
-        qCDebug(category) << "    botLeft" << pos;
-        // pos += deco->rect().topLeft();
-        // qCDebug(category) << "    rect" << deco->rect();
-        // qCDebug(category) << "    pos" << pos;
+        qCDebug(category) << "    position" << position;
 
         auto *decoratedClient = deco->client().toStrongRef().data();
         WId windowId = decoratedClient->windowId();
@@ -160,6 +159,7 @@ void TextButton::trigger() {
         need to use xcb because the embedding of the widget
         breaks QT's mapToGlobal and other methods
         */
+        QPoint rootPosition(position);
         auto connection( QX11Info::connection() );
         xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
         ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
@@ -173,14 +173,97 @@ void TextButton::trigger() {
             ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
 
             if (coordReply) {
-                pos.rx() += coordReply.data()->dst_x;
-                pos.ry() += coordReply.data()->dst_y;
+                rootPosition.rx() += coordReply.data()->dst_x;
+                rootPosition.ry() += coordReply.data()->dst_y;
             }
         }
+        qCDebug(category) << "    rootPosition" << rootPosition;
+
+        // button release event
+        // xcb_button_release_event_t releaseEvent;
+        // memset(&releaseEvent, 0, sizeof(releaseEvent));
+
+        // releaseEvent.response_type = XCB_BUTTON_RELEASE;
+        // releaseEvent.event =  windowId;
+        // releaseEvent.child = XCB_WINDOW_NONE;
+        // releaseEvent.root = QX11Info::appRootWindow();
+        // releaseEvent.event_x = position.x();
+        // releaseEvent.event_y = position.y();
+        // releaseEvent.root_x = rootPosition.x();
+        // releaseEvent.root_y = rootPosition.y();
+        // releaseEvent.detail = XCB_BUTTON_INDEX_1;
+        // releaseEvent.state = XCB_BUTTON_MASK_1;
+        // releaseEvent.time = XCB_CURRENT_TIME;
+        // releaseEvent.same_screen = true;
+        // xcb_send_event( connection, false, windowId, XCB_EVENT_MASK_BUTTON_RELEASE, reinterpret_cast<const char*>(&releaseEvent));
+
+        // xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
         //---
 
-        menu->popup(pos);
+        menu->popup(rootPosition);
     }
+}
+
+void TextButton::mousePressEvent(QMouseEvent *event)
+{
+    DecorationButton::mousePressEvent(event);
+    qCDebug(category) << "TextButton::mousePressEvent" << event;
+
+    const auto *deco = qobject_cast<Decoration *>(decoration());
+    auto *decoratedClient = deco->client().toStrongRef().data();
+    WId windowId = decoratedClient->windowId();
+    qCDebug(category) << "windowId" << windowId;
+
+    QPoint position(event->pos());
+
+    //--- From: BreezeSizeGrip.cpp
+    /*
+    get root position matching position
+    need to use xcb because the embedding of the widget
+    breaks QT's mapToGlobal and other methods
+    */
+    QPoint rootPosition(position);
+    auto connection( QX11Info::connection() );
+    xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
+    ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
+    if (reply) {
+        // translate coordinates
+        xcb_translate_coordinates_cookie_t coordCookie( xcb_translate_coordinates(
+            connection, windowId, reply.data()->root,
+            -reply.data()->border_width,
+            -reply.data()->border_width ) );
+
+        ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
+
+        if (coordReply) {
+            rootPosition.rx() += coordReply.data()->dst_x;
+            rootPosition.ry() += coordReply.data()->dst_y;
+        }
+    }
+    qCDebug(category) << "    rootPosition" << rootPosition;
+
+    // button release event
+    xcb_button_release_event_t releaseEvent;
+    memset(&releaseEvent, 0, sizeof(releaseEvent));
+
+    releaseEvent.response_type = XCB_BUTTON_RELEASE;
+    releaseEvent.event =  windowId;
+    releaseEvent.child = XCB_WINDOW_NONE;
+    releaseEvent.root = QX11Info::appRootWindow();
+    releaseEvent.event_x = position.x();
+    releaseEvent.event_y = position.y();
+    releaseEvent.root_x = rootPosition.x();
+    releaseEvent.root_y = rootPosition.y();
+    releaseEvent.detail = XCB_BUTTON_INDEX_1;
+    releaseEvent.state = XCB_BUTTON_MASK_1;
+    releaseEvent.time = XCB_CURRENT_TIME;
+    releaseEvent.same_screen = true;
+    xcb_send_event( connection, false, windowId, XCB_EVENT_MASK_BUTTON_RELEASE, reinterpret_cast<const char*>(&releaseEvent));
+
+    xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
+    //---
+
+    DecorationButton::mouseReleaseEvent(event);
 }
 
 
