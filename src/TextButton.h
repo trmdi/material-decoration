@@ -34,7 +34,7 @@ class TextButton : public CommonButton
     Q_OBJECT
 
 public:
-    TextButton(Decoration *decoration, QObject *parent = nullptr);
+    TextButton(Decoration *decoration, const int buttonIndex, QObject *parent = nullptr);
     ~TextButton() override;
 
     Q_PROPERTY(QAction* action READ action WRITE setAction NOTIFY actionChanged)
@@ -66,6 +66,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
 
 private:
+    int m_buttonIndex;
     QAction *m_action;
     int m_horzPadding;
     QString m_text;

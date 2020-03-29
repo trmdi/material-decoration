@@ -37,6 +37,7 @@ namespace Material
 AppMenuButtonGroup::AppMenuButtonGroup(Decoration *decoration)
     : KDecoration2::DecorationButtonGroup(decoration)
     , m_appMenuModel(nullptr)
+    , m_currentIndex(-1)
 {
     auto *decoratedClient = decoration->client().toStrongRef().data();
     connect(decoratedClient, &KDecoration2::DecoratedClient::hasApplicationMenuChanged,
@@ -47,6 +48,19 @@ AppMenuButtonGroup::~AppMenuButtonGroup()
 {
 }
 
+int AppMenuButtonGroup::currentIndex() const
+{
+    return m_currentIndex;
+}
+
+void AppMenuButtonGroup::setCurrentIndex(int set)
+{
+    if (m_currentIndex != set) {
+        m_currentIndex = set;
+        qCDebug(category) << "setCurrentIndex" << m_currentIndex;
+        emit currentIndexChanged();
+    }
+}
 
 void AppMenuButtonGroup::resetButtons()
 {
@@ -95,7 +109,7 @@ void AppMenuButtonGroup::updateAppMenuModel()
                 continue;
             }
 
-            TextButton *b = new TextButton(deco, this);
+            TextButton *b = new TextButton(deco, row, this);
             b->setText(itemLabel);
             b->setAction(itemAction);
             addButton(QPointer<KDecoration2::DecorationButton>(b));

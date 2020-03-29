@@ -38,8 +38,9 @@ static const QLoggingCategory category("kdecoration.material");
 namespace Material
 {
 
-TextButton::TextButton(Decoration *decoration, QObject *parent)
+TextButton::TextButton(Decoration *decoration, const int buttonIndex, QObject *parent)
     : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    , m_buttonIndex(buttonIndex)
     , m_action(nullptr)
     , m_horzPadding(4) // TODO: Scale by DPI
     , m_text(QStringLiteral("Menu"))

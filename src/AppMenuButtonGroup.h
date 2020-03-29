@@ -37,16 +37,24 @@ public:
     AppMenuButtonGroup(Decoration *decoration);
     ~AppMenuButtonGroup() override;
 
+    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
+
+    int currentIndex() const;
+    void setCurrentIndex(int set);
+
 public slots:
     void updateAppMenuModel();
 
-Q_SIGNALS:
+signals:
     void menuUpdated();
+
+    void currentIndexChanged();
 
 private:
     void resetButtons();
 
     AppMenuModel *m_appMenuModel;
+    int m_currentIndex;
 };
 
 } // namespace Material
