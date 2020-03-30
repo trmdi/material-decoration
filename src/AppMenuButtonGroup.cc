@@ -109,14 +109,15 @@ void AppMenuButtonGroup::updateAppMenuModel()
 
             qCDebug(category) << "    " << itemAction;
 
-            // Skip items with empty labels (The first item in a Gtk app)
-            if (itemLabel.isEmpty()) {
-                continue;
-            }
-
             TextButton *b = new TextButton(deco, row, this);
             b->setText(itemLabel);
             b->setAction(itemAction);
+
+            // Skip items with empty labels (The first item in a Gtk app)
+            if (itemLabel.isEmpty()) {
+                b->setVisible(false);
+            }
+            
             addButton(QPointer<KDecoration2::DecorationButton>(b));
 
         }
