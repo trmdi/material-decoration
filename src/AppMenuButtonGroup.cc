@@ -21,6 +21,7 @@
 #include "MinimizeButton.h"
 #include "Decoration.h"
 #include "TextButton.h"
+#include "ApplicationMenuButton.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -71,6 +72,7 @@ void AppMenuButtonGroup::setCurrentIndex(int set)
 
 void AppMenuButtonGroup::resetButtons()
 {
+    removeButton(KDecoration2::DecorationButtonType::ApplicationMenu);
     removeButton(KDecoration2::DecorationButtonType::Custom);
     emit menuUpdated();
 }
@@ -123,6 +125,7 @@ void AppMenuButtonGroup::updateAppMenuModel()
             addButton(QPointer<KDecoration2::DecorationButton>(b));
 
         }
+        addButton(new ApplicationMenuButton(deco, this));
 
         emit menuUpdated();
 
