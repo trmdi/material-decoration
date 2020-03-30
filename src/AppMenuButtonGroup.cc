@@ -234,8 +234,12 @@ void AppMenuButtonGroup::trigger(int buttonIndex, KDecoration2::DecorationButton
             disconnect(oldMenu, &QMenu::aboutToHide, this, &AppMenuButtonGroup::onMenuAboutToHide);
             oldMenu->hide();
         }
+        if (0 <= m_currentIndex && m_currentIndex < buttons().length()) {
+            buttons().value(m_currentIndex)->setChecked(false);
+        }
 
         setCurrentIndex(buttonIndex);
+        button->setChecked(true);
 
         // FIXME TODO connect only once
         connect(actionMenu, &QMenu::aboutToHide, this, &AppMenuButtonGroup::onMenuAboutToHide, Qt::UniqueConnection);
@@ -244,6 +248,9 @@ void AppMenuButtonGroup::trigger(int buttonIndex, KDecoration2::DecorationButton
 
 void AppMenuButtonGroup::onMenuAboutToHide()
 {
+    if (0 <= m_currentIndex && m_currentIndex < buttons().length()) {
+        buttons().value(m_currentIndex)->setChecked(false);
+    }
     setCurrentIndex(-1);
 }
 

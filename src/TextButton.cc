@@ -49,6 +49,7 @@ TextButton::TextButton(Decoration *decoration, const int buttonIndex, QObject *p
     , m_text(QStringLiteral("Menu"))
 {
     setVisible(true);
+    setCheckable(true);
 
     connect(this, &TextButton::clicked,
         this, &TextButton::trigger);
