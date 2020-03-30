@@ -19,7 +19,7 @@
 
 // own
 #include "TextButton.h"
-#include "CommonButton.h"
+#include "CommonToggleButton.h"
 #include "Decoration.h"
 #include "AppMenuButtonGroup.h"
 
@@ -42,7 +42,7 @@ namespace Material
 {
 
 TextButton::TextButton(Decoration *decoration, const int buttonIndex, QObject *parent)
-    : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    : CommonToggleButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
     , m_buttonIndex(buttonIndex)
     , m_action(nullptr)
     , m_horzPadding(4) // TODO: Scale by DPI

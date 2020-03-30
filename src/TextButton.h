@@ -18,7 +18,7 @@
 #pragma once
 
 // own
-#include "CommonButton.h"
+#include "CommonToggleButton.h"
 
 // Qt
 #include <QAction>
@@ -29,7 +29,7 @@ namespace Material
 
 class Decoration;
 
-class TextButton : public CommonButton
+class TextButton : public CommonToggleButton
 {
     Q_OBJECT
 
