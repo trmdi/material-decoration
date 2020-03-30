@@ -33,7 +33,6 @@
 #include <QLoggingCategory>
 #include <QMenu>
 #include <QPainter>
-#include <QX11Info>
 
 static const QLoggingCategory category("kdecoration.material");
 
@@ -156,11 +155,6 @@ void AppMenuButtonGroup::updateAppMenuModel()
     }
 }
 
-
-//* scoped pointer convenience typedef
-template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
-
-
 void AppMenuButtonGroup::trigger(int buttonIndex) {
     qCDebug(category) << "AppMenuButtonGroup::trigger" << buttonIndex;
     KDecoration2::DecorationButton* button = buttons().value(buttonIndex);
@@ -185,40 +179,13 @@ void AppMenuButtonGroup::trigger(int buttonIndex) {
     // }
 
     if (actionMenu && deco) {
-        QRectF buttonRect = button ? button->geometry() : geometry();
+        QRectF buttonRect = button->geometry();
         QPoint position = buttonRect.topLeft().toPoint();
-        qCDebug(category) << "    geometry" << geometry();
-        qCDebug(category) << "    position" << position;
-
-        auto *decoratedClient = deco->client().toStrongRef().data();
-        WId windowId = decoratedClient->windowId();
-        qCDebug(category) << "    windowId" << windowId;
-
-        //--- From: BreezeSizeGrip.cpp
-        /*
-        get root position matching position
-        need to use xcb because the embedding of the widget
-        breaks QT's mapToGlobal and other methods
-        */
         QPoint rootPosition(position);
-        auto connection( QX11Info::connection() );
-        xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
-        ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
-        if (reply) {
-            // translate coordinates
-            xcb_translate_coordinates_cookie_t coordCookie( xcb_translate_coordinates(
-                connection, windowId, reply.data()->root,
-                -reply.data()->border_width,
-                -reply.data()->border_width ) );
+        rootPosition += deco->windowPos();
+        // qCDebug(category) << "    windowPos" << windowPos;
 
-            ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
-
-            if (coordReply) {
-                rootPosition.rx() += coordReply.data()->dst_x;
-                rootPosition.ry() += coordReply.data()->dst_y;
-            }
-        }
-        qCDebug(category) << "    rootPosition" << rootPosition;
+        // auto connection( QX11Info::connection() );
 
         // button release event
         // xcb_button_release_event_t releaseEvent;

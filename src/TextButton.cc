@@ -134,9 +134,6 @@ void TextButton::setText(const QString set)
     }
 }
 
-//* scoped pointer convenience typedef
-template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
-
 void TextButton::trigger() {
     qCDebug(category) << "TextButton::trigger" << m_buttonIndex;
 
@@ -156,34 +153,12 @@ void TextButton::mousePressEvent(QMouseEvent *event)
     qCDebug(category) << "    windowId" << windowId;
 
     QPoint position(event->pos());
+    QPoint rootPosition(position);
+    rootPosition += deco->windowPos();
 
     //--- From: BreezeSizeGrip.cpp
-    /*
-    get root position matching position
-    need to use xcb because the embedding of the widget
-    breaks QT's mapToGlobal and other methods
-    */
-    QPoint rootPosition(position);
-    auto connection( QX11Info::connection() );
-    xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
-    ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
-    if (reply) {
-        // translate coordinates
-        xcb_translate_coordinates_cookie_t coordCookie( xcb_translate_coordinates(
-            connection, windowId, reply.data()->root,
-            -reply.data()->border_width,
-            -reply.data()->border_width ) );
-
-        ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
-
-        if (coordReply) {
-            rootPosition.rx() += coordReply.data()->dst_x;
-            rootPosition.ry() += coordReply.data()->dst_y;
-        }
-    }
-    qCDebug(category) << "    rootPosition" << rootPosition;
-
     // button release event
+    auto connection( QX11Info::connection() );
     xcb_button_release_event_t releaseEvent;
     memset(&releaseEvent, 0, sizeof(releaseEvent));
 
