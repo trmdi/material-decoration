@@ -325,6 +325,39 @@ int Decoration::getTextWidth(const QString text) const
     return fontMetrics.boundingRect(text).width();
 }
 
+//* scoped pointer convenience typedef
+template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
+
+QPoint Decoration::windowPos() const
+{
+    const auto *decoratedClient = client().toStrongRef().data();
+    WId windowId = decoratedClient->windowId();
+
+    //--- From: BreezeSizeGrip.cpp
+    /*
+    get root position matching position
+    need to use xcb because the embedding of the widget
+    breaks QT's mapToGlobal and other methods
+    */
+    auto connection( QX11Info::connection() );
+    xcb_get_geometry_cookie_t cookie( xcb_get_geometry( connection, windowId ) );
+    ScopedPointer<xcb_get_geometry_reply_t> reply( xcb_get_geometry_reply( connection, cookie, nullptr ) );
+    if (reply) {
+        // translate coordinates
+        xcb_translate_coordinates_cookie_t coordCookie( xcb_translate_coordinates(
+            connection, windowId, reply.data()->root,
+            -reply.data()->border_width,
+            -reply.data()->border_width ) );
+
+        ScopedPointer< xcb_translate_coordinates_reply_t> coordReply( xcb_translate_coordinates_reply( connection, coordCookie, nullptr ) );
+
+        if (coordReply) {
+            return QPoint(coordReply.data()->dst_x, coordReply.data()->dst_y);
+        }
+    }
+    return QPoint(0, 0);
+}
+
 void Decoration::paintFrameBackground(QPainter *painter, const QRect &repaintRegion) const
 {
     Q_UNUSED(repaintRegion)

@@ -61,6 +61,7 @@ private:
 
     int titleBarHeight() const;
     int getTextWidth(const QString text) const;
+    QPoint windowPos() const;
 
     QColor titleBarBackgroundColor() const;
     QColor titleBarForegroundColor() const;
