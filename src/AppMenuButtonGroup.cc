@@ -295,8 +295,17 @@ bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
     } else if (event->type() == QEvent::MouseMove) {
         auto *e = static_cast<QMouseEvent *>(event);
 
-        const QPointF &pos = e->globalPos();
-        KDecoration2::DecorationButton* item = buttonAt(pos.x(), pos.y());
+        const auto *deco = qobject_cast<Decoration *>(decoration());
+
+        QPoint decoPos(e->globalPos());
+        decoPos -= deco->windowPos();
+        decoPos.ry() += deco->titleBarHeight();
+        // qCDebug(category) << "MouseMove";
+        // qCDebug(category) << "       globalPos" << e->globalPos();
+        // qCDebug(category) << "       windowPos" << deco->windowPos();
+        // qCDebug(category) << "  titleBarHeight" << deco->titleBarHeight();
+
+        KDecoration2::DecorationButton* item = buttonAt(decoPos.x(), decoPos.y());
         if (!item) {
             return false;
         }
