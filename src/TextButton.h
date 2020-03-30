@@ -38,6 +38,7 @@ public:
     ~TextButton() override;
 
     Q_PROPERTY(QAction* action READ action WRITE setAction NOTIFY actionChanged)
+    Q_PROPERTY(int buttonIndex READ buttonIndex NOTIFY buttonIndexChanged)
     Q_PROPERTY(int horzPadding READ horzPadding WRITE setHorzPadding NOTIFY horzPaddingChanged)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
@@ -48,6 +49,8 @@ public:
     QAction* action() const;
     void setAction(QAction *set);
 
+    int buttonIndex() const;
+
     int horzPadding() const;
     void setHorzPadding(int set);
 
@@ -56,6 +59,7 @@ public:
 
 signals:
     void actionChanged();
+    void buttonIndexChanged();
     void horzPaddingChanged();
     void textChanged();
 

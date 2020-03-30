@@ -103,6 +103,11 @@ void TextButton::setAction(QAction *set)
     }
 }
 
+int TextButton::buttonIndex() const
+{
+    return m_buttonIndex;
+}
+
 int TextButton::horzPadding() const
 {
     return m_horzPadding;
