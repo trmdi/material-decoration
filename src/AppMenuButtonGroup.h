@@ -48,13 +48,17 @@ public:
 
 public slots:
     void updateAppMenuModel();
-    void trigger(int index, KDecoration2::DecorationButton* button = nullptr);
+    void trigger(int index);
     void onMenuAboutToHide();
 
 signals:
     void menuUpdated();
+    void requestActivateIndex(int index);
 
     void currentIndexChanged();
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
     void resetButtons();

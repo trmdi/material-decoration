@@ -136,7 +136,8 @@ void TextButton::trigger() {
     qCDebug(category) << "TextButton::trigger" << m_buttonIndex;
 
     auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
-    buttonGroup->trigger(m_buttonIndex, this);
+    // buttonGroup->trigger(m_buttonIndex, this);
+    buttonGroup->trigger(m_buttonIndex);
 }
 
 void TextButton::mousePressEvent(QMouseEvent *event)

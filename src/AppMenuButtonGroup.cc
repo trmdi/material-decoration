@@ -47,6 +47,8 @@ AppMenuButtonGroup::AppMenuButtonGroup(Decoration *decoration)
     auto *decoratedClient = decoration->client().toStrongRef().data();
     connect(decoratedClient, &KDecoration2::DecoratedClient::hasApplicationMenuChanged,
             this, &AppMenuButtonGroup::updateAppMenuModel);
+    connect(this, &AppMenuButtonGroup::requestActivateIndex,
+            this, &AppMenuButtonGroup::trigger);
 }
 
 AppMenuButtonGroup::~AppMenuButtonGroup()
@@ -145,8 +147,9 @@ void AppMenuButtonGroup::updateAppMenuModel()
 template <typename T> using ScopedPointer = QScopedPointer<T, QScopedPointerPodDeleter>;
 
 
-void AppMenuButtonGroup::trigger(int buttonIndex, KDecoration2::DecorationButton* button) {
+void AppMenuButtonGroup::trigger(int buttonIndex) {
     qCDebug(category) << "AppMenuButtonGroup::trigger" << buttonIndex;
+    KDecoration2::DecorationButton* button = buttons().value(buttonIndex);
 
     // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
     QMenu *actionMenu = nullptr;
@@ -224,6 +227,8 @@ void AppMenuButtonGroup::trigger(int buttonIndex, KDecoration2::DecorationButton
         // xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
         //---
 
+        actionMenu->installEventFilter(this);
+
         actionMenu->popup(rootPosition);
 
         QMenu *oldMenu = m_currentMenu;
@@ -244,6 +249,38 @@ void AppMenuButtonGroup::trigger(int buttonIndex, KDecoration2::DecorationButton
         // FIXME TODO connect only once
         connect(actionMenu, &QMenu::aboutToHide, this, &AppMenuButtonGroup::onMenuAboutToHide, Qt::UniqueConnection);
     }
+}
+
+// FIXME TODO doesn't work on submenu
+bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
+{
+    auto *menu = qobject_cast<QMenu *>(watched);
+
+    if (!menu) {
+        return false;
+    }
+
+    if (event->type() == QEvent::KeyPress) {
+        auto *e = static_cast<QKeyEvent *>(event);
+
+        // TODO right to left languages
+        if (e->key() == Qt::Key_Left) {
+            int desiredIndex = m_currentIndex - 1;
+            emit requestActivateIndex(desiredIndex);
+            return true;
+        } else if (e->key() == Qt::Key_Right) {
+            if (menu->activeAction() && menu->activeAction()->menu()) {
+                return false;
+            }
+
+            int desiredIndex = m_currentIndex + 1;
+            emit requestActivateIndex(desiredIndex);
+            return true;
+        }
+
+    }
+
+    return false;
 }
 
 void AppMenuButtonGroup::onMenuAboutToHide()
