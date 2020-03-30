@@ -46,6 +46,8 @@ public:
     int currentIndex() const;
     void setCurrentIndex(int set);
 
+    KDecoration2::DecorationButton* buttonAt(int x, int y) const;
+
 public slots:
     void updateAppMenuModel();
     void trigger(int index);

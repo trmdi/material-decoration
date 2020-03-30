@@ -70,6 +70,17 @@ void AppMenuButtonGroup::setCurrentIndex(int set)
     }
 }
 
+KDecoration2::DecorationButton* AppMenuButtonGroup::buttonAt(int x, int y) const
+{
+    for (int i = 0; i < buttons().length(); i++) {
+        KDecoration2::DecorationButton* button = buttons().value(i);
+        if (button->geometry().contains(x, y)) {
+            return button;
+        }
+    }
+    return nullptr;
+}
+
 void AppMenuButtonGroup::resetButtons()
 {
     removeButton(KDecoration2::DecorationButtonType::ApplicationMenu);
@@ -281,6 +292,20 @@ bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
             return true;
         }
 
+    } else if (event->type() == QEvent::MouseMove) {
+        auto *e = static_cast<QMouseEvent *>(event);
+
+        const QPointF &pos = e->globalPos();
+        KDecoration2::DecorationButton* item = buttonAt(pos.x(), pos.y());
+        if (!item) {
+            return false;
+        }
+        TextButton* textButton = static_cast<TextButton *>(item);
+        if (!item) {
+            return false;
+        }
+
+        emit requestActivateIndex(textButton->buttonIndex());
     }
 
     return false;
