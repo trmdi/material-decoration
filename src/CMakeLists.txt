@@ -40,6 +40,7 @@ set (decoration_SRCS
     KeepAboveButton.cc
     KeepBelowButton.cc
     MaximizeButton.cc
+    MenuOverflowButton.cc
     MinimizeButton.cc
     OnAllDesktopsButton.cc
     TextButton.cc

@@ -87,6 +87,7 @@ private:
     friend class MaximizeButton;
     friend class MinimizeButton;
     friend class TextButton;
+    friend class MenuOverflowButton;
 };
 
 } // namespace Material

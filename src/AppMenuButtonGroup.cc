@@ -18,10 +18,10 @@
  */
 
 // own
-#include "MinimizeButton.h"
+#include "AppMenuButtonGroup.h"
 #include "Decoration.h"
 #include "TextButton.h"
-#include "ApplicationMenuButton.h"
+#include "MenuOverflowButton.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -82,7 +82,6 @@ KDecoration2::DecorationButton* AppMenuButtonGroup::buttonAt(int x, int y) const
 
 void AppMenuButtonGroup::resetButtons()
 {
-    removeButton(KDecoration2::DecorationButtonType::ApplicationMenu);
     removeButton(KDecoration2::DecorationButtonType::Custom);
     emit menuUpdated();
 }
@@ -133,9 +132,8 @@ void AppMenuButtonGroup::updateAppMenuModel()
             }
             
             addButton(QPointer<KDecoration2::DecorationButton>(b));
-
         }
-        addButton(new ApplicationMenuButton(deco, this));
+        addButton(new MenuOverflowButton(deco, this));
 
         emit menuUpdated();
 
