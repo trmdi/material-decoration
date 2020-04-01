@@ -35,6 +35,9 @@ public:
     ~MenuOverflowButton() override;
 
     void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+
+public slots:
+    void trigger();
 };
 
 } // namespace Material

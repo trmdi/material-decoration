@@ -25,7 +25,11 @@
 #include <KDecoration2/DecoratedClient>
 
 // Qt
+#include <QDebug>
+#include <QLoggingCategory>
 #include <QPainter>
+
+static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {
@@ -36,6 +40,9 @@ MenuOverflowButton::MenuOverflowButton(Decoration *decoration, QObject *parent)
     auto *decoratedClient = decoration->client().toStrongRef().data();
 
     setVisible(decoratedClient->hasApplicationMenu());
+
+    connect(this, &MenuOverflowButton::clicked,
+        this, &MenuOverflowButton::trigger);
 }
 
 MenuOverflowButton::~MenuOverflowButton()
@@ -60,5 +67,9 @@ void MenuOverflowButton::paintIcon(QPainter *painter, const QRectF &iconRect)
     }
 }
 
+void MenuOverflowButton::trigger()
+{
+    qCDebug(category) << "MenuOverflowButton::trigger";
+}
 
 } // namespace Material
