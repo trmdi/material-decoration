@@ -20,7 +20,7 @@
 #include "Decoration.h"
 #include "AppMenuButtonGroup.h"
 #include "BoxShadowHelper.h"
-#include "MenuButton.h"
+#include "AppIconButton.h"
 #include "ApplicationMenuButton.h"
 #include "OnAllDesktopsButton.h"
 #include "KeepAboveButton.h"
@@ -152,7 +152,7 @@ void Decoration::init()
 
         switch (type) {
         case KDecoration2::DecorationButtonType::Menu:
-            return new MenuButton(this, parent);
+            return new AppIconButton(this, parent);
 
         // case KDecoration2::DecorationButtonType::ApplicationMenu:
         //     return new ApplicationMenuButton(this, parent);

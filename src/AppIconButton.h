@@ -26,13 +26,13 @@ namespace Material
 
 class Decoration;
 
-class MenuButton : public CommonButton
+class AppIconButton : public CommonButton
 {
     Q_OBJECT
 
 public:
-    MenuButton(Decoration *decoration, QObject *parent = nullptr);
-    ~MenuButton() override;
+    AppIconButton(Decoration *decoration, QObject *parent = nullptr);
+    ~AppIconButton() override;
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
 };

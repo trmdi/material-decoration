@@ -17,7 +17,7 @@
  */
 
 // own
-#include "MenuButton.h"
+#include "AppIconButton.h"
 #include "CommonButton.h"
 #include "Decoration.h"
 
@@ -30,7 +30,7 @@
 namespace Material
 {
 
-MenuButton::MenuButton(Decoration *decoration, QObject *parent)
+AppIconButton::AppIconButton(Decoration *decoration, QObject *parent)
     : CommonButton(KDecoration2::DecorationButtonType::Menu, decoration, parent)
 {
     auto *decoratedClient = decoration->client().toStrongRef().data();
@@ -40,11 +40,11 @@ MenuButton::MenuButton(Decoration *decoration, QObject *parent)
         });
 }
 
-MenuButton::~MenuButton()
+AppIconButton::~AppIconButton()
 {
 }
 
-void MenuButton::paint(QPainter *painter, const QRect &repaintRegion)
+void AppIconButton::paint(QPainter *painter, const QRect &repaintRegion)
 {
     Q_UNUSED(repaintRegion)
 
