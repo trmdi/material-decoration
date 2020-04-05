@@ -243,6 +243,20 @@ void Decoration::updateButtonsGeometry()
     if (!m_menuButtons->buttons().isEmpty()) {
         m_menuButtons->setPos(QPointF(m_leftButtons->geometry().width() + settings()->smallSpacing(), 0));
         m_menuButtons->setSpacing(0);
+
+        const int captionMinWidth = titleBarHeight() * 4;
+        const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
+        const QRect availableRect = titleBarRect.adjusted(
+            m_leftButtons->geometry().width()
+                + settings()->smallSpacing(),
+            0,
+            -m_rightButtons->geometry().width()
+                - settings()->smallSpacing()
+                - captionMinWidth
+                - settings()->smallSpacing(),
+            0
+        );
+        m_menuButtons->updateOverflow(availableRect);
     }
 
     update();

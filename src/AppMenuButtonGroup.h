@@ -50,6 +50,7 @@ public:
 
 public slots:
     void updateAppMenuModel();
+    void updateOverflow(QRectF availableRect);
     void trigger(int index);
     void onMenuAboutToHide();
 

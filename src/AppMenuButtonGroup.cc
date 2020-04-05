@@ -164,6 +164,26 @@ void AppMenuButtonGroup::updateAppMenuModel()
     }
 }
 
+void AppMenuButtonGroup::updateOverflow(QRectF availableRect)
+{
+    // qCDebug(category) << "updateOverflow" << availableRect;
+    bool showOverflow = false;
+    for (KDecoration2::DecorationButton *button : buttons()) {
+        // qCDebug(category) << "    " << button->geometry() << button;
+        if (qobject_cast<MenuOverflowButton *>(button)) {
+            button->setVisible(showOverflow);
+            // qCDebug(category) << "    showOverflow" << showOverflow;
+        } else if (qobject_cast<TextButton *>(button)) {
+            if (availableRect.contains(button->geometry())) {
+                button->setVisible(true);
+            } else {
+                button->setVisible(false);
+                showOverflow = true;
+            }
+        }
+    }
+}
+
 void AppMenuButtonGroup::trigger(int buttonIndex) {
     qCDebug(category) << "AppMenuButtonGroup::trigger" << buttonIndex;
     KDecoration2::DecorationButton* button = buttons().value(buttonIndex);
