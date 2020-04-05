@@ -63,13 +63,8 @@ void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
     Q_UNUSED(iconRect)
 
-    const QSize textSize = getTextSize();
-    const QSize size = textSize + QSize(m_horzPadding * 2, 0);
-    const QRect rect(geometry().topLeft().toPoint(), size);
-    setGeometry(rect);
-
     // TODO: Use Qt::TextShowMnemonic when Alt is pressed
-    painter->drawText(rect, Qt::TextHideMnemonic | Qt::AlignCenter, m_text);
+    painter->drawText(geometry(), Qt::TextHideMnemonic | Qt::AlignCenter, m_text);
 }
 
 QSize TextButton::getTextSize()
@@ -131,6 +126,11 @@ void TextButton::setText(const QString set)
     if (m_text != set) {
         m_text = set;
         emit textChanged();
+
+        const QSize textSize = getTextSize();
+        const QSize size = textSize + QSize(m_horzPadding * 2, 0);
+        const QRect rect(geometry().topLeft().toPoint(), size);
+        setGeometry(rect);
     }
 }
 
