@@ -82,7 +82,18 @@ KDecoration2::DecorationButton* AppMenuButtonGroup::buttonAt(int x, int y) const
 
 void AppMenuButtonGroup::resetButtons()
 {
+    qCDebug(category) << "    resetButtons";
+    qCDebug(category) << "        before" << buttons();
+    auto list = QVector<QPointer<KDecoration2::DecorationButton>>(buttons());
+    qCDebug(category) << "          list" << list;
     removeButton(KDecoration2::DecorationButtonType::Custom);
+    qCDebug(category) << "     remCustom" << buttons();
+    while (!list.isEmpty()) {
+        auto item = list.takeFirst();
+        qCDebug(category) << "        delete" << item;
+        delete item;
+    }
+    qCDebug(category) << "         after" << list;
     emit menuUpdated();
 }
 
