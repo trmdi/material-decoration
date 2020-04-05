@@ -69,7 +69,7 @@ void MenuOverflowButton::paintIcon(QPainter *painter, const QRectF &iconRect)
 
 void MenuOverflowButton::trigger()
 {
-    qCDebug(category) << "MenuOverflowButton::trigger";
+    qCDebug(category) << "MenuOverflowButton::trigger" << this;
 }
 
 } // namespace Material
