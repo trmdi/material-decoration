@@ -311,13 +311,17 @@ bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
 
         TextButton* textButton = static_cast<TextButton *>(item);
         if (textButton) {
-            emit requestActivateIndex(textButton->buttonIndex());
+            if (m_currentIndex != textButton->buttonIndex()) {
+                emit requestActivateIndex(textButton->buttonIndex());
+            }
             return false;
         }
 
         MenuOverflowButton* menuOverflowButton = static_cast<MenuOverflowButton *>(item);
         if (menuOverflowButton) {
-            // emit requestActivateOverflow(menuOverflowButton->buttonIndex());
+            // if (m_currentIndex != menuOverflowButton->buttonIndex()) {
+            //     emit requestActivateOverflow(menuOverflowButton->buttonIndex());
+            // }
             return false;
         }
     }
