@@ -139,6 +139,7 @@ void AppMenuButtonGroup::updateAppMenuModel()
 
             // Skip items with empty labels (The first item in a Gtk app)
             if (itemLabel.isEmpty()) {
+                b->setEnabled(false);
                 b->setVisible(false);
             }
             
@@ -174,11 +175,13 @@ void AppMenuButtonGroup::updateOverflow(QRectF availableRect)
             button->setVisible(showOverflow);
             // qCDebug(category) << "    showOverflow" << showOverflow;
         } else if (qobject_cast<TextButton *>(button)) {
-            if (availableRect.contains(button->geometry())) {
-                button->setVisible(true);
-            } else {
-                button->setVisible(false);
-                showOverflow = true;
+            if (button->isEnabled()) {
+                if (availableRect.contains(button->geometry())) {
+                    button->setVisible(true);
+                } else {
+                    button->setVisible(false);
+                    showOverflow = true;
+                }
             }
         }
     }
