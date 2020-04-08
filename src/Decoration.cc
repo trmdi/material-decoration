@@ -244,7 +244,6 @@ void Decoration::updateButtonsGeometry()
         m_menuButtons->setPos(QPointF(m_leftButtons->geometry().width() + settings()->smallSpacing(), 0));
         m_menuButtons->setSpacing(0);
 
-        const int captionMinWidth = titleBarHeight() * 4;
         const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
         const QRect availableRect = titleBarRect.adjusted(
             m_leftButtons->geometry().width()
@@ -252,7 +251,7 @@ void Decoration::updateButtonsGeometry()
             0,
             -m_rightButtons->geometry().width()
                 - settings()->smallSpacing()
-                - captionMinWidth
+                - captionMinWidth()
                 - settings()->smallSpacing(),
             0
         );
@@ -331,6 +330,11 @@ int Decoration::titleBarHeight() const
     const QFontMetrics fontMetrics(settings()->font());
     const int baseUnit = settings()->gridUnit();
     return qRound(0.6 * baseUnit) + fontMetrics.height();
+}
+
+int Decoration::captionMinWidth() const
+{
+    return titleBarHeight() * 4;
 }
 
 int Decoration::getTextWidth(const QString text) const
@@ -479,7 +483,10 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
         const int textLeft = textRect.left();
         const int textRight = textRect.right();
         // qCDebug(category) << "textLeft" << textLeft << "menuRight" << menuRight;
-        if (textRight < menuRight) { // menuButtons completely coveres caption
+
+        if (m_menuButtons->overflowing()) { // hide caption leaving "whitespace" to easily grab.
+            painter->setPen(Qt::transparent);
+        } else if (textRight < menuRight) { // menuButtons completely coveres caption
             painter->setPen(Qt::transparent);
         } else if (textLeft < menuRight) { // menuButtons covers caption
             const int fadeWidth = 10; // TODO: scale by dpi

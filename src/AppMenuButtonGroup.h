@@ -42,9 +42,13 @@ public:
     ~AppMenuButtonGroup() override;
 
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
+    Q_PROPERTY(int overflowing READ overflowing WRITE setOverflowing NOTIFY overflowingChanged)
 
     int currentIndex() const;
     void setCurrentIndex(int set);
+
+    bool overflowing() const;
+    void setOverflowing(bool set);
 
     KDecoration2::DecorationButton* buttonAt(int x, int y) const;
 
@@ -59,6 +63,7 @@ signals:
     void requestActivateIndex(int index);
 
     void currentIndexChanged();
+    void overflowingChanged();
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
@@ -68,6 +73,7 @@ private:
 
     AppMenuModel *m_appMenuModel;
     int m_currentIndex;
+    bool m_overflowing;
     QPointer<QMenu> m_currentMenu;
 };
 

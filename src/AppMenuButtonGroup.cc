@@ -69,6 +69,20 @@ void AppMenuButtonGroup::setCurrentIndex(int set)
     }
 }
 
+bool AppMenuButtonGroup::overflowing() const
+{
+    return m_overflowing;
+}
+
+void AppMenuButtonGroup::setOverflowing(bool set)
+{
+    if (m_overflowing != set) {
+        m_overflowing = set;
+        qCDebug(category) << "setOverflowing" << m_overflowing;
+        emit overflowingChanged();
+    }
+}
+
 KDecoration2::DecorationButton* AppMenuButtonGroup::buttonAt(int x, int y) const
 {
     for (int i = 0; i < buttons().length(); i++) {
@@ -185,6 +199,7 @@ void AppMenuButtonGroup::updateOverflow(QRectF availableRect)
             }
         }
     }
+    setOverflowing(showOverflow);
 }
 
 void AppMenuButtonGroup::trigger(int buttonIndex) {

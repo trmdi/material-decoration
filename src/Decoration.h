@@ -60,6 +60,7 @@ private:
     void updateShadow();
 
     int titleBarHeight() const;
+    int captionMinWidth() const;
     int getTextWidth(const QString text) const;
     QPoint windowPos() const;
 
