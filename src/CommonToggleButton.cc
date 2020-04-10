@@ -99,6 +99,8 @@ QColor CommonToggleButton::foregroundColor() const
         if (isPressed() || isHovered()) {
             return deco->titleBarForegroundColor();
         }
+
+        // Keep in sync with TextButton::foregroundColor()
         return KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),

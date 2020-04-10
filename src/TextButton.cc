@@ -26,6 +26,9 @@
 // KDecoration
 #include <KDecoration2/DecoratedClient>
 
+// KF
+#include <KColorUtils>
+
 // Qt
 #include <QDebug>
 #include <QLoggingCategory>
@@ -180,6 +183,39 @@ void TextButton::mousePressEvent(QMouseEvent *event)
     //---
 
     DecorationButton::mouseReleaseEvent(event);
+}
+
+QColor TextButton::backgroundColor() const
+{
+    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
+    if (buttonGroup
+        && buttonGroup->currentIndex() >= 0
+        && buttonGroup->currentIndex() != m_buttonIndex
+    ) {
+        return Qt::transparent;
+    } else {
+        return CommonToggleButton::backgroundColor();
+    }
+}
+
+QColor TextButton::foregroundColor() const
+{
+    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
+    if (buttonGroup
+        && buttonGroup->currentIndex() >= 0
+        && buttonGroup->currentIndex() != m_buttonIndex
+    ) {
+        const auto *deco = qobject_cast<Decoration *>(decoration());
+        if (!deco) {
+            return {};
+        }
+        return KColorUtils::mix(
+            deco->titleBarBackgroundColor(),
+            deco->titleBarForegroundColor(),
+            0.8);
+    } else {
+        return CommonToggleButton::foregroundColor();
+    }
 }
 
 

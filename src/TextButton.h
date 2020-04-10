@@ -67,7 +67,9 @@ public slots:
     void trigger();
 
 protected:
-    virtual void mousePressEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    QColor backgroundColor() const override;
+    QColor foregroundColor() const override;
 
 private:
     int m_buttonIndex;
