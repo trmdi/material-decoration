@@ -67,7 +67,9 @@ void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect)
     Q_UNUSED(iconRect)
 
     // TODO: Use Qt::TextShowMnemonic when Alt is pressed
-    painter->drawText(geometry(), Qt::TextHideMnemonic | Qt::AlignCenter, m_text);
+    const bool isAltPressed = false;
+    const Qt::TextFlag mnemonicFlag = isAltPressed ? Qt::TextShowMnemonic : Qt::TextHideMnemonic;
+    painter->drawText(geometry(), mnemonicFlag | Qt::AlignCenter, m_text);
 }
 
 QSize TextButton::getTextSize()
