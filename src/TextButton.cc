@@ -139,6 +139,7 @@ void TextButton::setText(const QString set)
 
 void TextButton::trigger() {
     qCDebug(category) << "TextButton::trigger" << m_buttonIndex;
+    qCDebug(category) << "    " << m_action->shortcut();
 
     auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
     // buttonGroup->trigger(m_buttonIndex, this);
