@@ -19,6 +19,7 @@
 #pragma once
 
 // KDecoration
+#include <KDecoration2/Decoration>
 #include <KDecoration2/DecorationButton>
 
 namespace Material
@@ -33,6 +34,12 @@ class CommonButton : public KDecoration2::DecorationButton
 public:
     CommonButton(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent = nullptr);
     ~CommonButton() override;
+
+    // These are called by:
+    // registerPlugin<Material::CommonButton>(QStringLiteral("button"))
+    // They are needed to create buttons for applet-window-buttons.
+    static KDecoration2::DecorationButton *create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
+    explicit CommonButton(QObject *parent, const QVariantList &args);
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
     virtual void paintIcon(QPainter *painter, const QRectF &iconRect);

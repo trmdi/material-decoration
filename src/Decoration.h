@@ -19,7 +19,6 @@
 #pragma once
 
 // own
-#include "AppMenuModel.h"
 #include "AppMenuButtonGroup.h"
 
 // KDecoration
@@ -33,12 +32,11 @@
 namespace Material
 {
 
+class CommonButton;
+class CommonToggleButton;
 class AppIconButton;
-class ApplicationMenuButton;
-class KeepAboveButton;
-class CloseButton;
-class MaximizeButton;
-class MinimizeButton;
+class TextButton;
+class MenuOverflowButton;
 
 class Decoration : public KDecoration2::Decoration
 {
@@ -49,8 +47,6 @@ public:
     ~Decoration() override;
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
-
-    static KDecoration2::DecorationButton *createButton(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
 
 public slots:
     void init() override;
@@ -82,16 +78,16 @@ private:
     friend class AppMenuButtonGroup;
     friend class CommonButton;
     friend class CommonToggleButton;
-    friend class AppIconButton;
-    friend class ApplicationMenuButton;
-    friend class OnAllDesktopsButton;
-    friend class KeepAboveButton;
-    friend class KeepBelowButton;
-    friend class CloseButton;
-    friend class MaximizeButton;
-    friend class MinimizeButton;
+    // friend class AppIconButton;
+    // friend class ApplicationMenuButton;
+    // friend class OnAllDesktopsButton;
+    // friend class KeepAboveButton;
+    // friend class KeepBelowButton;
+    // friend class CloseButton;
+    // friend class MaximizeButton;
+    // friend class MinimizeButton;
     friend class TextButton;
-    friend class MenuOverflowButton;
+    // friend class MenuOverflowButton;
 };
 
 } // namespace Material

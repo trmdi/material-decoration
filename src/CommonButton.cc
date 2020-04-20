@@ -20,8 +20,19 @@
 #include "CommonButton.h"
 #include "Decoration.h"
 
+#include "AppIconButton.h"
+#include "ApplicationMenuButton.h"
+#include "OnAllDesktopsButton.h"
+#include "KeepAboveButton.h"
+#include "KeepBelowButton.h"
+#include "CloseButton.h"
+#include "MaximizeButton.h"
+#include "MinimizeButton.h"
+
 // KDecoration
 #include <KDecoration2/DecoratedClient>
+#include <KDecoration2/Decoration>
+#include <KDecoration2/DecorationButton>
 
 // KF
 #include <KColorUtils>
@@ -46,6 +57,48 @@ CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *
 }
 
 CommonButton::~CommonButton()
+{
+}
+
+KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent)
+{
+    auto deco = qobject_cast<Decoration*>(decoration);
+    if (!deco) {
+        return nullptr;
+    }
+
+    switch (type) {
+    case KDecoration2::DecorationButtonType::Menu:
+        return new AppIconButton(deco, parent);
+
+    // case KDecoration2::DecorationButtonType::ApplicationMenu:
+    //     return new ApplicationMenuButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::OnAllDesktops:
+        return new OnAllDesktopsButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::KeepAbove:
+        return new KeepAboveButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::KeepBelow:
+        return new KeepBelowButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::Close:
+        return new CloseButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::Maximize:
+        return new MaximizeButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::Minimize:
+        return new MinimizeButton(deco, parent);
+
+    default:
+        return nullptr;
+    }
+}
+
+CommonButton::CommonButton(QObject *parent, const QVariantList &args)
+    : CommonButton(args.at(0).value<KDecoration2::DecorationButtonType>(), args.at(1).value<Decoration*>(), parent)
 {
 }
 

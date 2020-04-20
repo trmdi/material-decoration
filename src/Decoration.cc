@@ -20,15 +20,7 @@
 #include "Decoration.h"
 #include "AppMenuButtonGroup.h"
 #include "BoxShadowHelper.h"
-#include "AppIconButton.h"
-#include "ApplicationMenuButton.h"
-#include "OnAllDesktopsButton.h"
-#include "KeepAboveButton.h"
-#include "KeepBelowButton.h"
-#include "CloseButton.h"
-#include "MaximizeButton.h"
-#include "MinimizeButton.h"
-#include "TextButton.h"
+#include "CommonButton.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -124,43 +116,6 @@ void Decoration::paint(QPainter *painter, const QRect &repaintRegion)
     paintCaption(painter, repaintRegion);
 }
 
-KDecoration2::DecorationButton* Decoration::createButton(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent)
-{
-    auto deco = qobject_cast<Decoration*>(decoration);
-    if (!deco) {
-        return nullptr;
-    }
-
-    switch (type) {
-    case KDecoration2::DecorationButtonType::Menu:
-        return new AppIconButton(deco, parent);
-
-    // case KDecoration2::DecorationButtonType::ApplicationMenu:
-    //     return new ApplicationMenuButton(deco, parent);
-
-    case KDecoration2::DecorationButtonType::OnAllDesktops:
-        return new OnAllDesktopsButton(deco, parent);
-
-    case KDecoration2::DecorationButtonType::KeepAbove:
-        return new KeepAboveButton(deco, parent);
-
-    case KDecoration2::DecorationButtonType::KeepBelow:
-        return new KeepBelowButton(deco, parent);
-
-    case KDecoration2::DecorationButtonType::Close:
-        return new CloseButton(deco, parent);
-
-    case KDecoration2::DecorationButtonType::Maximize:
-        return new MaximizeButton(deco, parent);
-
-    case KDecoration2::DecorationButtonType::Minimize:
-        return new MinimizeButton(deco, parent);
-
-    default:
-        return nullptr;
-    }
-}
-
 void Decoration::init()
 {
     auto *decoratedClient = client().toStrongRef().data();
@@ -188,12 +143,12 @@ void Decoration::init()
     m_leftButtons = new KDecoration2::DecorationButtonGroup(
         KDecoration2::DecorationButtonGroup::Position::Left,
         this,
-        &Decoration::createButton);
+        &CommonButton::create);
 
     m_rightButtons = new KDecoration2::DecorationButtonGroup(
         KDecoration2::DecorationButtonGroup::Position::Right,
         this,
-        &Decoration::createButton);
+        &CommonButton::create);
 
     m_menuButtons = new AppMenuButtonGroup(this);
     connect(m_menuButtons, &AppMenuButtonGroup::menuUpdated,

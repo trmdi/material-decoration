@@ -17,6 +17,7 @@
 
 // own
 #include "Decoration.h"
+#include "CommonButton.h"
 
 // KF
 #include <KPluginFactory>
@@ -24,6 +25,8 @@
 K_PLUGIN_FACTORY_WITH_JSON(
     MaterialDecorationFactory,
     "material.json",
-    registerPlugin<Material::Decoration>(););
+    registerPlugin<Material::Decoration>();
+    registerPlugin<Material::CommonButton>(QStringLiteral("button"));
+);
 
 #include "plugin.moc"
