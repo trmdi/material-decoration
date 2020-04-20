@@ -32,6 +32,8 @@
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
+#include <KDecoration2/DecorationButton>
+#include <KDecoration2/DecorationButtonGroup>
 #include <KDecoration2/DecorationSettings>
 #include <KDecoration2/DecorationShadow>
 
@@ -122,6 +124,43 @@ void Decoration::paint(QPainter *painter, const QRect &repaintRegion)
     paintCaption(painter, repaintRegion);
 }
 
+KDecoration2::DecorationButton* Decoration::createButton(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent)
+{
+    auto deco = qobject_cast<Decoration*>(decoration);
+    if (!deco) {
+        return nullptr;
+    }
+
+    switch (type) {
+    case KDecoration2::DecorationButtonType::Menu:
+        return new AppIconButton(deco, parent);
+
+    // case KDecoration2::DecorationButtonType::ApplicationMenu:
+    //     return new ApplicationMenuButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::OnAllDesktops:
+        return new OnAllDesktopsButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::KeepAbove:
+        return new KeepAboveButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::KeepBelow:
+        return new KeepBelowButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::Close:
+        return new CloseButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::Maximize:
+        return new MaximizeButton(deco, parent);
+
+    case KDecoration2::DecorationButtonType::Minimize:
+        return new MinimizeButton(deco, parent);
+
+    default:
+        return nullptr;
+    }
+}
+
 void Decoration::init()
 {
     auto *decoratedClient = client().toStrongRef().data();
@@ -146,49 +185,15 @@ void Decoration::init()
     updateResizeBorders();
     updateTitleBar();
 
-    auto buttonCreator = [this] (KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent)
-            -> KDecoration2::DecorationButton* {
-        Q_UNUSED(decoration)
-
-        switch (type) {
-        case KDecoration2::DecorationButtonType::Menu:
-            return new AppIconButton(this, parent);
-
-        // case KDecoration2::DecorationButtonType::ApplicationMenu:
-        //     return new ApplicationMenuButton(this, parent);
-
-        case KDecoration2::DecorationButtonType::OnAllDesktops:
-            return new OnAllDesktopsButton(this, parent);
-
-        case KDecoration2::DecorationButtonType::KeepAbove:
-            return new KeepAboveButton(this, parent);
-
-        case KDecoration2::DecorationButtonType::KeepBelow:
-            return new KeepBelowButton(this, parent);
-
-        case KDecoration2::DecorationButtonType::Close:
-            return new CloseButton(this, parent);
-
-        case KDecoration2::DecorationButtonType::Maximize:
-            return new MaximizeButton(this, parent);
-
-        case KDecoration2::DecorationButtonType::Minimize:
-            return new MinimizeButton(this, parent);
-
-        default:
-            return nullptr;
-        }
-    };
-
     m_leftButtons = new KDecoration2::DecorationButtonGroup(
         KDecoration2::DecorationButtonGroup::Position::Left,
         this,
-        buttonCreator);
+        &Decoration::createButton);
 
     m_rightButtons = new KDecoration2::DecorationButtonGroup(
         KDecoration2::DecorationButtonGroup::Position::Right,
         this,
-        buttonCreator);
+        &Decoration::createButton);
 
     m_menuButtons = new AppMenuButtonGroup(this);
     connect(m_menuButtons, &AppMenuButtonGroup::menuUpdated,

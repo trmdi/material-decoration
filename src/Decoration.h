@@ -24,6 +24,7 @@
 
 // KDecoration
 #include <KDecoration2/Decoration>
+#include <KDecoration2/DecorationButton>
 #include <KDecoration2/DecorationButtonGroup>
 
 // Qt
@@ -48,6 +49,8 @@ public:
     ~Decoration() override;
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
+
+    static KDecoration2::DecorationButton *createButton(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
 
 public slots:
     void init() override;
