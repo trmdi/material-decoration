@@ -32,7 +32,6 @@ set (decoration_SRCS
     AppMenuButtonGroup.cc
     ApplicationMenuButton.cc
     BoxShadowHelper.cc
-    CloseButton.cc
     CommonButton.cc
     CommonToggleButton.cc
     Decoration.cc

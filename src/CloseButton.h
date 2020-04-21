@@ -20,23 +20,31 @@
 // own
 #include "CommonButton.h"
 
+// KDecoration
+#include <KDecoration2/DecoratedClient>
+
+// Qt
+#include <QPainter>
+
 namespace Material
 {
 
-class Decoration;
-
-class CloseButton : public CommonButton
+class CloseButton
 {
-    Q_OBJECT
 
 public:
-    CloseButton(Decoration *decoration, QObject *parent = nullptr);
-    ~CloseButton() override;
+    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+        QObject::connect(decoratedClient, &KDecoration2::DecoratedClient::closeableChanged,
+                button, &CommonButton::setVisible);
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+        button->setVisible(decoratedClient->isCloseable());
+    }
+    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+        Q_UNUSED(button)
 
-protected:
-    QColor backgroundColor() const override;
+        painter->drawLine(iconRect.topLeft(), iconRect.bottomRight());
+        painter->drawLine(iconRect.topRight(), iconRect.bottomLeft());
+    }
 };
 
 } // namespace Material

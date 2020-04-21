@@ -66,6 +66,10 @@ CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *
         AppIconButton::init(this, decoratedClient);
         break;
 
+    case KDecoration2::DecorationButtonType::Close:
+        CloseButton::init(this, decoratedClient);
+        break;
+
     case KDecoration2::DecorationButtonType::Maximize:
         MaximizeButton::init(this, decoratedClient);
         break;
@@ -107,7 +111,7 @@ KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationBut
         return new KeepBelowButton(deco, parent);
 
     case KDecoration2::DecorationButtonType::Close:
-        return new CloseButton(deco, parent);
+        return new CommonButton(type, deco, parent);
 
     case KDecoration2::DecorationButtonType::Maximize:
         return new CommonButton(type, deco, parent);
@@ -153,6 +157,10 @@ void CommonButton::paint(QPainter *painter, const QRect &repaintRegion)
         AppIconButton::paintIcon(this, painter, iconRect);
         break;
 
+    case KDecoration2::DecorationButtonType::Close:
+        CloseButton::paintIcon(this, painter, iconRect);
+        break;
+
     case KDecoration2::DecorationButtonType::Maximize:
         MaximizeButton::paintIcon(this, painter, iconRect);
         break;
@@ -180,6 +188,25 @@ QColor CommonButton::backgroundColor() const
     const auto *deco = qobject_cast<Decoration *>(decoration());
     if (!deco) {
         return {};
+    }
+
+    //--- CloseButton
+    if (type() == KDecoration2::DecorationButtonType::Close) {
+        if (isPressed()) {
+            auto *decoratedClient = deco->client().toStrongRef().data();
+            return decoratedClient->color(
+                KDecoration2::ColorGroup::Warning,
+                KDecoration2::ColorRole::Foreground
+            ).lighter();
+        }
+
+        if (isHovered()) {
+            auto *decoratedClient = deco->client().toStrongRef().data();
+            return decoratedClient->color(
+                KDecoration2::ColorGroup::Warning,
+                KDecoration2::ColorRole::Foreground
+            );
+        }
     }
 
     //--- Checked
