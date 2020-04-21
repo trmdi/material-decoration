@@ -19,7 +19,7 @@
 
 // own
 #include "TextButton.h"
-#include "CommonToggleButton.h"
+#include "CommonButton.h"
 #include "Decoration.h"
 #include "AppMenuButtonGroup.h"
 
@@ -45,7 +45,7 @@ namespace Material
 {
 
 TextButton::TextButton(Decoration *decoration, const int buttonIndex, QObject *parent)
-    : CommonToggleButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
     , m_buttonIndex(buttonIndex)
     , m_action(nullptr)
     , m_horzPadding(4) // TODO: Scale by DPI
@@ -139,6 +139,39 @@ void TextButton::setText(const QString set)
     }
 }
 
+QColor TextButton::backgroundColor() const
+{
+    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
+    if (buttonGroup
+        && buttonGroup->currentIndex() >= 0
+        && buttonGroup->currentIndex() != m_buttonIndex
+    ) {
+        return Qt::transparent;
+    } else {
+        return CommonButton::backgroundColor();
+    }
+}
+
+QColor TextButton::foregroundColor() const
+{
+    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
+    if (buttonGroup
+        && buttonGroup->currentIndex() >= 0
+        && buttonGroup->currentIndex() != m_buttonIndex
+    ) {
+        const auto *deco = qobject_cast<Decoration *>(decoration());
+        if (!deco) {
+            return {};
+        }
+        return KColorUtils::mix(
+            deco->titleBarBackgroundColor(),
+            deco->titleBarForegroundColor(),
+            0.8);
+    } else {
+        return CommonButton::foregroundColor();
+    }
+}
+
 void TextButton::trigger() {
     qCDebug(category) << "TextButton::trigger" << m_buttonIndex;
     qCDebug(category) << "    " << m_action->shortcut();
@@ -186,39 +219,6 @@ void TextButton::mousePressEvent(QMouseEvent *event)
     //---
 
     DecorationButton::mouseReleaseEvent(event);
-}
-
-QColor TextButton::backgroundColor() const
-{
-    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
-    if (buttonGroup
-        && buttonGroup->currentIndex() >= 0
-        && buttonGroup->currentIndex() != m_buttonIndex
-    ) {
-        return Qt::transparent;
-    } else {
-        return CommonToggleButton::backgroundColor();
-    }
-}
-
-QColor TextButton::foregroundColor() const
-{
-    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
-    if (buttonGroup
-        && buttonGroup->currentIndex() >= 0
-        && buttonGroup->currentIndex() != m_buttonIndex
-    ) {
-        const auto *deco = qobject_cast<Decoration *>(decoration());
-        if (!deco) {
-            return {};
-        }
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.8);
-    } else {
-        return CommonToggleButton::foregroundColor();
-    }
 }
 
 

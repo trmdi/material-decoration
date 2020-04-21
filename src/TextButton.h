@@ -18,7 +18,7 @@
 #pragma once
 
 // own
-#include "CommonToggleButton.h"
+#include "CommonButton.h"
 
 // Qt
 #include <QAction>
@@ -29,7 +29,7 @@ namespace Material
 
 class Decoration;
 
-class TextButton : public CommonToggleButton
+class TextButton : public CommonButton
 {
     Q_OBJECT
 
@@ -57,6 +57,9 @@ public:
     QString text() const;
     void setText(const QString set);
 
+    QColor backgroundColor() const override;
+    QColor foregroundColor() const override;
+
 signals:
     void actionChanged();
     void buttonIndexChanged();
@@ -68,8 +71,6 @@ public slots:
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
-    QColor backgroundColor() const override;
-    QColor foregroundColor() const override;
 
 private:
     int m_buttonIndex;

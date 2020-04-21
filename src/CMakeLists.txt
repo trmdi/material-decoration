@@ -30,15 +30,10 @@ find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS X11Extras)
 set (decoration_SRCS
     AppMenuModel.cc
     AppMenuButtonGroup.cc
-    ApplicationMenuButton.cc
     BoxShadowHelper.cc
     CommonButton.cc
-    CommonToggleButton.cc
     Decoration.cc
-    KeepAboveButton.cc
-    KeepBelowButton.cc
     MenuOverflowButton.cc
-    OnAllDesktopsButton.cc
     TextButton.cc
     plugin.cc
 )

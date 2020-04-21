@@ -66,6 +66,22 @@ CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *
         AppIconButton::init(this, decoratedClient);
         break;
 
+    case KDecoration2::DecorationButtonType::ApplicationMenu:
+        ApplicationMenuButton::init(this, decoratedClient);
+        break;
+
+    case KDecoration2::DecorationButtonType::OnAllDesktops:
+        OnAllDesktopsButton::init(this, decoratedClient);
+        break;
+
+    case KDecoration2::DecorationButtonType::KeepAbove:
+        KeepAboveButton::init(this, decoratedClient);
+        break;
+
+    case KDecoration2::DecorationButtonType::KeepBelow:
+        KeepBelowButton::init(this, decoratedClient);
+        break;
+
     case KDecoration2::DecorationButtonType::Close:
         CloseButton::init(this, decoratedClient);
         break;
@@ -96,26 +112,12 @@ KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationBut
 
     switch (type) {
     case KDecoration2::DecorationButtonType::Menu:
-        return new CommonButton(type, deco, parent);
-
-    // case KDecoration2::DecorationButtonType::ApplicationMenu:
-    //     return new ApplicationMenuButton(deco, parent);
-
+    case KDecoration2::DecorationButtonType::ApplicationMenu:
     case KDecoration2::DecorationButtonType::OnAllDesktops:
-        return new OnAllDesktopsButton(deco, parent);
-
     case KDecoration2::DecorationButtonType::KeepAbove:
-        return new KeepAboveButton(deco, parent);
-
     case KDecoration2::DecorationButtonType::KeepBelow:
-        return new KeepBelowButton(deco, parent);
-
     case KDecoration2::DecorationButtonType::Close:
-        return new CommonButton(type, deco, parent);
-
     case KDecoration2::DecorationButtonType::Maximize:
-        return new CommonButton(type, deco, parent);
-
     case KDecoration2::DecorationButtonType::Minimize:
         return new CommonButton(type, deco, parent);
 
@@ -155,6 +157,22 @@ void CommonButton::paint(QPainter *painter, const QRect &repaintRegion)
     switch (type()) {
     case KDecoration2::DecorationButtonType::Menu:
         AppIconButton::paintIcon(this, painter, iconRect);
+        break;
+
+    case KDecoration2::DecorationButtonType::ApplicationMenu:
+        ApplicationMenuButton::paintIcon(this, painter, iconRect);
+        break;
+
+    case KDecoration2::DecorationButtonType::OnAllDesktops:
+        OnAllDesktopsButton::paintIcon(this, painter, iconRect);
+        break;
+
+    case KDecoration2::DecorationButtonType::KeepAbove:
+        KeepAboveButton::paintIcon(this, painter, iconRect);
+        break;
+
+    case KDecoration2::DecorationButtonType::KeepBelow:
+        KeepBelowButton::paintIcon(this, painter, iconRect);
         break;
 
     case KDecoration2::DecorationButtonType::Close:

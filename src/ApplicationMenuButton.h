@@ -20,20 +20,38 @@
 // own
 #include "CommonButton.h"
 
+// KDecoration
+#include <KDecoration2/DecoratedClient>
+
+// Qt
+#include <QPainter>
+
 namespace Material
 {
 
-class Decoration;
-
-class ApplicationMenuButton : public CommonButton
+class ApplicationMenuButton
 {
-    Q_OBJECT
 
 public:
-    ApplicationMenuButton(Decoration *decoration, QObject *parent = nullptr);
-    ~ApplicationMenuButton() override;
+    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+        button->setVisible(decoratedClient->hasApplicationMenu());
+    }
+    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+        QPen pen(button->foregroundColor());
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::MiterJoin);
+        const qreal PenWidth_Symbol = 1.01; // https://github.com/KDE/breeze/blob/master/kstyle/breeze.h#L164
+        pen.setWidthF(PenWidth_Symbol * 1.75);
+        painter->setPen(pen);
+        painter->setBrush(Qt::NoBrush);
+        
+        for (int i = -1; i <= 1; ++i) {
+            const QPointF left { iconRect.left(), iconRect.center().y() + i * 4 };
+            const QPointF right { iconRect.right(), iconRect.center().y() + i * 4 };
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+            painter->drawLine(left, right);
+        }
+    }
 };
 
 } // namespace Material

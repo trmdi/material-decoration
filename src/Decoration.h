@@ -33,8 +33,6 @@ namespace Material
 {
 
 class CommonButton;
-class CommonToggleButton;
-class AppIconButton;
 class TextButton;
 class MenuOverflowButton;
 
@@ -77,15 +75,6 @@ private:
 
     friend class AppMenuButtonGroup;
     friend class CommonButton;
-    friend class CommonToggleButton;
-    // friend class AppIconButton;
-    // friend class ApplicationMenuButton;
-    // friend class OnAllDesktopsButton;
-    // friend class KeepAboveButton;
-    // friend class KeepBelowButton;
-    // friend class CloseButton;
-    // friend class MaximizeButton;
-    // friend class MinimizeButton;
     friend class TextButton;
     // friend class MenuOverflowButton;
 };

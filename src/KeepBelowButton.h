@@ -18,22 +18,48 @@
 #pragma once
 
 // own
-#include "CommonToggleButton.h"
+#include "CommonButton.h"
+
+// KDecoration
+#include <KDecoration2/DecoratedClient>
+
+// Qt
+#include <QPainter>
 
 namespace Material
 {
 
-class Decoration;
-
-class KeepBelowButton : public CommonToggleButton
+class KeepBelowButton
 {
-    Q_OBJECT
 
 public:
-    KeepBelowButton(Decoration *decoration, QObject *parent = nullptr);
-    ~KeepBelowButton() override;
+    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+        Q_UNUSED(decoratedClient)
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+        button->setVisible(true);
+    }
+    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+        QPen pen(button->foregroundColor());
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::MiterJoin);
+        const qreal PenWidth_Symbol = 1.01; // https://github.com/KDE/breeze/blob/master/kstyle/breeze.h#L164
+        pen.setWidthF(PenWidth_Symbol * 1.25);
+        painter->setPen(pen);
+        painter->setBrush(Qt::NoBrush);
+
+        painter->translate( iconRect.topLeft() );
+        painter->drawPolyline(  QVector<QPointF> {
+            QPointF( 0.5, 0.25 ),
+            QPointF( 5.0, 4.75 ),
+            QPointF( 9.5, 0.25 )
+        });
+
+        painter->drawPolyline(  QVector<QPointF> {
+            QPointF( 0.5, 5.25 ),
+            QPointF( 5.0, 9.75 ),
+            QPointF( 9.5, 5.25 )
+        });
+    }
 };
 
 } // namespace Material

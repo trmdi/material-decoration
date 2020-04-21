@@ -44,7 +44,6 @@ public:
     void paint(QPainter *painter, const QRect &repaintRegion) override;
     virtual void paintIcon(QPainter *painter, const QRectF &iconRect);
 
-protected:
     virtual QColor backgroundColor() const;
     virtual QColor foregroundColor() const;
 };
