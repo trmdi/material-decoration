@@ -182,20 +182,36 @@ QColor CommonButton::backgroundColor() const
         return {};
     }
 
+    //--- Checked
+    if (isChecked() && type() != KDecoration2::DecorationButtonType::Maximize) {
+        if (isPressed()) {
+            return KColorUtils::mix(
+                deco->titleBarBackgroundColor(),
+                deco->titleBarForegroundColor(),
+                0.7);
+        }
+        if (isHovered()) {
+            return KColorUtils::mix(
+                deco->titleBarBackgroundColor(),
+                deco->titleBarForegroundColor(),
+                0.8);
+        }
+        return deco->titleBarForegroundColor();
+    }
+
+    //--- Normal
     if (isPressed()) {
         return KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.3);
     }
-
     if (isHovered()) {
         return KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.2);
     }
-
     return Qt::transparent;
 }
 
@@ -206,10 +222,23 @@ QColor CommonButton::foregroundColor() const
         return {};
     }
 
+    //--- Checked
+    if (isChecked() && type() != KDecoration2::DecorationButtonType::Maximize) {
+        if (isPressed() || isHovered()) {
+            return deco->titleBarBackgroundColor();
+        }
+        return KColorUtils::mix(
+            deco->titleBarBackgroundColor(),
+            deco->titleBarForegroundColor(),
+            0.2);
+    }
+
+    //--- Normal
     if (isPressed() || isHovered()) {
         return deco->titleBarForegroundColor();
     }
 
+    // Keep in sync with TextButton::foregroundColor()
     return KColorUtils::mix(
         deco->titleBarBackgroundColor(),
         deco->titleBarForegroundColor(),
