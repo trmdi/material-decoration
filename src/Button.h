@@ -27,21 +27,21 @@ namespace Material
 
 class Decoration;
 
-class CommonButton : public KDecoration2::DecorationButton
+class Button : public KDecoration2::DecorationButton
 {
     Q_OBJECT
 
 public:
-    CommonButton(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent = nullptr);
-    ~CommonButton() override;
+    Button(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent = nullptr);
+    ~Button() override;
 
     // Passed to DecorationButtonGroup in Decoration
     static KDecoration2::DecorationButton *create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
 
     // This is called by:
-    // registerPlugin<Material::CommonButton>(QStringLiteral("button"))
+    // registerPlugin<Material::Button>(QStringLiteral("button"))
     // It is needed to create buttons for applet-window-buttons.
-    explicit CommonButton(QObject *parent, const QVariantList &args);
+    explicit Button(QObject *parent, const QVariantList &args);
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
     virtual void paintIcon(QPainter *painter, const QRectF &iconRect);

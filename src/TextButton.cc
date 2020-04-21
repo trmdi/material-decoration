@@ -19,7 +19,7 @@
 
 // own
 #include "TextButton.h"
-#include "CommonButton.h"
+#include "Button.h"
 #include "Decoration.h"
 #include "AppMenuButtonGroup.h"
 
@@ -45,7 +45,7 @@ namespace Material
 {
 
 TextButton::TextButton(Decoration *decoration, const int buttonIndex, QObject *parent)
-    : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    : Button(KDecoration2::DecorationButtonType::Custom, decoration, parent)
     , m_buttonIndex(buttonIndex)
     , m_action(nullptr)
     , m_horzPadding(4) // TODO: Scale by DPI
@@ -148,7 +148,7 @@ QColor TextButton::backgroundColor() const
     ) {
         return Qt::transparent;
     } else {
-        return CommonButton::backgroundColor();
+        return Button::backgroundColor();
     }
 }
 
@@ -168,7 +168,7 @@ QColor TextButton::foregroundColor() const
             deco->titleBarForegroundColor(),
             0.8);
     } else {
-        return CommonButton::foregroundColor();
+        return Button::foregroundColor();
     }
 }
 

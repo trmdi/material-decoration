@@ -31,7 +31,7 @@ set (decoration_SRCS
     AppMenuModel.cc
     AppMenuButtonGroup.cc
     BoxShadowHelper.cc
-    CommonButton.cc
+    Button.cc
     Decoration.cc
     MenuOverflowButton.cc
     TextButton.cc

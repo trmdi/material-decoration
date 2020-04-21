@@ -18,7 +18,7 @@
 #pragma once
 
 // own
-#include "CommonButton.h"
+#include "Button.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -33,12 +33,12 @@ class OnAllDesktopsButton
 {
 
 public:
-    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+    static void init(Button *button, KDecoration2::DecoratedClient *decoratedClient) {
         Q_UNUSED(decoratedClient)
 
         button->setVisible(true);
     }
-    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
         QPen pen(button->foregroundColor());
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::MiterJoin);

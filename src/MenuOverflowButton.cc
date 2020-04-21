@@ -18,7 +18,7 @@
 
 // own
 #include "MenuOverflowButton.h"
-#include "CommonButton.h"
+#include "Button.h"
 #include "Decoration.h"
 
 // KDecoration
@@ -35,7 +35,7 @@ namespace Material
 {
 
 MenuOverflowButton::MenuOverflowButton(Decoration *decoration, QObject *parent)
-    : CommonButton(KDecoration2::DecorationButtonType::Custom, decoration, parent)
+    : Button(KDecoration2::DecorationButtonType::Custom, decoration, parent)
 {
     auto *decoratedClient = decoration->client().toStrongRef().data();
 

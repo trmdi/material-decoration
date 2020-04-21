@@ -17,7 +17,7 @@
  */
 
 // own
-#include "CommonButton.h"
+#include "Button.h"
 #include "Decoration.h"
 
 #include "AppIconButton.h"
@@ -47,10 +47,10 @@ static const QLoggingCategory category("kdecoration.material");
 namespace Material
 {
 
-CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent)
+Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent)
     : DecorationButton(type, decoration, parent)
 {
-    connect(this, &CommonButton::hoveredChanged, this,
+    connect(this, &Button::hoveredChanged, this,
         [this] {
             update();
         });
@@ -99,11 +99,11 @@ CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *
     }
 }
 
-CommonButton::~CommonButton()
+Button::~Button()
 {
 }
 
-KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent)
+KDecoration2::DecorationButton* Button::create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent)
 {
     auto deco = qobject_cast<Decoration*>(decoration);
     if (!deco) {
@@ -119,19 +119,19 @@ KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationBut
     case KDecoration2::DecorationButtonType::Close:
     case KDecoration2::DecorationButtonType::Maximize:
     case KDecoration2::DecorationButtonType::Minimize:
-        return new CommonButton(type, deco, parent);
+        return new Button(type, deco, parent);
 
     default:
         return nullptr;
     }
 }
 
-CommonButton::CommonButton(QObject *parent, const QVariantList &args)
-    : CommonButton(args.at(0).value<KDecoration2::DecorationButtonType>(), args.at(1).value<Decoration*>(), parent)
+Button::Button(QObject *parent, const QVariantList &args)
+    : Button(args.at(0).value<KDecoration2::DecorationButtonType>(), args.at(1).value<Decoration*>(), parent)
 {
 }
 
-void CommonButton::paint(QPainter *painter, const QRect &repaintRegion)
+void Button::paint(QPainter *painter, const QRect &repaintRegion)
 {
     Q_UNUSED(repaintRegion)
 
@@ -195,13 +195,13 @@ void CommonButton::paint(QPainter *painter, const QRect &repaintRegion)
     painter->restore();
 }
 
-void CommonButton::paintIcon(QPainter *painter, const QRectF &iconRect)
+void Button::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
     Q_UNUSED(painter)
     Q_UNUSED(iconRect)
 }
 
-QColor CommonButton::backgroundColor() const
+QColor Button::backgroundColor() const
 {
     const auto *deco = qobject_cast<Decoration *>(decoration());
     if (!deco) {
@@ -260,7 +260,7 @@ QColor CommonButton::backgroundColor() const
     return Qt::transparent;
 }
 
-QColor CommonButton::foregroundColor() const
+QColor Button::foregroundColor() const
 {
     const auto *deco = qobject_cast<Decoration *>(decoration());
     if (!deco) {

@@ -18,7 +18,7 @@
 #pragma once
 
 // own
-#include "CommonButton.h"
+#include "Button.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -33,13 +33,13 @@ class MaximizeButton
 {
 
 public:
-    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+    static void init(Button *button, KDecoration2::DecoratedClient *decoratedClient) {
         QObject::connect(decoratedClient, &KDecoration2::DecoratedClient::maximizeableChanged,
-                button, &CommonButton::setVisible);
+                button, &Button::setVisible);
 
         button->setVisible(decoratedClient->isMaximizeable());
     }
-    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
         if (button->isChecked()) {
             painter->drawPolygon(QVector<QPointF> {
                 iconRect.bottomLeft(),

@@ -19,7 +19,7 @@
 #pragma once
 
 // own
-#include "CommonButton.h"
+#include "Button.h"
 #include "Decoration.h"
 
 // KDecoration
@@ -35,14 +35,14 @@ class AppIconButton
 {
 
 public:
-    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+    static void init(Button *button, KDecoration2::DecoratedClient *decoratedClient) {
         QObject::connect(decoratedClient, &KDecoration2::DecoratedClient::iconChanged,
             button, [button] {
                 button->update();
             }
         );
     }
-    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
         Q_UNUSED(iconRect)
 
         const QRectF buttonRect = button->geometry();

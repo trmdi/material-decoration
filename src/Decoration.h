@@ -32,7 +32,7 @@
 namespace Material
 {
 
-class CommonButton;
+class Button;
 class TextButton;
 class MenuOverflowButton;
 
@@ -74,7 +74,7 @@ private:
     AppMenuButtonGroup *m_menuButtons;
 
     friend class AppMenuButtonGroup;
-    friend class CommonButton;
+    friend class Button;
     friend class TextButton;
     // friend class MenuOverflowButton;
 };

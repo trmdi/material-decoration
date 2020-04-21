@@ -20,7 +20,7 @@
 #include "Decoration.h"
 #include "AppMenuButtonGroup.h"
 #include "BoxShadowHelper.h"
-#include "CommonButton.h"
+#include "Button.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -143,12 +143,12 @@ void Decoration::init()
     m_leftButtons = new KDecoration2::DecorationButtonGroup(
         KDecoration2::DecorationButtonGroup::Position::Left,
         this,
-        &CommonButton::create);
+        &Button::create);
 
     m_rightButtons = new KDecoration2::DecorationButtonGroup(
         KDecoration2::DecorationButtonGroup::Position::Right,
         this,
-        &CommonButton::create);
+        &Button::create);
 
     m_menuButtons = new AppMenuButtonGroup(this);
     connect(m_menuButtons, &AppMenuButtonGroup::menuUpdated,

@@ -19,14 +19,14 @@
 #pragma once
 
 // own
-#include "CommonButton.h"
+#include "Button.h"
 
 namespace Material
 {
 
 class Decoration;
 
-class MenuOverflowButton : public CommonButton
+class MenuOverflowButton : public Button
 {
     Q_OBJECT
 
