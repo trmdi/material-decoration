@@ -35,10 +35,12 @@ public:
     CommonButton(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent = nullptr);
     ~CommonButton() override;
 
-    // These are called by:
-    // registerPlugin<Material::CommonButton>(QStringLiteral("button"))
-    // They are needed to create buttons for applet-window-buttons.
+    // Passed to DecorationButtonGroup in Decoration
     static KDecoration2::DecorationButton *create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
+
+    // This is called by:
+    // registerPlugin<Material::CommonButton>(QStringLiteral("button"))
+    // It is needed to create buttons for applet-window-buttons.
     explicit CommonButton(QObject *parent, const QVariantList &args);
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
