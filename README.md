@@ -8,7 +8,7 @@ Material-ish window decoration theme for KWin.
 
 This hides the AppMenu icon button and draws the menu in the titlebar.
 
-![](https://i.imgur.com/R3qHgaN.png)
+![](https://i.imgur.com/oFOVWjV.png)
 
 Make sure you add the AppMenu button in System Settings > Application Style > Window Decorations > Buttons Tab.
 
