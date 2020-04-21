@@ -6,27 +6,18 @@ Material-ish window decoration theme for KWin.
 
 ### Locally Integrated Menus
 
-This `lim` branch hides the AppMenu icon button and draws the menu in the titlebar.
+This hides the AppMenu icon button and draws the menu in the titlebar.
 
 ![](https://i.imgur.com/R3qHgaN.png)
 
 Make sure you add the AppMenu button in System Settings > Application Style > Window Decorations > Buttons Tab.
 
-More discussion in the KDE Bug report: https://bugs.kde.org/show_bug.cgi?id=375951#c27
+TODO/Bugs ([Issue #1](https://github.com/Zren/material-decoration/issues/1)):
 
-TODO/Bugs:
+* Open Submenu on Shortcut (eg: `Alt+F`)
+* Display mnemonics when holding `Alt`
 
-* Figure out how to detect when `decoration->windowId` changes so I can update `AppMenuModel->winId` as KWin reuses the decorations I think. It will sometimes show the menu for Dolphin over top a SublimeText window.
-* Refactor to use `QMenuBar` or implement:
-	* Switch submenu on Hover.
-	* Switch submenu on Left/Right Arrow.
-	* Open Submenu on Shortcut.
-	* Display mnemonics when holding `Alt`.
-* Filter empty menu items without a label.
-
-Features:
-
-* Hide menu on model windows.
+Upstream LIM discussion in the KDE Bug report: https://bugs.kde.org/show_bug.cgi?id=375951#c27
 
 ### Installation
 
@@ -42,13 +33,12 @@ sudo apt build-dep breeze
 
 ##### Building from source
 
-First download and checkout the `lim` branch.
+First download the source.
 
 ```
 cd ~/Downloads
 git clone https://github.com/Zren/material-decoration.git
 cd material-decoration
-git checkout lim
 ```
 
 Then compile the decoration, and install it.
