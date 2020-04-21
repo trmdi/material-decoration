@@ -20,21 +20,38 @@
 
 // own
 #include "CommonButton.h"
+#include "Decoration.h"
+
+// KDecoration
+#include <KDecoration2/DecoratedClient>
+
+// Qt
+#include <QPainter>
 
 namespace Material
 {
 
-class Decoration;
-
-class AppIconButton : public CommonButton
+class AppIconButton
 {
-    Q_OBJECT
 
 public:
-    AppIconButton(Decoration *decoration, QObject *parent = nullptr);
-    ~AppIconButton() override;
+    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+        QObject::connect(decoratedClient, &KDecoration2::DecoratedClient::iconChanged,
+            button, [button] {
+                button->update();
+            }
+        );
+    }
+    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+        Q_UNUSED(iconRect)
 
-    void paint(QPainter *painter, const QRect &repaintRegion) override;
+        const QRectF buttonRect = button->geometry();
+        QRectF appIconRect = QRectF(0, 0, 16, 16);
+        appIconRect.moveCenter(buttonRect.center().toPoint());
+
+        auto *decoratedClient = button->decoration()->client().toStrongRef().data();
+        decoratedClient->icon().paint(painter, appIconRect.toRect());
+    }
 };
 
 } // namespace Material

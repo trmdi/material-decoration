@@ -28,7 +28,6 @@ set_package_properties(XCB PROPERTIES TYPE REQUIRED)
 find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS X11Extras)
 
 set (decoration_SRCS
-    AppIconButton.cc
     AppMenuModel.cc
     AppMenuButtonGroup.cc
     ApplicationMenuButton.cc
@@ -39,9 +38,7 @@ set (decoration_SRCS
     Decoration.cc
     KeepAboveButton.cc
     KeepBelowButton.cc
-    MaximizeButton.cc
     MenuOverflowButton.cc
-    MinimizeButton.cc
     OnAllDesktopsButton.cc
     TextButton.cc
     plugin.cc

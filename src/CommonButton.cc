@@ -58,6 +58,25 @@ CommonButton::CommonButton(KDecoration2::DecorationButtonType type, Decoration *
     const int titleBarHeight = decoration->titleBarHeight();
     const QSize size(qRound(titleBarHeight * 1.33), titleBarHeight);
     setGeometry(QRect(QPoint(0, 0), size));
+
+    auto *decoratedClient = decoration->client().toStrongRef().data();
+
+    switch (type) {
+    case KDecoration2::DecorationButtonType::Menu:
+        AppIconButton::init(this, decoratedClient);
+        break;
+
+    case KDecoration2::DecorationButtonType::Maximize:
+        MaximizeButton::init(this, decoratedClient);
+        break;
+
+    case KDecoration2::DecorationButtonType::Minimize:
+        MinimizeButton::init(this, decoratedClient);
+        break;
+
+    default:
+        break;
+    }
 }
 
 CommonButton::~CommonButton()
@@ -73,7 +92,7 @@ KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationBut
 
     switch (type) {
     case KDecoration2::DecorationButtonType::Menu:
-        return new AppIconButton(deco, parent);
+        return new CommonButton(type, deco, parent);
 
     // case KDecoration2::DecorationButtonType::ApplicationMenu:
     //     return new ApplicationMenuButton(deco, parent);
@@ -91,10 +110,10 @@ KDecoration2::DecorationButton* CommonButton::create(KDecoration2::DecorationBut
         return new CloseButton(deco, parent);
 
     case KDecoration2::DecorationButtonType::Maximize:
-        return new MaximizeButton(deco, parent);
+        return new CommonButton(type, deco, parent);
 
     case KDecoration2::DecorationButtonType::Minimize:
-        return new MinimizeButton(deco, parent);
+        return new CommonButton(type, deco, parent);
 
     default:
         return nullptr;
@@ -127,8 +146,26 @@ void CommonButton::paint(QPainter *painter, const QRect &repaintRegion)
     painter->setPen(foregroundColor());
     painter->setBrush(Qt::NoBrush);
 
-    paintIcon(painter, iconRect);
-    
+
+    // Icon
+    switch (type()) {
+    case KDecoration2::DecorationButtonType::Menu:
+        AppIconButton::paintIcon(this, painter, iconRect);
+        break;
+
+    case KDecoration2::DecorationButtonType::Maximize:
+        MaximizeButton::paintIcon(this, painter, iconRect);
+        break;
+
+    case KDecoration2::DecorationButtonType::Minimize:
+        MinimizeButton::paintIcon(this, painter, iconRect);
+        break;
+
+    default:
+        paintIcon(painter, iconRect);
+        break;
+    }
+
     painter->restore();
 }
 

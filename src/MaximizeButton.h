@@ -20,20 +20,45 @@
 // own
 #include "CommonButton.h"
 
+// KDecoration
+#include <KDecoration2/DecoratedClient>
+
+// Qt
+#include <QPainter>
+
 namespace Material
 {
 
-class Decoration;
-
-class MaximizeButton : public CommonButton
+class MaximizeButton
 {
-    Q_OBJECT
 
 public:
-    MaximizeButton(Decoration *decoration, QObject *parent = nullptr);
-    ~MaximizeButton() override;
+    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+        QObject::connect(decoratedClient, &KDecoration2::DecoratedClient::maximizeableChanged,
+                button, &CommonButton::setVisible);
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+        button->setVisible(decoratedClient->isMaximizeable());
+    }
+    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+        if (button->isChecked()) {
+            painter->drawPolygon(QVector<QPointF> {
+                iconRect.bottomLeft(),
+                iconRect.topLeft() + QPoint(0, 2),
+                iconRect.topRight() + QPointF(-2, 2),
+                iconRect.bottomRight() + QPointF(-2, 0)
+            });
+
+            painter->drawPolyline(QVector<QPointF> {
+                iconRect.topLeft() + QPointF(2, 2),
+                iconRect.topLeft() + QPointF(2, 0),
+                iconRect.topRight(),
+                iconRect.bottomRight() + QPointF(0, -2),
+                iconRect.bottomRight() + QPointF(-2, -2)
+            });
+        } else {
+            painter->drawRect(iconRect);
+        }
+    }
 };
 
 } // namespace Material

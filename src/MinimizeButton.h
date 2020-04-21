@@ -20,20 +20,32 @@
 // own
 #include "CommonButton.h"
 
+// KDecoration
+#include <KDecoration2/DecoratedClient>
+
+// Qt
+#include <QPainter>
+
 namespace Material
 {
 
-class Decoration;
-
-class MinimizeButton : public CommonButton
+class MinimizeButton
 {
-    Q_OBJECT
 
 public:
-    MinimizeButton(Decoration *decoration, QObject *parent = nullptr);
-    ~MinimizeButton() override;
+    static void init(CommonButton *button, KDecoration2::DecoratedClient *decoratedClient) {
+        QObject::connect(decoratedClient, &KDecoration2::DecoratedClient::minimizeableChanged,
+                button, &CommonButton::setVisible);
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+        button->setVisible(decoratedClient->isMinimizeable());
+    }
+    static void paintIcon(CommonButton *button, QPainter *painter, const QRectF &iconRect) {
+        Q_UNUSED(button)
+
+        painter->drawLine(
+            iconRect.left(), iconRect.center().y(),
+            iconRect.right(), iconRect.center().y());
+    }
 };
 
 } // namespace Material
