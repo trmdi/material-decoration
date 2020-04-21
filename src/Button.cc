@@ -112,7 +112,7 @@ KDecoration2::DecorationButton* Button::create(KDecoration2::DecorationButtonTyp
 
     switch (type) {
     case KDecoration2::DecorationButtonType::Menu:
-    case KDecoration2::DecorationButtonType::ApplicationMenu:
+    // case KDecoration2::DecorationButtonType::ApplicationMenu:
     case KDecoration2::DecorationButtonType::OnAllDesktops:
     case KDecoration2::DecorationButtonType::KeepAbove:
     case KDecoration2::DecorationButtonType::KeepBelow:
