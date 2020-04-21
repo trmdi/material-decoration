@@ -38,7 +38,11 @@
 #include <KColorUtils>
 
 // Qt
+#include <QDebug>
+#include <QLoggingCategory>
 #include <QPainter>
+
+static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {
