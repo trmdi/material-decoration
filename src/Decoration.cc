@@ -297,10 +297,13 @@ int Decoration::captionMinWidth() const
     return titleBarHeight() * 4;
 }
 
-int Decoration::getTextWidth(const QString text) const
+int Decoration::getTextWidth(const QString text, bool showMnemonic) const
 {
     const QFontMetrics fontMetrics(settings()->font());
-    return fontMetrics.boundingRect(text).width();
+    const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
+    int flags = showMnemonic ? Qt::TextShowMnemonic : Qt::TextHideMnemonic;
+    const QRect boundingRect = fontMetrics.boundingRect(titleBarRect, flags, text);
+    return boundingRect.width();
 }
 
 //* scoped pointer convenience typedef

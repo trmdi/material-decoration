@@ -58,7 +58,7 @@ private:
 
     int titleBarHeight() const;
     int captionMinWidth() const;
-    int getTextWidth(const QString text) const;
+    int getTextWidth(const QString text, bool showMnemonic = false) const;
     QPoint windowPos() const;
 
     QColor titleBarBackgroundColor() const;
