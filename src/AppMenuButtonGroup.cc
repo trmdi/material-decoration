@@ -19,7 +19,9 @@
 
 // own
 #include "AppMenuButtonGroup.h"
+#include "AppMenuModel.h"
 #include "Decoration.h"
+#include "AppMenuButton.h"
 #include "TextButton.h"
 #include "MenuOverflowButton.h"
 
@@ -29,6 +31,7 @@
 #include <KDecoration2/DecorationButtonGroup>
 
 // Qt
+#include <QAction>
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QMenu>
@@ -43,12 +46,15 @@ AppMenuButtonGroup::AppMenuButtonGroup(Decoration *decoration)
     : KDecoration2::DecorationButtonGroup(decoration)
     , m_appMenuModel(nullptr)
     , m_currentIndex(-1)
+    , m_overflowIndex(-1)
 {
     auto *decoratedClient = decoration->client().toStrongRef().data();
     connect(decoratedClient, &KDecoration2::DecoratedClient::hasApplicationMenuChanged,
             this, &AppMenuButtonGroup::updateAppMenuModel);
     connect(this, &AppMenuButtonGroup::requestActivateIndex,
             this, &AppMenuButtonGroup::trigger);
+    connect(this, &AppMenuButtonGroup::requestActivateOverflow,
+            this, &AppMenuButtonGroup::triggerOverflow);
 }
 
 AppMenuButtonGroup::~AppMenuButtonGroup()
@@ -87,6 +93,9 @@ KDecoration2::DecorationButton* AppMenuButtonGroup::buttonAt(int x, int y) const
 {
     for (int i = 0; i < buttons().length(); i++) {
         KDecoration2::DecorationButton* button = buttons().value(i);
+        if (!button->isVisible()) {
+            continue;
+        }
         if (button->geometry().contains(x, y)) {
             return button;
         }
@@ -159,7 +168,8 @@ void AppMenuButtonGroup::updateAppMenuModel()
             
             addButton(QPointer<KDecoration2::DecorationButton>(b));
         }
-        addButton(new MenuOverflowButton(deco, this));
+        m_overflowIndex = m_appMenuModel->rowCount();
+        addButton(new MenuOverflowButton(deco, m_overflowIndex, this));
 
         emit menuUpdated();
 
@@ -209,14 +219,38 @@ void AppMenuButtonGroup::trigger(int buttonIndex) {
     // https://github.com/psifidotos/applet-window-appmenu/blob/908e60831d7d68ee56a56f9c24017a71822fc02d/lib/appmenuapplet.cpp#L167
     QMenu *actionMenu = nullptr;
 
-    const QModelIndex modelIndex = m_appMenuModel->index(buttonIndex, 0);
-    const QVariant data = m_appMenuModel->data(modelIndex, AppMenuModel::ActionRole);
-    QAction *itemAction = (QAction *)data.value<void *>();
-    qCDebug(category) << "    action" << itemAction;
+    if (buttonIndex == m_appMenuModel->rowCount()) {
+        // Overflow Menu
+        actionMenu = new QMenu();
+        actionMenu->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (itemAction) {
-        actionMenu = itemAction->menu();
-        qCDebug(category) << "    menu" << actionMenu;
+        int overflowStartsAt = 0;
+        for (KDecoration2::DecorationButton *b : buttons()) {
+            TextButton* textButton = qobject_cast<TextButton *>(b);
+            if (textButton && textButton->isEnabled() && !textButton->isVisible()) {
+                overflowStartsAt = textButton->buttonIndex();
+                break;
+            }
+        }
+
+        QAction *action = nullptr;
+        for (int i = overflowStartsAt; i < m_appMenuModel->rowCount(); i++) {
+            const QModelIndex index = m_appMenuModel->index(i, 0);
+            const QVariant data = m_appMenuModel->data(index, AppMenuModel::ActionRole);
+            action = (QAction *)data.value<void *>();
+            actionMenu->addAction(action);
+        }
+
+    } else {
+        const QModelIndex modelIndex = m_appMenuModel->index(buttonIndex, 0);
+        const QVariant data = m_appMenuModel->data(modelIndex, AppMenuModel::ActionRole);
+        QAction *itemAction = (QAction *)data.value<void *>();
+        qCDebug(category) << "    action" << itemAction;
+
+        if (itemAction) {
+            actionMenu = itemAction->menu();
+            qCDebug(category) << "    menu" << actionMenu;
+        }
     }
 
     const auto *deco = qobject_cast<Decoration *>(decoration());
@@ -279,6 +313,12 @@ void AppMenuButtonGroup::trigger(int buttonIndex) {
     }
 }
 
+void AppMenuButtonGroup::triggerOverflow()
+{
+    qCDebug(category) << "AppMenuButtonGroup::triggerOverflow" << m_overflowIndex;
+    trigger(m_overflowIndex);
+}
+
 // FIXME TODO doesn't work on submenu
 bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
 {
@@ -324,19 +364,14 @@ bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
             return false;
         }
 
-        TextButton* textButton = static_cast<TextButton *>(item);
-        if (textButton) {
-            if (m_currentIndex != textButton->buttonIndex()) {
-                emit requestActivateIndex(textButton->buttonIndex());
+        AppMenuButton* appMenuButton = qobject_cast<AppMenuButton *>(item);
+        if (appMenuButton) {
+            if (m_currentIndex != appMenuButton->buttonIndex()
+                && appMenuButton->isVisible()
+                && appMenuButton->isEnabled()
+            ) {
+                emit requestActivateIndex(appMenuButton->buttonIndex());
             }
-            return false;
-        }
-
-        MenuOverflowButton* menuOverflowButton = static_cast<MenuOverflowButton *>(item);
-        if (menuOverflowButton) {
-            // if (m_currentIndex != menuOverflowButton->buttonIndex()) {
-            //     emit requestActivateOverflow(menuOverflowButton->buttonIndex());
-            // }
             return false;
         }
     }

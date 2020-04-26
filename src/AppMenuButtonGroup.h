@@ -56,11 +56,13 @@ public slots:
     void updateAppMenuModel();
     void updateOverflow(QRectF availableRect);
     void trigger(int index);
+    void triggerOverflow();
     void onMenuAboutToHide();
 
 signals:
     void menuUpdated();
     void requestActivateIndex(int index);
+    void requestActivateOverflow();
 
     void currentIndexChanged();
     void overflowingChanged();
@@ -73,6 +75,7 @@ private:
 
     AppMenuModel *m_appMenuModel;
     int m_currentIndex;
+    int m_overflowIndex;
     bool m_overflowing;
     QPointer<QMenu> m_currentMenu;
 };

@@ -18,18 +18,17 @@
 #pragma once
 
 // own
-#include "Button.h"
+#include "AppMenuButton.h"
 
 // Qt
 #include <QAction>
-#include <QMouseEvent>
 
 namespace Material
 {
 
 class Decoration;
 
-class TextButton : public Button
+class TextButton : public AppMenuButton
 {
     Q_OBJECT
 
@@ -38,7 +37,6 @@ public:
     ~TextButton() override;
 
     Q_PROPERTY(QAction* action READ action WRITE setAction NOTIFY actionChanged)
-    Q_PROPERTY(int buttonIndex READ buttonIndex NOTIFY buttonIndexChanged)
     Q_PROPERTY(int horzPadding READ horzPadding WRITE setHorzPadding NOTIFY horzPaddingChanged)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
@@ -49,31 +47,18 @@ public:
     QAction* action() const;
     void setAction(QAction *set);
 
-    int buttonIndex() const;
-
     int horzPadding() const;
     void setHorzPadding(int set);
 
     QString text() const;
     void setText(const QString set);
 
-    QColor backgroundColor() const override;
-    QColor foregroundColor() const override;
-
 signals:
     void actionChanged();
-    void buttonIndexChanged();
     void horzPaddingChanged();
     void textChanged();
 
-public slots:
-    void trigger();
-
-protected:
-    void mousePressEvent(QMouseEvent *event) override;
-
 private:
-    int m_buttonIndex;
     QAction *m_action;
     int m_horzPadding;
     QString m_text;

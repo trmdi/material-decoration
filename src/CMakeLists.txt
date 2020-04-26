@@ -29,6 +29,7 @@ find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS X11Extras)
 
 set (decoration_SRCS
     AppMenuModel.cc
+    AppMenuButton.cc
     AppMenuButtonGroup.cc
     BoxShadowHelper.cc
     Button.cc

@@ -75,6 +75,7 @@ private:
 
     friend class AppMenuButtonGroup;
     friend class Button;
+    friend class AppMenuButton;
     friend class TextButton;
     // friend class MenuOverflowButton;
 };

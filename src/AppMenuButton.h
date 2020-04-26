@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
- * Copyright (C) 2019 Zain Ahmad <zain.x.ahmad@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +18,42 @@
 #pragma once
 
 // own
-#include "AppMenuButton.h"
+#include "Button.h"
+
+// Qt
+#include <QMouseEvent>
 
 namespace Material
 {
 
 class Decoration;
 
-class MenuOverflowButton : public AppMenuButton
+class AppMenuButton : public Button
 {
     Q_OBJECT
 
 public:
-    MenuOverflowButton(Decoration *decoration, const int buttonIndex, QObject *parent = nullptr);
-    ~MenuOverflowButton() override;
+    AppMenuButton(Decoration *decoration, const int buttonIndex, QObject *parent = nullptr);
+    ~AppMenuButton() override;
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+    Q_PROPERTY(int buttonIndex READ buttonIndex NOTIFY buttonIndexChanged)
+
+    int buttonIndex() const;
+
+    QColor backgroundColor() const override;
+    QColor foregroundColor() const override;
+
+signals:
+    void buttonIndexChanged();
+
+public slots:
+    virtual void trigger();
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+
+private:
+    int m_buttonIndex;
 };
 
 } // namespace Material

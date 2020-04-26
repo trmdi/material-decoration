@@ -19,25 +19,18 @@
 
 // own
 #include "TextButton.h"
-#include "Button.h"
+#include "AppMenuButton.h"
 #include "Decoration.h"
-#include "AppMenuButtonGroup.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
-
-// KF
-#include <KColorUtils>
 
 // Qt
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QAction>
 #include <QFontMetrics>
-#include <QMenu>
-#include <QMouseEvent>
 #include <QPainter>
-#include <QX11Info>
 
 static const QLoggingCategory category("kdecoration.material");
 
@@ -45,17 +38,12 @@ namespace Material
 {
 
 TextButton::TextButton(Decoration *decoration, const int buttonIndex, QObject *parent)
-    : Button(KDecoration2::DecorationButtonType::Custom, decoration, parent)
-    , m_buttonIndex(buttonIndex)
+    : AppMenuButton(decoration, buttonIndex, parent)
     , m_action(nullptr)
     , m_horzPadding(4) // TODO: Scale by DPI
     , m_text(QStringLiteral("Menu"))
 {
     setVisible(true);
-    setCheckable(true);
-
-    connect(this, &TextButton::clicked,
-        this, &TextButton::trigger);
 }
 
 TextButton::~TextButton()
@@ -103,11 +91,6 @@ void TextButton::setAction(QAction *set)
     }
 }
 
-int TextButton::buttonIndex() const
-{
-    return m_buttonIndex;
-}
-
 int TextButton::horzPadding() const
 {
     return m_horzPadding;
@@ -137,88 +120,6 @@ void TextButton::setText(const QString set)
         const QRect rect(geometry().topLeft().toPoint(), size);
         setGeometry(rect);
     }
-}
-
-QColor TextButton::backgroundColor() const
-{
-    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
-    if (buttonGroup
-        && buttonGroup->currentIndex() >= 0
-        && buttonGroup->currentIndex() != m_buttonIndex
-    ) {
-        return Qt::transparent;
-    } else {
-        return Button::backgroundColor();
-    }
-}
-
-QColor TextButton::foregroundColor() const
-{
-    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
-    if (buttonGroup
-        && buttonGroup->currentIndex() >= 0
-        && buttonGroup->currentIndex() != m_buttonIndex
-    ) {
-        const auto *deco = qobject_cast<Decoration *>(decoration());
-        if (!deco) {
-            return {};
-        }
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.8);
-    } else {
-        return Button::foregroundColor();
-    }
-}
-
-void TextButton::trigger() {
-    qCDebug(category) << "TextButton::trigger" << m_buttonIndex;
-    qCDebug(category) << "    " << m_action->shortcut();
-
-    auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
-    // buttonGroup->trigger(m_buttonIndex, this);
-    buttonGroup->trigger(m_buttonIndex);
-}
-
-void TextButton::mousePressEvent(QMouseEvent *event)
-{
-    DecorationButton::mousePressEvent(event);
-    qCDebug(category) << "TextButton::mousePressEvent" << event;
-
-    const auto *deco = qobject_cast<Decoration *>(decoration());
-    auto *decoratedClient = deco->client().toStrongRef().data();
-    WId windowId = decoratedClient->windowId();
-    qCDebug(category) << "    windowId" << windowId;
-
-    QPoint position(event->pos());
-    QPoint rootPosition(position);
-    rootPosition += deco->windowPos();
-
-    //--- From: BreezeSizeGrip.cpp
-    // button release event
-    auto connection( QX11Info::connection() );
-    xcb_button_release_event_t releaseEvent;
-    memset(&releaseEvent, 0, sizeof(releaseEvent));
-
-    releaseEvent.response_type = XCB_BUTTON_RELEASE;
-    releaseEvent.event =  windowId;
-    releaseEvent.child = XCB_WINDOW_NONE;
-    releaseEvent.root = QX11Info::appRootWindow();
-    releaseEvent.event_x = position.x();
-    releaseEvent.event_y = position.y();
-    releaseEvent.root_x = rootPosition.x();
-    releaseEvent.root_y = rootPosition.y();
-    releaseEvent.detail = XCB_BUTTON_INDEX_1;
-    releaseEvent.state = XCB_BUTTON_MASK_1;
-    releaseEvent.time = XCB_CURRENT_TIME;
-    releaseEvent.same_screen = true;
-    xcb_send_event( connection, false, windowId, XCB_EVENT_MASK_BUTTON_RELEASE, reinterpret_cast<const char*>(&releaseEvent));
-
-    xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
-    //---
-
-    DecorationButton::mouseReleaseEvent(event);
 }
 
 
