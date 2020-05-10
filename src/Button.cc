@@ -163,9 +163,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
 
     // Background.
     painter->setPen(Qt::NoPen);
-    QColor bgColor = backgroundColor();
-    bgColor.setAlphaF(bgColor.alphaF() * m_opacity);
-    painter->setBrush(bgColor);
+    painter->setBrush(backgroundColor());
     painter->drawRect(buttonRect);
 
     // Foreground.
@@ -230,54 +228,67 @@ QColor Button::backgroundColor() const
 
     //--- CloseButton
     if (type() == KDecoration2::DecorationButtonType::Close) {
+        auto *decoratedClient = deco->client().toStrongRef().data();
+        const QColor hoveredColor = decoratedClient->color(
+            KDecoration2::ColorGroup::Warning,
+            KDecoration2::ColorRole::Foreground
+        );
+        QColor normalColor = QColor(hoveredColor);
+        normalColor.setAlphaF(0);
+
         if (isPressed()) {
-            auto *decoratedClient = deco->client().toStrongRef().data();
-            return decoratedClient->color(
+            const QColor pressedColor = decoratedClient->color(
                 KDecoration2::ColorGroup::Warning,
                 KDecoration2::ColorRole::Foreground
             ).lighter();
+            return KColorUtils::mix(normalColor, pressedColor, m_opacity);
         }
 
         if (isHovered()) {
-            auto *decoratedClient = deco->client().toStrongRef().data();
-            return decoratedClient->color(
-                KDecoration2::ColorGroup::Warning,
-                KDecoration2::ColorRole::Foreground
-            );
+            return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
         }
     }
 
     //--- Checked
     if (isChecked() && type() != KDecoration2::DecorationButtonType::Maximize) {
+        const QColor normalColor = deco->titleBarForegroundColor();
+
         if (isPressed()) {
-            return KColorUtils::mix(
+            const QColor pressedColor = KColorUtils::mix(
                 deco->titleBarBackgroundColor(),
                 deco->titleBarForegroundColor(),
                 0.7);
+            return KColorUtils::mix(normalColor, pressedColor, m_opacity);
         }
         if (isHovered()) {
-            return KColorUtils::mix(
+            const QColor hoveredColor = KColorUtils::mix(
                 deco->titleBarBackgroundColor(),
                 deco->titleBarForegroundColor(),
                 0.8);
+            return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
         }
-        return deco->titleBarForegroundColor();
+        return normalColor;
     }
 
     //--- Normal
+    const QColor hoveredColor = KColorUtils::mix(
+        deco->titleBarBackgroundColor(),
+        deco->titleBarForegroundColor(),
+        0.2);
+    QColor normalColor = QColor(hoveredColor);
+    normalColor.setAlphaF(0);
+
     if (isPressed()) {
-        return KColorUtils::mix(
+        const QColor pressedColor = KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.3);
+        return KColorUtils::mix(normalColor, pressedColor, m_opacity);
     }
     if (isHovered()) {
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.2);
+        return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
     }
-    return Qt::transparent;
+    return normalColor;
 }
 
 QColor Button::foregroundColor() const
