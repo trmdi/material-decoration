@@ -22,6 +22,9 @@
 #include <KDecoration2/Decoration>
 #include <KDecoration2/DecorationButton>
 
+// Qt
+#include <QVariantAnimation>
+
 namespace Material
 {
 
@@ -35,6 +38,9 @@ public:
     Button(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent = nullptr);
     ~Button() override;
 
+    Q_PROPERTY(bool animationEnabled READ animationEnabled WRITE setAnimationEnabled NOTIFY animationEnabledChanged)
+    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
+
     // Passed to DecorationButtonGroup in Decoration
     static KDecoration2::DecorationButton *create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
 
@@ -43,11 +49,30 @@ public:
     // It is needed to create buttons for applet-window-buttons.
     explicit Button(QObject *parent, const QVariantList &args);
 
+
     void paint(QPainter *painter, const QRect &repaintRegion) override;
     virtual void paintIcon(QPainter *painter, const QRectF &iconRect);
 
     virtual QColor backgroundColor() const;
     virtual QColor foregroundColor() const;
+
+    bool animationEnabled() const;
+    void setAnimationEnabled(bool value);
+
+    qreal opacity() const;
+    void setOpacity(qreal value);
+
+private Q_SLOTS:
+    void updateAnimationState(bool hovered);
+
+signals:
+    void animationEnabledChanged();
+    void opacityChanged();
+
+private:
+    bool m_animationEnabled;
+    QVariantAnimation *m_animation;
+    qreal m_opacity;
 };
 
 } // namespace Material
