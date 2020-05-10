@@ -289,25 +289,34 @@ QColor Button::foregroundColor() const
 
     //--- Checked
     if (isChecked() && type() != KDecoration2::DecorationButtonType::Maximize) {
-        if (isPressed() || isHovered()) {
-            return deco->titleBarBackgroundColor();
-        }
-        return KColorUtils::mix(
+        QColor activeColor = KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.2);
+
+        if (isPressed() || isHovered()) {
+            return KColorUtils::mix(
+                activeColor,
+                deco->titleBarBackgroundColor(),
+                m_opacity);
+        }
+        return activeColor;
     }
 
     //--- Normal
-    if (isPressed() || isHovered()) {
-        return deco->titleBarForegroundColor();
-    }
-
-    // Keep in sync with TextButton::foregroundColor()
-    return KColorUtils::mix(
+    QColor normalColor = KColorUtils::mix(
         deco->titleBarBackgroundColor(),
         deco->titleBarForegroundColor(),
         0.8);
+
+    if (isPressed() || isHovered()) {
+        return KColorUtils::mix(
+            normalColor,
+            deco->titleBarForegroundColor(),
+            m_opacity);
+    }
+
+    return normalColor;
 }
 
 
