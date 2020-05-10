@@ -21,19 +21,24 @@ Upstream LIM discussion in the KDE Bug report: https://bugs.kde.org/show_bug.cgi
 
 ### Installation
 
-##### Prerequisites
+#### Binary package
 
-* KDecoration2
+- openSUSE:
+```
+sudo zypper ar obs://home:trmdi trmdi
+sudo zypper in -r trmdi material-decoration
+```
 
-The following command should probably install all the build dependency libraries.
+#### Building from source
+Build dependencies:
 
+- Ubuntu:
 ```
 sudo apt build-dep breeze
 ```
 
-##### Building from source
 
-First download the source.
+Download the source:
 
 ```
 cd ~/Downloads
@@ -41,7 +46,7 @@ git clone https://github.com/Zren/material-decoration.git
 cd material-decoration
 ```
 
-Then compile the decoration, and install it.
+Then compile the decoration, and install it:
 
 ```
 mkdir build
