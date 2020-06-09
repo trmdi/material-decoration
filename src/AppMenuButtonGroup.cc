@@ -291,7 +291,9 @@ void AppMenuButtonGroup::trigger(int buttonIndex) {
 
         actionMenu->installEventFilter(this);
 
-        actionMenu->popup(rootPosition);
+        if (!KWindowSystem::isPlatformWayland()) {
+            actionMenu->popup(rootPosition);
+        }
 
         QMenu *oldMenu = m_currentMenu;
         m_currentMenu = actionMenu;
@@ -303,6 +305,10 @@ void AppMenuButtonGroup::trigger(int buttonIndex) {
         }
         if (0 <= m_currentIndex && m_currentIndex < buttons().length()) {
             buttons().value(m_currentIndex)->setChecked(false);
+        }
+
+        if (KWindowSystem::isPlatformWayland()) {
+            actionMenu->popup(rootPosition);
         }
 
         setCurrentIndex(buttonIndex);
