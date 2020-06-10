@@ -35,6 +35,7 @@ Build dependencies:
 - Ubuntu:
 ```
 sudo apt build-dep breeze
+sudo apt build-dep kwin
 ```
 
 
