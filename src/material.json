@@ -2,7 +2,7 @@
     "KPlugin": {
         "Description": "Window decoration",
         "EnabledByDefault": false,
-        "Id": "com.github.zzag.material",
+        "Id": "com.github.zren.material",
         "Name": "Material",
         "ServiceTypes": [
             "org.kde.kdecoration2"
