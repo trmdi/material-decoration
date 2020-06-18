@@ -29,6 +29,10 @@
 // Qt
 #include <QVariant>
 
+// X11
+#include <xcb/xcb.h>
+
+
 namespace Material
 {
 
@@ -61,6 +65,8 @@ private:
     int getTextWidth(const QString text, bool showMnemonic = false) const;
     QPoint windowPos() const;
 
+    void sendMoveEvent(const QPoint pos);
+
     QColor titleBarBackgroundColor() const;
     QColor titleBarForegroundColor() const;
 
@@ -72,6 +78,8 @@ private:
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
     AppMenuButtonGroup *m_menuButtons;
+
+    xcb_atom_t m_moveResizeAtom = 0;
 
     friend class AppMenuButtonGroup;
     friend class Button;

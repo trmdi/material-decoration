@@ -30,9 +30,11 @@
 #include <KColorUtils>
 
 // Qt
+#include <QApplication>
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QMouseEvent>
+#include <QPoint>
 #include <QX11Info>
 
 static const QLoggingCategory category("kdecoration.material");
@@ -104,39 +106,40 @@ void AppMenuButton::mousePressEvent(QMouseEvent *event)
     DecorationButton::mousePressEvent(event);
     qCDebug(category) << "AppMenuButton::mousePressEvent" << event;
 
-    const auto *deco = qobject_cast<Decoration *>(decoration());
-    auto *decoratedClient = deco->client().toStrongRef().data();
-    WId windowId = decoratedClient->windowId();
-    qCDebug(category) << "    windowId" << windowId;
+    m_pressedPoint = event->pos();
+}
 
-    QPoint position(event->pos());
-    QPoint rootPosition(position);
-    rootPosition += deco->windowPos();
+void AppMenuButton::hoverMoveEvent(QHoverEvent *event)
+{
+    DecorationButton::hoverMoveEvent(event);
+    qCDebug(category) << "AppMenuButton::hoverMoveEvent" << event << "pressed" << isPressed() << "pressedPoint" << m_pressedPoint;
 
-    //--- From: BreezeSizeGrip.cpp
-    // button release event
-    auto connection( QX11Info::connection() );
-    xcb_button_release_event_t releaseEvent;
-    memset(&releaseEvent, 0, sizeof(releaseEvent));
+    if (isPressed() && !m_pressedPoint.isNull()) {
+        QPoint diff = event->pos() - m_pressedPoint;
+        qCDebug(category) << "    diff" << diff << "mL" << diff.manhattanLength() << "sDD" << QApplication::startDragDistance();
+        if (diff.manhattanLength() >= QApplication::startDragDistance()) {
+            auto *deco = qobject_cast<Decoration *>(decoration());
+            deco->sendMoveEvent(event->pos());
+            m_pressedPoint = QPoint(); // reset to isNull()
+        }
+    }
 
-    releaseEvent.response_type = XCB_BUTTON_RELEASE;
-    releaseEvent.event =  windowId;
-    releaseEvent.child = XCB_WINDOW_NONE;
-    releaseEvent.root = QX11Info::appRootWindow();
-    releaseEvent.event_x = position.x();
-    releaseEvent.event_y = position.y();
-    releaseEvent.root_x = rootPosition.x();
-    releaseEvent.root_y = rootPosition.y();
-    releaseEvent.detail = XCB_BUTTON_INDEX_1;
-    releaseEvent.state = XCB_BUTTON_MASK_1;
-    releaseEvent.time = XCB_CURRENT_TIME;
-    releaseEvent.same_screen = true;
-    xcb_send_event( connection, false, windowId, XCB_EVENT_MASK_BUTTON_RELEASE, reinterpret_cast<const char*>(&releaseEvent));
+}
 
-    xcb_ungrab_pointer( connection, XCB_TIME_CURRENT_TIME );
-    //---
+void AppMenuButton::mouseMoveEvent(QMouseEvent *event)
+{
+    DecorationButton::mouseMoveEvent(event);
+    qCDebug(category) << "AppMenuButton::mouseMoveEvent" << event;
 
-    DecorationButton::mouseReleaseEvent(event);
+    // Never called... even when mouse+button is pressed
+    // So we use hoverMoveEvent
+}
+
+
+void AppMenuButton::sendMoveEvent(QPoint pos)
+{
+    qCDebug(category) << "AppMenuButton::sendMoveEvent" << pos;
+
 }
 
 
