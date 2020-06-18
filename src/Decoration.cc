@@ -337,9 +337,14 @@ int Decoration::titleBarHeight() const
     return qRound(0.6 * baseUnit) + fontMetrics.height();
 }
 
+int Decoration::appMenuCaptionSpacing() const
+{
+    return settings()->largeSpacing() * 4;
+}
+
 int Decoration::captionMinWidth() const
 {
-    return titleBarHeight() * 4;
+    return settings()->largeSpacing() * 8;
 }
 
 int Decoration::getTextWidth(const QString text, bool showMnemonic) const
@@ -556,11 +561,14 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
 
     const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
 
+    const bool appMenuVisible = !m_menuButtons->buttons().isEmpty();
+
     const QRect availableRect = titleBarRect.adjusted(
         m_leftButtons->geometry().width()
             + settings()->smallSpacing()
             + m_menuButtons->geometry().width()
-            + settings()->smallSpacing(),
+            + settings()->smallSpacing()
+            + (appMenuVisible ? appMenuCaptionSpacing() : 0),
         0,
         -m_rightButtons->geometry().width()
             - settings()->smallSpacing(),

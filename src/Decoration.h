@@ -69,6 +69,7 @@ private:
     void updateShadow();
 
     int titleBarHeight() const;
+    int appMenuCaptionSpacing() const;
     int captionMinWidth() const;
     int getTextWidth(const QString text, bool showMnemonic = false) const;
     QPoint windowPos() const;
