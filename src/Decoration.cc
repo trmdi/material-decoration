@@ -172,7 +172,7 @@ void Decoration::init()
 void Decoration::mousePressEvent(QMouseEvent *event)
 {
     KDecoration2::Decoration::mousePressEvent(event);
-    qCDebug(category) << "Decoration::mousePressEvent" << event;
+    // qCDebug(category) << "Decoration::mousePressEvent" << event;
 
     if (m_menuButtons->geometry().contains(event->pos())) {
         initDragMove(event->pos());
@@ -182,10 +182,10 @@ void Decoration::mousePressEvent(QMouseEvent *event)
 void Decoration::hoverMoveEvent(QHoverEvent *event)
 {
     KDecoration2::Decoration::hoverMoveEvent(event);
-    qCDebug(category) << "Decoration::hoverMoveEvent" << event;
+    // qCDebug(category) << "Decoration::hoverMoveEvent" << event;
 
     const bool dragStarted = dragMoveTick(event->pos());
-    qCDebug(category) << "    " << dragStarted;
+    // qCDebug(category) << "    " << "dragStarted" << dragStarted;
     if (dragStarted) {
         m_menuButtons->unPressAllButtons();
     }
@@ -194,7 +194,7 @@ void Decoration::hoverMoveEvent(QHoverEvent *event)
 void Decoration::mouseReleaseEvent(QMouseEvent *event)
 {
     KDecoration2::Decoration::mouseReleaseEvent(event);
-    qCDebug(category) << "Decoration::mouseReleaseEvent" << event;
+    // qCDebug(category) << "Decoration::mouseReleaseEvent" << event;
 
     resetDragMove();
 }
@@ -202,7 +202,7 @@ void Decoration::mouseReleaseEvent(QMouseEvent *event)
 void Decoration::hoverLeaveEvent(QHoverEvent *event)
 {
     KDecoration2::Decoration::hoverLeaveEvent(event);
-    qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
+    // qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
 
     resetDragMove();
 }
