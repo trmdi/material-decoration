@@ -27,6 +27,8 @@
 #include <KDecoration2/DecorationButtonGroup>
 
 // Qt
+#include <QHoverEvent>
+#include <QMouseEvent>
 #include <QVariant>
 
 // X11
@@ -53,6 +55,12 @@ public:
 public slots:
     void init() override;
 
+protected:
+    void hoverMoveEvent(QHoverEvent *event) override;
+    void hoverLeaveEvent(QHoverEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private:
     void updateBorders();
     void updateResizeBorders();
@@ -65,6 +73,9 @@ private:
     int getTextWidth(const QString text, bool showMnemonic = false) const;
     QPoint windowPos() const;
 
+    void initDragMove(const QPoint pos);
+    void resetDragMove();
+    bool dragMoveTick(const QPoint pos);
     void sendMoveEvent(const QPoint pos);
 
     QColor titleBarBackgroundColor() const;
@@ -79,6 +90,7 @@ private:
     KDecoration2::DecorationButtonGroup *m_rightButtons;
     AppMenuButtonGroup *m_menuButtons;
 
+    QPoint m_pressedPoint;
     xcb_atom_t m_moveResizeAtom = 0;
 
     friend class AppMenuButtonGroup;

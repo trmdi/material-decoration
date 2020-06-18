@@ -50,15 +50,8 @@ signals:
 public slots:
     virtual void trigger();
 
-protected:
-    void hoverMoveEvent(QHoverEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void sendMoveEvent(QPoint pos);
-
 private:
     int m_buttonIndex;
-    QPoint m_pressedPoint;
 };
 
 } // namespace Material

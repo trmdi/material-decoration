@@ -30,11 +30,9 @@
 #include <KColorUtils>
 
 // Qt
-#include <QApplication>
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QMouseEvent>
-#include <QPoint>
 #include <QX11Info>
 
 static const QLoggingCategory category("kdecoration.material");
@@ -100,51 +98,5 @@ void AppMenuButton::trigger() {
     auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent());
     buttonGroup->trigger(m_buttonIndex);
 }
-
-void AppMenuButton::mousePressEvent(QMouseEvent *event)
-{
-    DecorationButton::mousePressEvent(event);
-    qCDebug(category) << "AppMenuButton::mousePressEvent" << event;
-
-    m_pressedPoint = event->pos();
-}
-
-void AppMenuButton::hoverMoveEvent(QHoverEvent *event)
-{
-    DecorationButton::hoverMoveEvent(event);
-    qCDebug(category) << "AppMenuButton::hoverMoveEvent" << event << "pressed" << isPressed() << "pressedPoint" << m_pressedPoint;
-
-    if (isPressed() && !m_pressedPoint.isNull()) {
-        QPoint diff = event->pos() - m_pressedPoint;
-        qCDebug(category) << "    diff" << diff << "mL" << diff.manhattanLength() << "sDD" << QApplication::startDragDistance();
-        if (diff.manhattanLength() >= QApplication::startDragDistance()) {
-            auto *deco = qobject_cast<Decoration *>(decoration());
-            deco->sendMoveEvent(event->pos());
-            m_pressedPoint = QPoint(); // reset to isNull()
-
-            // Hack to setPressed(false)
-            setEnabled(!isEnabled());
-            setEnabled(!isEnabled());
-        }
-    }
-
-}
-
-void AppMenuButton::mouseMoveEvent(QMouseEvent *event)
-{
-    DecorationButton::mouseMoveEvent(event);
-    qCDebug(category) << "AppMenuButton::mouseMoveEvent" << event;
-
-    // Never called... even when mouse+button is pressed
-    // So we use hoverMoveEvent
-}
-
-
-void AppMenuButton::sendMoveEvent(QPoint pos)
-{
-    qCDebug(category) << "AppMenuButton::sendMoveEvent" << pos;
-
-}
-
 
 } // namespace Material

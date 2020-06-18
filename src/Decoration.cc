@@ -30,8 +30,11 @@
 #include <KDecoration2/DecorationShadow>
 
 // Qt
+#include <QApplication>
 #include <QDebug>
+#include <QHoverEvent>
 #include <QLoggingCategory>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QSharedPointer>
 
@@ -164,6 +167,50 @@ void Decoration::init()
     // For some reason, the shadow should be installed the last. Otherwise,
     // the Window Decorations KCM crashes.
     updateShadow();
+}
+
+void Decoration::mousePressEvent(QMouseEvent *event)
+{
+    KDecoration2::Decoration::mousePressEvent(event);
+    qCDebug(category) << "Decoration::mousePressEvent" << event;
+
+    if (m_menuButtons->geometry().contains(event->pos())) {
+        initDragMove(event->pos());
+    }
+}
+
+void Decoration::hoverMoveEvent(QHoverEvent *event)
+{
+    KDecoration2::Decoration::hoverMoveEvent(event);
+    qCDebug(category) << "Decoration::hoverMoveEvent" << event;
+
+    const bool dragStarted = dragMoveTick(event->pos());
+    qCDebug(category) << "    " << dragStarted;
+    if (dragStarted) {
+        for (int i = 0; i < m_menuButtons->buttons().length(); i++) {
+            KDecoration2::DecorationButton* button = m_menuButtons->buttons().value(i);
+
+            // Hack to setPressed(false)
+            button->setEnabled(!button->isEnabled());
+            button->setEnabled(!button->isEnabled());
+        }
+    }
+}
+
+void Decoration::mouseReleaseEvent(QMouseEvent *event)
+{
+    KDecoration2::Decoration::mouseReleaseEvent(event);
+    qCDebug(category) << "Decoration::mouseReleaseEvent" << event;
+
+    resetDragMove();
+}
+
+void Decoration::hoverLeaveEvent(QHoverEvent *event)
+{
+    KDecoration2::Decoration::hoverLeaveEvent(event);
+    qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
+
+    resetDragMove();
 }
 
 void Decoration::updateBorders()
@@ -343,6 +390,32 @@ QPoint Decoration::windowPos() const
     return QPoint(0, 0);
 }
 
+void Decoration::initDragMove(const QPoint pos)
+{
+    m_pressedPoint = pos;
+}
+
+void Decoration::resetDragMove()
+{
+    m_pressedPoint = QPoint();
+}
+
+
+bool Decoration::dragMoveTick(const QPoint pos)
+{
+    if (m_pressedPoint.isNull()) {
+        return false;
+    }
+
+    QPoint diff = pos - m_pressedPoint;
+    qCDebug(category) << "    diff" << diff << "mL" << diff.manhattanLength() << "sDD" << QApplication::startDragDistance();
+    if (diff.manhattanLength() >= QApplication::startDragDistance()) {
+        sendMoveEvent(pos);
+        resetDragMove();
+        return true;
+    }
+    return false;
+}
 
 void Decoration::sendMoveEvent(const QPoint pos)
 {
