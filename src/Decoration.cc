@@ -30,11 +30,18 @@
 #include <KDecoration2/DecorationShadow>
 
 // Qt
+#include <QApplication>
 #include <QDebug>
+#include <QHoverEvent>
 #include <QLoggingCategory>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QSharedPointer>
+
+// X11
+#include <xcb/xcb.h>
 #include <QX11Info>
+
 
 static const QLoggingCategory category("kdecoration.material");
 
@@ -160,6 +167,50 @@ void Decoration::init()
     // For some reason, the shadow should be installed the last. Otherwise,
     // the Window Decorations KCM crashes.
     updateShadow();
+}
+
+void Decoration::mousePressEvent(QMouseEvent *event)
+{
+    KDecoration2::Decoration::mousePressEvent(event);
+    qCDebug(category) << "Decoration::mousePressEvent" << event;
+
+    if (m_menuButtons->geometry().contains(event->pos())) {
+        initDragMove(event->pos());
+    }
+}
+
+void Decoration::hoverMoveEvent(QHoverEvent *event)
+{
+    KDecoration2::Decoration::hoverMoveEvent(event);
+    qCDebug(category) << "Decoration::hoverMoveEvent" << event;
+
+    const bool dragStarted = dragMoveTick(event->pos());
+    qCDebug(category) << "    " << dragStarted;
+    if (dragStarted) {
+        for (int i = 0; i < m_menuButtons->buttons().length(); i++) {
+            KDecoration2::DecorationButton* button = m_menuButtons->buttons().value(i);
+
+            // Hack to setPressed(false)
+            button->setEnabled(!button->isEnabled());
+            button->setEnabled(!button->isEnabled());
+        }
+    }
+}
+
+void Decoration::mouseReleaseEvent(QMouseEvent *event)
+{
+    KDecoration2::Decoration::mouseReleaseEvent(event);
+    qCDebug(category) << "Decoration::mouseReleaseEvent" << event;
+
+    resetDragMove();
+}
+
+void Decoration::hoverLeaveEvent(QHoverEvent *event)
+{
+    KDecoration2::Decoration::hoverLeaveEvent(event);
+    qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
+
+    resetDragMove();
 }
 
 void Decoration::updateBorders()
@@ -337,6 +388,109 @@ QPoint Decoration::windowPos() const
         }
     }
     return QPoint(0, 0);
+}
+
+void Decoration::initDragMove(const QPoint pos)
+{
+    m_pressedPoint = pos;
+}
+
+void Decoration::resetDragMove()
+{
+    m_pressedPoint = QPoint();
+}
+
+
+bool Decoration::dragMoveTick(const QPoint pos)
+{
+    if (m_pressedPoint.isNull()) {
+        return false;
+    }
+
+    QPoint diff = pos - m_pressedPoint;
+    qCDebug(category) << "    diff" << diff << "mL" << diff.manhattanLength() << "sDD" << QApplication::startDragDistance();
+    if (diff.manhattanLength() >= QApplication::startDragDistance()) {
+        sendMoveEvent(pos);
+        resetDragMove();
+        return true;
+    }
+    return false;
+}
+
+void Decoration::sendMoveEvent(const QPoint pos)
+{
+    const auto *decoratedClient = client().toStrongRef().data();
+    WId windowId = decoratedClient->windowId();
+
+    QPoint globalPos = windowPos()
+        - QPoint(0, titleBarHeight())
+        + pos;
+
+    //--- From: BreezeSizeGrip.cpp
+    auto connection(QX11Info::connection());
+
+
+    // move/resize atom
+    if (!m_moveResizeAtom) {
+        // create atom if not found
+        const QString atomName( "_NET_WM_MOVERESIZE" );
+        xcb_intern_atom_cookie_t cookie( xcb_intern_atom( connection, false, atomName.size(), qPrintable( atomName ) ) );
+        ScopedPointer<xcb_intern_atom_reply_t> reply( xcb_intern_atom_reply( connection, cookie, nullptr ) );
+        m_moveResizeAtom = reply ? reply->atom : 0;
+    }
+    if (!m_moveResizeAtom) {
+        return;
+    }
+
+    // button release event
+    xcb_button_release_event_t releaseEvent;
+    memset(&releaseEvent, 0, sizeof(releaseEvent));
+
+    releaseEvent.response_type = XCB_BUTTON_RELEASE;
+    releaseEvent.event =  windowId;
+    releaseEvent.child = XCB_WINDOW_NONE;
+    releaseEvent.root = QX11Info::appRootWindow();
+    releaseEvent.event_x = pos.x();
+    releaseEvent.event_y = pos.y();
+    releaseEvent.root_x = globalPos.x();
+    releaseEvent.root_y = globalPos.y();
+    releaseEvent.detail = XCB_BUTTON_INDEX_1;
+    releaseEvent.state = XCB_BUTTON_MASK_1;
+    releaseEvent.time = XCB_CURRENT_TIME;
+    releaseEvent.same_screen = true;
+    xcb_send_event(
+        connection,
+        false,
+        windowId,
+        XCB_EVENT_MASK_BUTTON_RELEASE,
+        reinterpret_cast<const char*>(&releaseEvent)
+    );
+
+    xcb_ungrab_pointer(connection, XCB_TIME_CURRENT_TIME);
+
+    // move resize event
+    xcb_client_message_event_t clientMessageEvent;
+    memset(&clientMessageEvent, 0, sizeof(clientMessageEvent));
+
+    clientMessageEvent.response_type = XCB_CLIENT_MESSAGE;
+    clientMessageEvent.type = m_moveResizeAtom;
+    clientMessageEvent.format = 32;
+    clientMessageEvent.window = windowId;
+    clientMessageEvent.data.data32[0] = globalPos.x();
+    clientMessageEvent.data.data32[1] = globalPos.y();
+    clientMessageEvent.data.data32[2] = 8; // _NET_WM_MOVERESIZE_MOVE
+    clientMessageEvent.data.data32[3] = Qt::LeftButton;
+    clientMessageEvent.data.data32[4] = 0;
+
+    xcb_send_event(
+        connection,
+        false,
+        QX11Info::appRootWindow(),
+        XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT,
+        reinterpret_cast<const char*>(&clientMessageEvent)
+    );
+
+    xcb_flush(connection);
 }
 
 void Decoration::paintFrameBackground(QPainter *painter, const QRect &repaintRegion) const
