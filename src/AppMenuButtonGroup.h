@@ -52,6 +52,8 @@ public:
 
     KDecoration2::DecorationButton* buttonAt(int x, int y) const;
 
+    void unPressAllButtons();
+
 public slots:
     void updateAppMenuModel();
     void updateOverflow(QRectF availableRect);

@@ -187,13 +187,7 @@ void Decoration::hoverMoveEvent(QHoverEvent *event)
     const bool dragStarted = dragMoveTick(event->pos());
     qCDebug(category) << "    " << dragStarted;
     if (dragStarted) {
-        for (int i = 0; i < m_menuButtons->buttons().length(); i++) {
-            KDecoration2::DecorationButton* button = m_menuButtons->buttons().value(i);
-
-            // Hack to setPressed(false)
-            button->setEnabled(!button->isEnabled());
-            button->setEnabled(!button->isEnabled());
-        }
+        m_menuButtons->unPressAllButtons();
     }
 }
 

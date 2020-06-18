@@ -385,6 +385,18 @@ bool AppMenuButtonGroup::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
+void AppMenuButtonGroup::unPressAllButtons()
+{
+    qCDebug(category) << "AppMenuButtonGroup::unPressAllButtons";
+    for (int i = 0; i < buttons().length(); i++) {
+        KDecoration2::DecorationButton* button = buttons().value(i);
+
+        // Hack to setPressed(false)
+        button->setEnabled(!button->isEnabled());
+        button->setEnabled(!button->isEnabled());
+    }
+}
+
 void AppMenuButtonGroup::onMenuAboutToHide()
 {
     if (0 <= m_currentIndex && m_currentIndex < buttons().length()) {
