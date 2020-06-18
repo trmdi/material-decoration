@@ -64,3 +64,18 @@ To test changes, restart `kwin_x11` with:
 ```
 QT_LOGGING_RULES="*=false;kdecoration.material=true" kstart5 -- kwin_x11 --replace
 ```
+
+### Update
+
+On 2020 June 18, the kdecoration id was changed from `zzag` to `zren`. You will need to re-select `Material` in System Settings > Application Style > Window Decoration. KWin will fallback to `Breeze` if you forget to do this.
+
+#### Building from source
+
+First navigate to the source directory, and `git pull` recent changes.
+
+```
+cd ~/Downloads/material-decoration
+git pull origin master --ff-only
+```
+
+Then re-run the install instructions.
