@@ -121,6 +121,10 @@ void AppMenuButton::hoverMoveEvent(QHoverEvent *event)
             auto *deco = qobject_cast<Decoration *>(decoration());
             deco->sendMoveEvent(event->pos());
             m_pressedPoint = QPoint(); // reset to isNull()
+
+            // Hack to setPressed(false)
+            setEnabled(!isEnabled());
+            setEnabled(!isEnabled());
         }
     }
 
