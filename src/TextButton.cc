@@ -54,6 +54,9 @@ void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
     Q_UNUSED(iconRect)
 
+    // Font
+    painter->setFont(decoration()->settings()->font());
+
     // TODO: Use Qt::TextShowMnemonic when Alt is pressed
     const bool isAltPressed = false;
     const Qt::TextFlag mnemonicFlag = isAltPressed ? Qt::TextShowMnemonic : Qt::TextHideMnemonic;
