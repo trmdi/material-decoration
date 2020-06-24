@@ -24,6 +24,7 @@
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
+#include <KDecoration2/DecorationSettings>
 
 // Qt
 #include <QDebug>
