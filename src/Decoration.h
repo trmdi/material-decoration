@@ -29,6 +29,7 @@
 // Qt
 #include <QHoverEvent>
 #include <QMouseEvent>
+#include <QWheelEvent>
 #include <QVariant>
 
 // X11
@@ -60,6 +61,7 @@ protected:
     void hoverLeaveEvent(QHoverEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     void updateBorders();

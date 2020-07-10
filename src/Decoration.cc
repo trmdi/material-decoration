@@ -37,6 +37,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QSharedPointer>
+#include <QWheelEvent>
 
 // X11
 #include <xcb/xcb.h>
@@ -175,7 +176,16 @@ void Decoration::mousePressEvent(QMouseEvent *event)
     // qCDebug(category) << "Decoration::mousePressEvent" << event;
 
     if (m_menuButtons->geometry().contains(event->pos())) {
-        initDragMove(event->pos());
+        if (event->button() == Qt::LeftButton) {
+            initDragMove(event->pos());
+
+        // If AppMenuButton's do not handle the button
+        } else if (event->button() == Qt::MiddleButton || event->button() == Qt::RightButton) {
+            // Don't accept the event. KDecoration2 will
+            // accept the event even if it doesn't pass
+            // button->acceptableButtons()->testFlag(button)
+            event->setAccepted(false);
+        }
     }
 }
 
@@ -205,6 +215,15 @@ void Decoration::hoverLeaveEvent(QHoverEvent *event)
     // qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
 
     resetDragMove();
+}
+
+void Decoration::wheelEvent(QWheelEvent *event)
+{
+    if (m_menuButtons->geometry().contains(event->position())) {
+        // Skip
+    } else {
+        KDecoration2::Decoration::wheelEvent(event);
+    }
 }
 
 void Decoration::updateBorders()
