@@ -219,7 +219,13 @@ void Decoration::hoverLeaveEvent(QHoverEvent *event)
 
 void Decoration::wheelEvent(QWheelEvent *event)
 {
-    if (m_menuButtons->geometry().contains(event->position())) {
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    const QPointF pos = event->position();
+    #else
+    const QPointF pos = event->posF();
+    #endif
+
+    if (m_menuButtons->geometry().contains(pos)) {
         // Skip
     } else {
         KDecoration2::Decoration::wheelEvent(event);
