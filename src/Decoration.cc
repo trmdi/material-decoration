@@ -178,6 +178,7 @@ void Decoration::mousePressEvent(QMouseEvent *event)
     if (m_menuButtons->geometry().contains(event->pos())) {
         if (event->button() == Qt::LeftButton) {
             initDragMove(event->pos());
+            event->setAccepted(false);
 
         // If AppMenuButton's do not handle the button
         } else if (event->button() == Qt::MiddleButton || event->button() == Qt::RightButton) {
