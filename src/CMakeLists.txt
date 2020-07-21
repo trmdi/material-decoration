@@ -9,6 +9,7 @@ find_package (KF5 REQUIRED COMPONENTS
     Config
     CoreAddons
     GuiAddons
+    IconThemes
     WindowSystem
 )
 
@@ -53,6 +54,7 @@ target_link_libraries (materialdecoration
         KF5::ConfigGui
         KF5::CoreAddons
         KF5::GuiAddons
+        KF5::IconThemes
         KF5::WindowSystem
         XCB::XCB
 

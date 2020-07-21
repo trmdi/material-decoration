@@ -25,6 +25,9 @@
 // KDecoration
 #include <KDecoration2/DecoratedClient>
 
+// KF
+#include <KIconLoader>
+
 // Qt
 #include <QPainter>
 
@@ -49,8 +52,19 @@ public:
         QRectF appIconRect = QRectF(0, 0, 16, 16);
         appIconRect.moveCenter(buttonRect.center().toPoint());
 
-        auto *decoratedClient = button->decoration()->client().toStrongRef().data();
+        const auto *deco = qobject_cast<Decoration *>(button->decoration());
+        auto *decoratedClient = deco->client().toStrongRef().data();
+
+        const QPalette activePalette = KIconLoader::global()->customPalette();
+        QPalette palette = decoratedClient->palette();
+        palette.setColor(QPalette::Foreground, deco->titleBarForegroundColor());
+        KIconLoader::global()->setCustomPalette(palette);
         decoratedClient->icon().paint(painter, appIconRect.toRect());
+        if (activePalette == QPalette()) {
+            KIconLoader::global()->resetPalette();
+        } else {
+            KIconLoader::global()->setCustomPalette(palette);
+        }
     }
 };
 

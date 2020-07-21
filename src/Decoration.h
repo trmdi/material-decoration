@@ -98,6 +98,7 @@ private:
 
     friend class AppMenuButtonGroup;
     friend class Button;
+    friend class AppIconButton;
     friend class AppMenuButton;
     friend class TextButton;
     // friend class MenuOverflowButton;
