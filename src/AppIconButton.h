@@ -30,6 +30,7 @@
 
 // Qt
 #include <QPainter>
+#include <QPalette>
 
 namespace Material
 {
