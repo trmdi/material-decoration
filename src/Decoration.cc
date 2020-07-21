@@ -272,13 +272,16 @@ void Decoration::updateButtonsGeometry()
     }
 
     if (!m_menuButtons->buttons().isEmpty()) {
-        m_menuButtons->setPos(QPointF(m_leftButtons->geometry().width() + settings()->smallSpacing(), 0));
+        const bool leftButtonsVisible = !m_leftButtons->buttons().isEmpty();
+        const int leftButtonsWidth = m_leftButtons->geometry().width()
+            + (leftButtonsVisible ? settings()->smallSpacing() : 0);
+
+        m_menuButtons->setPos(QPointF(leftButtonsWidth, 0));
         m_menuButtons->setSpacing(0);
 
         const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
         const QRect availableRect = titleBarRect.adjusted(
-            m_leftButtons->geometry().width()
-                + settings()->smallSpacing(),
+            leftButtonsWidth,
             0,
             -m_rightButtons->geometry().width()
                 - settings()->smallSpacing()
@@ -587,14 +590,17 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
 
     const QRect titleBarRect(0, 0, size().width(), titleBarHeight());
 
+    const bool leftButtonsVisible = !m_leftButtons->buttons().isEmpty();
+    const int leftButtonsWidth = m_leftButtons->geometry().width()
+        + (leftButtonsVisible ? settings()->smallSpacing() : 0);
+
     const bool appMenuVisible = !m_menuButtons->buttons().isEmpty();
+    const int menuButtonsWidth = m_menuButtons->geometry().width()
+        + (appMenuVisible ? appMenuCaptionSpacing() : 0);
 
     const QRect availableRect = titleBarRect.adjusted(
-        m_leftButtons->geometry().width()
-            + settings()->smallSpacing()
-            + m_menuButtons->geometry().width()
-            + settings()->smallSpacing()
-            + (appMenuVisible ? appMenuCaptionSpacing() : 0),
+            + leftButtonsWidth
+            + menuButtonsWidth,
         0,
         -m_rightButtons->geometry().width()
             - settings()->smallSpacing(),
