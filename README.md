@@ -23,6 +23,10 @@ Upstream LIM discussion in the KDE Bug report: https://bugs.kde.org/show_bug.cgi
 
 #### Binary package
 
+- Arch/Manjaro (AUR):  
+  Install the `material-kwin-decoration-git` AUR package.  
+  https://aur.archlinux.org/packages/material-kwin-decoration-git/
+
 - openSUSE:
 ```
 sudo zypper ar obs://home:trmdi trmdi
