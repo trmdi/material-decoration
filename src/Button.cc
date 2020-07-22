@@ -41,6 +41,7 @@
 #include <QDebug>
 #include <QLoggingCategory>
 #include <QPainter>
+#include <QVariantAnimation>
 
 static const QLoggingCategory category("kdecoration.material");
 
@@ -49,11 +50,28 @@ namespace Material
 
 Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, QObject *parent)
     : DecorationButton(type, decoration, parent)
+    , m_animationEnabled(true)
+    , m_animation(new QVariantAnimation(this))
+    , m_opacity(0)
 {
     connect(this, &Button::hoveredChanged, this,
-        [this] {
+        [this](bool hovered) {
+            updateAnimationState(hovered);
             update();
         });
+
+    // Animation based on SierraBreezeEnhanced
+    // https://github.com/kupiqu/SierraBreezeEnhanced/blob/master/breezebutton.cpp#L45
+    m_animation->setDuration(250);
+    m_animation->setStartValue(0.0);
+    m_animation->setEndValue(1.0);
+    m_animation->setEasingCurve(QEasingCurve::InOutQuad);
+    connect(m_animation, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
+        setOpacity(value.toReal());
+    });
+    connect(this, &Button::opacityChanged, this, [this]() {
+        update();
+    });
 
     const int titleBarHeight = decoration->titleBarHeight();
     const QSize size(qRound(titleBarHeight * 1.33), titleBarHeight);
@@ -210,54 +228,67 @@ QColor Button::backgroundColor() const
 
     //--- CloseButton
     if (type() == KDecoration2::DecorationButtonType::Close) {
+        auto *decoratedClient = deco->client().toStrongRef().data();
+        const QColor hoveredColor = decoratedClient->color(
+            KDecoration2::ColorGroup::Warning,
+            KDecoration2::ColorRole::Foreground
+        );
+        QColor normalColor = QColor(hoveredColor);
+        normalColor.setAlphaF(0);
+
         if (isPressed()) {
-            auto *decoratedClient = deco->client().toStrongRef().data();
-            return decoratedClient->color(
+            const QColor pressedColor = decoratedClient->color(
                 KDecoration2::ColorGroup::Warning,
                 KDecoration2::ColorRole::Foreground
             ).lighter();
+            return KColorUtils::mix(normalColor, pressedColor, m_opacity);
         }
 
         if (isHovered()) {
-            auto *decoratedClient = deco->client().toStrongRef().data();
-            return decoratedClient->color(
-                KDecoration2::ColorGroup::Warning,
-                KDecoration2::ColorRole::Foreground
-            );
+            return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
         }
     }
 
     //--- Checked
     if (isChecked() && type() != KDecoration2::DecorationButtonType::Maximize) {
+        const QColor normalColor = deco->titleBarForegroundColor();
+
         if (isPressed()) {
-            return KColorUtils::mix(
+            const QColor pressedColor = KColorUtils::mix(
                 deco->titleBarBackgroundColor(),
                 deco->titleBarForegroundColor(),
                 0.7);
+            return KColorUtils::mix(normalColor, pressedColor, m_opacity);
         }
         if (isHovered()) {
-            return KColorUtils::mix(
+            const QColor hoveredColor = KColorUtils::mix(
                 deco->titleBarBackgroundColor(),
                 deco->titleBarForegroundColor(),
                 0.8);
+            return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
         }
-        return deco->titleBarForegroundColor();
+        return normalColor;
     }
 
     //--- Normal
+    const QColor hoveredColor = KColorUtils::mix(
+        deco->titleBarBackgroundColor(),
+        deco->titleBarForegroundColor(),
+        0.2);
+    QColor normalColor = QColor(hoveredColor);
+    normalColor.setAlphaF(0);
+
     if (isPressed()) {
-        return KColorUtils::mix(
+        const QColor pressedColor = KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.3);
+        return KColorUtils::mix(normalColor, pressedColor, m_opacity);
     }
     if (isHovered()) {
-        return KColorUtils::mix(
-            deco->titleBarBackgroundColor(),
-            deco->titleBarForegroundColor(),
-            0.2);
+        return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
     }
-    return Qt::transparent;
+    return normalColor;
 }
 
 QColor Button::foregroundColor() const
@@ -269,25 +300,79 @@ QColor Button::foregroundColor() const
 
     //--- Checked
     if (isChecked() && type() != KDecoration2::DecorationButtonType::Maximize) {
-        if (isPressed() || isHovered()) {
-            return deco->titleBarBackgroundColor();
-        }
-        return KColorUtils::mix(
+        QColor activeColor = KColorUtils::mix(
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.2);
+
+        if (isPressed() || isHovered()) {
+            return KColorUtils::mix(
+                activeColor,
+                deco->titleBarBackgroundColor(),
+                m_opacity);
+        }
+        return activeColor;
     }
 
     //--- Normal
-    if (isPressed() || isHovered()) {
-        return deco->titleBarForegroundColor();
-    }
-
-    // Keep in sync with TextButton::foregroundColor()
-    return KColorUtils::mix(
+    QColor normalColor = KColorUtils::mix(
         deco->titleBarBackgroundColor(),
         deco->titleBarForegroundColor(),
         0.8);
+
+    if (isPressed() || isHovered()) {
+        return KColorUtils::mix(
+            normalColor,
+            deco->titleBarForegroundColor(),
+            m_opacity);
+    }
+
+    return normalColor;
 }
+
+
+bool Button::animationEnabled() const
+{
+    return m_animationEnabled;
+}
+
+void Button::setAnimationEnabled(bool value)
+{
+    if (m_animationEnabled != value) {
+        m_animationEnabled = value;
+        emit animationEnabledChanged();
+    }
+}
+
+qreal Button::opacity() const
+{
+    return m_opacity;
+}
+
+void Button::setOpacity(qreal value)
+{
+    if (m_opacity != value) {
+        m_opacity = value;
+        emit opacityChanged();
+    }
+}
+
+
+void Button::updateAnimationState(bool hovered)
+{
+    if (m_animationEnabled) {
+        QAbstractAnimation::Direction dir = hovered ? QAbstractAnimation::Forward : QAbstractAnimation::Backward;
+        if (m_animation->state() == QAbstractAnimation::Running && m_animation->direction() != dir) {
+            m_animation->stop();
+        }
+        m_animation->setDirection(dir);
+        if (m_animation->state() != QAbstractAnimation::Running) {
+            m_animation->start();
+        }
+    } else {
+        setOpacity(1);
+    }
+}
+
 
 } // namespace Material
