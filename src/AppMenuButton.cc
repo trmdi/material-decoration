@@ -45,7 +45,6 @@ AppMenuButton::AppMenuButton(Decoration *decoration, const int buttonIndex, QObj
     , m_buttonIndex(buttonIndex)
 {
     setCheckable(true);
-    setAnimationEnabled(false);
 
     connect(this, &AppMenuButton::clicked,
         this, &AppMenuButton::trigger);
