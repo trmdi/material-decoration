@@ -19,6 +19,7 @@
 
 // own
 #include "Button.h"
+#include "Material.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -42,8 +43,7 @@ public:
         QPen pen(button->foregroundColor());
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::MiterJoin);
-        const qreal PenWidth_Symbol = 1.01; // https://github.com/KDE/breeze/blob/master/kstyle/breeze.h#L164
-        pen.setWidthF(PenWidth_Symbol * 1.25);
+        pen.setWidthF(PenWidth::Symbol * 1.25);
         painter->setPen(pen);
         painter->setBrush(Qt::NoBrush);
 

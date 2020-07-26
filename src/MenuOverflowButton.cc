@@ -50,8 +50,7 @@ void MenuOverflowButton::paintIcon(QPainter *painter, const QRectF &iconRect)
     QPen pen(foregroundColor());
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::MiterJoin);
-    const qreal PenWidth_Symbol = 1.01; // https://github.com/KDE/breeze/blob/master/kstyle/breeze.h#L164
-    pen.setWidthF(PenWidth_Symbol * 1.75);
+    pen.setWidthF(PenWidth::Symbol * 1.75);
     painter->setPen(pen);
     painter->setBrush(Qt::NoBrush);
     
