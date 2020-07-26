@@ -70,6 +70,7 @@ private:
     void updateButtonsGeometry();
     void updateShadow();
 
+    int buttonPadding() const;
     int titleBarHeight() const;
     int appMenuCaptionSpacing() const;
     int captionMinWidth() const;
@@ -92,6 +93,8 @@ private:
     KDecoration2::DecorationButtonGroup *m_leftButtons;
     KDecoration2::DecorationButtonGroup *m_rightButtons;
     AppMenuButtonGroup *m_menuButtons;
+
+    KDecoration2::BorderSize m_buttonSize;
 
     QPoint m_pressedPoint;
     xcb_atom_t m_moveResizeAtom = 0;

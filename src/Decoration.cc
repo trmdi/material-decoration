@@ -100,6 +100,7 @@ static qreal s_titleBarOpacityInactive = 0.85;
 
 Decoration::Decoration(QObject *parent, const QVariantList &args)
     : KDecoration2::Decoration(parent, args)
+    , m_buttonSize(KDecoration2::BorderSize::Normal)
 {
     ++s_decoCount;
 }
@@ -359,11 +360,32 @@ void Decoration::updateShadow()
     setShadow(s_cachedShadow);
 }
 
+int Decoration::buttonPadding() const
+{
+    const int baseUnit = settings()->gridUnit();
+    switch (m_buttonSize) {
+    case KDecoration2::BorderSize::Tiny:
+        return qRound(baseUnit * 0.1);
+    default:
+    case KDecoration2::BorderSize::Normal:
+        return qRound(baseUnit * 0.3);
+    case KDecoration2::BorderSize::Large:
+        return qRound(baseUnit * 0.4);
+    case KDecoration2::BorderSize::VeryLarge:
+        return qRound(baseUnit * 0.5);
+    case KDecoration2::BorderSize::Huge:
+        return qRound(baseUnit * 0.6);
+    case KDecoration2::BorderSize::VeryHuge:
+        return qRound(baseUnit * 0.7);
+    case KDecoration2::BorderSize::Oversized:
+        return qRound(baseUnit * 0.8);
+    }
+}
+
 int Decoration::titleBarHeight() const
 {
     const QFontMetrics fontMetrics(settings()->font());
-    const int baseUnit = settings()->gridUnit();
-    return qRound(0.6 * baseUnit) + fontMetrics.height();
+    return buttonPadding()*2 + fontMetrics.height();
 }
 
 int Decoration::appMenuCaptionSpacing() const
