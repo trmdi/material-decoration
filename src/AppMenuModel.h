@@ -24,18 +24,21 @@
 // Qt
 #include <QAbstractListModel>
 #include <QAbstractNativeEventFilter>
-#include <QStringList>
+#include <QAction>
+#include <QDBusServiceWatcher>
+#include <QMenu>
+#include <QModelIndex>
 #include <QPointer>
 #include <QRect>
+#include <QStringList>
 
 // KF
 #include <KWindowSystem>
 
-// own
-class QMenu;
-class QAction;
-class QModelIndex;
-class QDBusServiceWatcher;
+
+namespace Material
+{
+
 class KDBusMenuImporter;
 
 class AppMenuModel : public QAbstractListModel, public QAbstractNativeEventFilter
@@ -135,3 +138,5 @@ private:
 
     QPointer<KDBusMenuImporter> m_importer;
 };
+
+} // namespace Material

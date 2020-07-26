@@ -19,6 +19,7 @@
 
 // own
 #include "AppMenuButtonGroup.h"
+#include "Material.h"
 #include "AppMenuModel.h"
 #include "Decoration.h"
 #include "AppMenuButton.h"
@@ -33,11 +34,9 @@
 // Qt
 #include <QAction>
 #include <QDebug>
-#include <QLoggingCategory>
 #include <QMenu>
 #include <QPainter>
 
-static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {

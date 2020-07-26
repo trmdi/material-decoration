@@ -18,6 +18,7 @@
 
 // own
 #include "Button.h"
+#include "Material.h"
 #include "Decoration.h"
 
 #include "AppIconButton.h"
@@ -39,11 +40,9 @@
 
 // Qt
 #include <QDebug>
-#include <QLoggingCategory>
 #include <QPainter>
 #include <QVariantAnimation>
 
-static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {

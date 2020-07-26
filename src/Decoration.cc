@@ -18,6 +18,7 @@
 
 // own
 #include "Decoration.h"
+#include "Material.h"
 #include "AppMenuButtonGroup.h"
 #include "BoxShadowHelper.h"
 #include "Button.h"
@@ -33,7 +34,6 @@
 #include <QApplication>
 #include <QDebug>
 #include <QHoverEvent>
-#include <QLoggingCategory>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QSharedPointer>
@@ -43,8 +43,6 @@
 #include <xcb/xcb.h>
 #include <QX11Info>
 
-
-static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {

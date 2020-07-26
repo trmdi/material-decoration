@@ -18,6 +18,7 @@
 
 // own
 #include "MenuOverflowButton.h"
+#include "Material.h"
 #include "AppMenuButton.h"
 #include "Decoration.h"
 
@@ -26,10 +27,8 @@
 
 // Qt
 #include <QDebug>
-#include <QLoggingCategory>
 #include <QPainter>
 
-static const QLoggingCategory category("kdecoration.material");
 
 namespace Material
 {

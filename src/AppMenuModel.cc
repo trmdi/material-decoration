@@ -21,7 +21,9 @@
  *
  ******************************************************************/
 
+// own
 #include "AppMenuModel.h"
+#include "Material.h"
 
 // #include <config-X11.h>
 
@@ -30,18 +32,21 @@
 #include <xcb/xcb.h>
 // #endif
 
+// Qt
 #include <QAction>
+#include <QDebug>
 #include <QMenu>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusServiceWatcher>
 #include <QGuiApplication>
 
-#include <QDebug>
-#include <QLoggingCategory>
-static const QLoggingCategory category("kdecoration.material");
-
+// libdbusmenuqt
 #include <dbusmenuimporter.h>
+
+
+namespace Material
+{
 
 static const QByteArray s_x11AppMenuServiceNamePropertyName = QByteArrayLiteral("_KDE_NET_WM_APPMENU_SERVICE_NAME");
 static const QByteArray s_x11AppMenuObjectPathPropertyName = QByteArrayLiteral("_KDE_NET_WM_APPMENU_OBJECT_PATH");
@@ -533,3 +538,4 @@ bool AppMenuModel::nativeEventFilter(const QByteArray &eventType, void *message,
     return false;
 }
 
+} // namespace Material
