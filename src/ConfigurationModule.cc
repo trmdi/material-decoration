@@ -41,7 +41,9 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QSpinBox>
+#include <QTabWidget>
 #include <QWidget>
+#include <QVBoxLayout>
 
 namespace Material
 {
@@ -61,60 +63,73 @@ void ConfigurationModule::init()
     skel->setCurrentGroup(QStringLiteral("Windeco"));
 
     //---
-    QFormLayout *form = new QFormLayout(this);
+    QTabWidget *tabWidget = new QTabWidget(this);
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(tabWidget);
+    mainLayout->addStretch(1);
+    setLayout(mainLayout);
 
     //---
-    QComboBox *buttonSizes = new QComboBox(this);
+    QWidget *generalTab = new QWidget(tabWidget);
+    tabWidget->addTab(generalTab, i18n("General"));
+    QFormLayout *generalForm = new QFormLayout(generalTab);
+    generalTab->setLayout(generalForm);
+
+    //---
+    QComboBox *buttonSizes = new QComboBox(generalTab);
     buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Tiny"));
     buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
     buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
     buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
     buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
     buttonSizes->setObjectName(QStringLiteral("kcfg_ButtonSize"));
-    form->addRow(i18n("Button size:"), buttonSizes);
+    generalForm->addRow(i18n("Button size:"), buttonSizes);
 
     //---
-    QDoubleSpinBox *activeOpacity = new QDoubleSpinBox(this);
+    QDoubleSpinBox *activeOpacity = new QDoubleSpinBox(generalTab);
     activeOpacity->setMinimum(0.0);
     activeOpacity->setMaximum(1.0);
     activeOpacity->setSingleStep(0.05);
     activeOpacity->setObjectName(QStringLiteral("kcfg_ActiveOpacity"));
-    form->addRow(i18n("Active Opacity:"), activeOpacity);
+    generalForm->addRow(i18n("Active Opacity:"), activeOpacity);
 
     //---
-    QDoubleSpinBox *inactiveOpacity = new QDoubleSpinBox(this);
+    QDoubleSpinBox *inactiveOpacity = new QDoubleSpinBox(generalTab);
     inactiveOpacity->setMinimum(0.0);
     inactiveOpacity->setMaximum(1.0);
     inactiveOpacity->setSingleStep(0.05);
     inactiveOpacity->setObjectName(QStringLiteral("kcfg_InactiveOpacity"));
-    form->addRow(i18n("Inactive Opacity:"), inactiveOpacity);
+    generalForm->addRow(i18n("Inactive Opacity:"), inactiveOpacity);
+
 
     //---
-    QComboBox *shadowSizes = new QComboBox(this);
+    QWidget *shadowTab = new QWidget(tabWidget);
+    tabWidget->addTab(shadowTab, i18n("Shadow"));
+    QFormLayout *shadowForm = new QFormLayout(shadowTab);
+    shadowTab->setLayout(shadowForm);
+
+    //---
+    QComboBox *shadowSizes = new QComboBox(shadowTab);
     shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "None"));
     shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
     shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
     shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
     shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
     shadowSizes->setObjectName(QStringLiteral("kcfg_ShadowSize"));
-    form->addRow(i18n("Shadow size:"), shadowSizes);
+    shadowForm->addRow(i18n("Shadow size:"), shadowSizes);
 
     //---
-    QSpinBox *shadowStrength = new QSpinBox(this);
+    QSpinBox *shadowStrength = new QSpinBox(shadowTab);
     shadowStrength->setMinimum(25);
     shadowStrength->setMaximum(255);
     // shadowStrength->setSuffix(QStringLiteral("%"));
     shadowStrength->setObjectName(QStringLiteral("kcfg_ShadowStrength"));
-    form->addRow(i18n("Shadow strength:"), shadowStrength);
+    shadowForm->addRow(i18n("Shadow strength:"), shadowStrength);
 
     //---
-    KColorButton *shadowColor = new KColorButton(this);
+    KColorButton *shadowColor = new KColorButton(shadowTab);
     shadowColor->setObjectName(QStringLiteral("kcfg_ShadowColor"));
-    form->addRow(i18n("Shadow color:"), shadowColor);
-
-
-    //---
-    setLayout(form);
+    shadowForm->addRow(i18n("Shadow color:"), shadowColor);
 
     //---
     skel->addItemInt(
