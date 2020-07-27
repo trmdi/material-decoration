@@ -53,6 +53,8 @@ public:
     void paint(QPainter *painter, const QRect &repaintRegion) override;
     virtual void paintIcon(QPainter *painter, const QRectF &iconRect);
 
+    virtual void setHeight(int buttonHeight);
+
     virtual QColor backgroundColor() const;
     virtual QColor foregroundColor() const;
 

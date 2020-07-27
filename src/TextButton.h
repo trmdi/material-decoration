@@ -53,6 +53,9 @@ public:
     QString text() const;
     void setText(const QString set);
 
+    void setHeight(int buttonHeight) override;
+    void updateGeometry();
+
 signals:
     void actionChanged();
     void horzPaddingChanged();

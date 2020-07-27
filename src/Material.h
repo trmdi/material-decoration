@@ -24,6 +24,7 @@
 namespace Material
 {
     static const QLoggingCategory category("kdecoration.material");
+    static const QString s_configFilename = QStringLiteral("kdecoration_materialrc");
 
     //--- Standard pen widths
     namespace PenWidth

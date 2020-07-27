@@ -1,0 +1,6 @@
+File=InternalSettingsSchema.kcfg
+ClassName=InternalSettings
+NameSpace=Material
+Singleton=false
+Mutators=true
+GlobalEnums=true

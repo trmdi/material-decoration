@@ -72,9 +72,7 @@ Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, 
         update();
     });
 
-    const int titleBarHeight = decoration->titleBarHeight();
-    const QSize size(qRound(titleBarHeight * 1.33), titleBarHeight);
-    setGeometry(QRect(QPoint(0, 0), size));
+    setHeight(decoration->titleBarHeight());
 
     auto *decoratedClient = decoration->client().toStrongRef().data();
 
@@ -216,6 +214,12 @@ void Button::paintIcon(QPainter *painter, const QRectF &iconRect)
 {
     Q_UNUSED(painter)
     Q_UNUSED(iconRect)
+}
+
+void Button::setHeight(int buttonHeight)
+{
+    const QSize size(qRound(buttonHeight * 1.33), buttonHeight);
+    setGeometry(QRect(QPoint(0, 0), size));
 }
 
 QColor Button::backgroundColor() const

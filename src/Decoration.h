@@ -20,6 +20,7 @@
 
 // own
 #include "AppMenuButtonGroup.h"
+#include "InternalSettings.h"
 
 // KDecoration
 #include <KDecoration2/Decoration>
@@ -29,6 +30,7 @@
 // Qt
 #include <QHoverEvent>
 #include <QMouseEvent>
+#include <QSharedPointer>
 #include <QWheelEvent>
 #include <QVariant>
 
@@ -55,6 +57,7 @@ public:
 
 public slots:
     void init() override;
+    void reconfigure();
 
 protected:
     void hoverMoveEvent(QHoverEvent *event) override;
@@ -67,6 +70,8 @@ private:
     void updateBorders();
     void updateResizeBorders();
     void updateTitleBar();
+    void setButtonGroupHeight(KDecoration2::DecorationButtonGroup *buttonGroup, int buttonHeight);
+    void updateButtonHeight();
     void updateButtonsGeometry();
     void updateShadow();
 
@@ -94,7 +99,7 @@ private:
     KDecoration2::DecorationButtonGroup *m_rightButtons;
     AppMenuButtonGroup *m_menuButtons;
 
-    KDecoration2::BorderSize m_buttonSize;
+    QSharedPointer<InternalSettings> m_internalSettings;
 
     QPoint m_pressedPoint;
     xcb_atom_t m_moveResizeAtom = 0;

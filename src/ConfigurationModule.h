@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
+ * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
+ * Copyright (C) 2012 Martin Gräßlin <mgraesslin@kde.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// own
-#include "Decoration.h"
-#include "Button.h"
-#include "ConfigurationModule.h"
-
 // KF
-#include <KPluginFactory>
+#include <KCModule>
 
-K_PLUGIN_FACTORY_WITH_JSON(
-    MaterialDecorationFactory,
-    "material.json",
-    registerPlugin<Material::Decoration>();
-    registerPlugin<Material::Button>(QStringLiteral("button"));
-    registerPlugin<Material::ConfigurationModule>(QStringLiteral("kcmodule"));
-);
+// Qt
+#include <QWidget>
 
-#include "plugin.moc"
+namespace Material
+{
+
+class ConfigurationModule : public KCModule
+{
+    Q_OBJECT
+public:
+    ConfigurationModule(QWidget *parent, const QVariantList &args);
+
+private:
+    void init();
+    int m_buttonSize;
+};
+
+} // namespace Material

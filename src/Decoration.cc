@@ -22,6 +22,7 @@
 #include "AppMenuButtonGroup.h"
 #include "BoxShadowHelper.h"
 #include "Button.h"
+#include "InternalSettings.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -98,7 +99,7 @@ static qreal s_titleBarOpacityInactive = 0.85;
 
 Decoration::Decoration(QObject *parent, const QVariantList &args)
     : KDecoration2::Decoration(parent, args)
-    , m_buttonSize(KDecoration2::BorderSize::Normal)
+    , m_internalSettings(nullptr)
 {
     ++s_decoCount;
 }
@@ -125,6 +126,8 @@ void Decoration::paint(QPainter *painter, const QRect &repaintRegion)
 
 void Decoration::init()
 {
+    m_internalSettings = QSharedPointer<InternalSettings>(new InternalSettings());
+
     auto *decoratedClient = client().toStrongRef().data();
 
     connect(decoratedClient, &KDecoration2::DecoratedClient::widthChanged,
@@ -167,6 +170,21 @@ void Decoration::init()
     // For some reason, the shadow should be installed the last. Otherwise,
     // the Window Decorations KCM crashes.
     updateShadow();
+
+    connect(settings().data(), &KDecoration2::DecorationSettings::reconfigured,
+        this, &Decoration::reconfigure);
+    connect(m_internalSettings.data(), &InternalSettings::configChanged,
+        this, &Decoration::reconfigure);
+}
+
+void Decoration::reconfigure()
+{
+    m_internalSettings->load();
+
+    updateBorders();
+    updateTitleBar();
+    updateButtonsGeometry();
+    update();
 }
 
 void Decoration::mousePressEvent(QMouseEvent *event)
@@ -258,8 +276,26 @@ void Decoration::updateTitleBar()
     setTitleBar(QRect(0, 0, decoratedClient->width(), titleBarHeight()));
 }
 
+void Decoration::setButtonGroupHeight(KDecoration2::DecorationButtonGroup *buttonGroup, int buttonHeight)
+{
+    for (int i = 0; i < buttonGroup->buttons().length(); i++) {
+        auto *button = qobject_cast<Button *>(buttonGroup->buttons().value(i));
+        button->setHeight(buttonHeight);
+    }
+}
+
+void Decoration::updateButtonHeight()
+{
+    const int buttonHeight = titleBarHeight();
+    setButtonGroupHeight(m_leftButtons, buttonHeight);
+    setButtonGroupHeight(m_rightButtons, buttonHeight);
+    setButtonGroupHeight(m_menuButtons, buttonHeight);
+}
+
 void Decoration::updateButtonsGeometry()
 {
+    updateButtonHeight();
+
     if (!m_leftButtons->buttons().isEmpty()) {
         m_leftButtons->setPos(QPointF(0, 0));
         m_leftButtons->setSpacing(0);
@@ -361,21 +397,17 @@ void Decoration::updateShadow()
 int Decoration::buttonPadding() const
 {
     const int baseUnit = settings()->gridUnit();
-    switch (m_buttonSize) {
-    case KDecoration2::BorderSize::Tiny:
+    switch (m_internalSettings->buttonSize()) {
+    case InternalSettings::ButtonTiny:
         return qRound(baseUnit * 0.1);
+    case InternalSettings::ButtonSmall:
+        return qRound(baseUnit * 0.2);
     default:
-    case KDecoration2::BorderSize::Normal:
+    case InternalSettings::ButtonDefault:
         return qRound(baseUnit * 0.3);
-    case KDecoration2::BorderSize::Large:
-        return qRound(baseUnit * 0.4);
-    case KDecoration2::BorderSize::VeryLarge:
+    case InternalSettings::ButtonLarge:
         return qRound(baseUnit * 0.5);
-    case KDecoration2::BorderSize::Huge:
-        return qRound(baseUnit * 0.6);
-    case KDecoration2::BorderSize::VeryHuge:
-        return qRound(baseUnit * 0.7);
-    case KDecoration2::BorderSize::Oversized:
+    case InternalSettings::ButtonVeryLarge:
         return qRound(baseUnit * 0.8);
     }
 }

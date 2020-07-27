@@ -118,11 +118,23 @@ void TextButton::setText(const QString set)
         m_text = set;
         emit textChanged();
 
-        const QSize textSize = getTextSize();
-        const QSize size = textSize + QSize(m_horzPadding * 2, 0);
-        const QRect rect(geometry().topLeft().toPoint(), size);
-        setGeometry(rect);
+        updateGeometry();
     }
+}
+
+void TextButton::setHeight(int buttonHeight)
+{
+    Q_UNUSED(buttonHeight)
+
+    updateGeometry();
+}
+
+void TextButton::updateGeometry()
+{
+    const QSize textSize = getTextSize();
+    const QSize size = textSize + QSize(m_horzPadding * 2, 0);
+    const QRect rect(geometry().topLeft().toPoint(), size);
+    setGeometry(rect);
 }
 
 
