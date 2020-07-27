@@ -62,6 +62,9 @@ void ConfigurationModule::init()
     KCoreConfigSkeleton *skel = new KCoreConfigSkeleton(KSharedConfig::openConfig(s_configFilename), this);
     skel->setCurrentGroup(QStringLiteral("Windeco"));
 
+    // See fr.po for the messages we can reuse from breeze:
+    // https://websvn.kde.org/*checkout*/trunk/l10n-kf5/fr/messages/breeze/breeze_kwin_deco.po
+
     //---
     QTabWidget *tabWidget = new QTabWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -71,19 +74,19 @@ void ConfigurationModule::init()
 
     //---
     QWidget *generalTab = new QWidget(tabWidget);
-    tabWidget->addTab(generalTab, i18n("General"));
+    tabWidget->addTab(generalTab, i18nd("breeze_kwin_deco", "General"));
     QFormLayout *generalForm = new QFormLayout(generalTab);
     generalTab->setLayout(generalForm);
 
     //---
     QComboBox *buttonSizes = new QComboBox(generalTab);
-    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Tiny"));
-    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
-    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
-    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
-    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
+    buttonSizes->addItem(i18nd("breeze_kwin_deco", "Tiny"));
+    buttonSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Small"));
+    buttonSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Medium"));
+    buttonSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Large"));
+    buttonSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Very Large"));
     buttonSizes->setObjectName(QStringLiteral("kcfg_ButtonSize"));
-    generalForm->addRow(i18n("Button size:"), buttonSizes);
+    generalForm->addRow(i18nd("breeze_kwin_deco", "B&utton size:"), buttonSizes);
 
     //---
     QDoubleSpinBox *activeOpacity = new QDoubleSpinBox(generalTab);
@@ -104,32 +107,32 @@ void ConfigurationModule::init()
 
     //---
     QWidget *shadowTab = new QWidget(tabWidget);
-    tabWidget->addTab(shadowTab, i18n("Shadow"));
+    tabWidget->addTab(shadowTab, i18nd("breeze_kwin_deco", "Shadows"));
     QFormLayout *shadowForm = new QFormLayout(shadowTab);
     shadowTab->setLayout(shadowForm);
 
     //---
     QComboBox *shadowSizes = new QComboBox(shadowTab);
-    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "None"));
-    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
-    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
-    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
-    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
+    shadowSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "None"));
+    shadowSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Small"));
+    shadowSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Medium"));
+    shadowSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Large"));
+    shadowSizes->addItem(i18ndc("breeze_kwin_deco", "@item:inlistbox Button size:", "Very Large"));
     shadowSizes->setObjectName(QStringLiteral("kcfg_ShadowSize"));
-    shadowForm->addRow(i18n("Shadow size:"), shadowSizes);
+    shadowForm->addRow(i18nd("breeze_kwin_deco", "Si&ze:"), shadowSizes);
 
     //---
     QSpinBox *shadowStrength = new QSpinBox(shadowTab);
     shadowStrength->setMinimum(25);
     shadowStrength->setMaximum(255);
-    // shadowStrength->setSuffix(QStringLiteral("%"));
+    // shadowStrength->setSuffix(i18nd("breeze_kwin_deco", "%"));
     shadowStrength->setObjectName(QStringLiteral("kcfg_ShadowStrength"));
-    shadowForm->addRow(i18n("Shadow strength:"), shadowStrength);
+    shadowForm->addRow(i18ndc("breeze_kwin_deco", "strength of the shadow (from transparent to opaque)", "S&trength:"), shadowStrength);
 
     //---
     KColorButton *shadowColor = new KColorButton(shadowTab);
     shadowColor->setObjectName(QStringLiteral("kcfg_ShadowColor"));
-    shadowForm->addRow(i18n("Shadow color:"), shadowColor);
+    shadowForm->addRow(i18nd("breeze_kwin_deco", "Color:"), shadowColor);
 
     //---
     skel->addItemInt(
