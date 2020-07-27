@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2020 Chris Holland <zrenfire@gmail.com>
  * Copyright (C) 2018 Vlad Zagorodniy <vladzzag@gmail.com>
+ * Copyright (C) 2014 Hugo Pereira Da Costa <hugo.pereira@free.fr>
+ * Copyright (C) 2014 Martin Gräßlin <mgraesslin@kde.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,20 +79,68 @@ struct CompositeShadowParams
         , shadow1(shadow1)
         , shadow2(shadow2) {}
 
+    bool isNone() const {
+        return qMax(shadow1.radius, shadow2.radius) == 0;
+    }
+
     QPoint offset;
     ShadowParams shadow1;
     ShadowParams shadow2;
 };
 
-const CompositeShadowParams s_shadowParams = CompositeShadowParams(
-    QPoint(0, 18),
-    ShadowParams(QPoint(0, 0), 64, 0.8),
-    ShadowParams(QPoint(0, -10), 24, 0.1)
-);
+// const CompositeShadowParams s_shadowParams = CompositeShadowParams(
+//     QPoint(0, 18),
+//     ShadowParams(QPoint(0, 0), 64, 0.8),
+//     ShadowParams(QPoint(0, -10), 24, 0.1)
+// );
+const CompositeShadowParams s_shadowParams[] = {
+    // None
+    CompositeShadowParams(),
+    // Small
+    CompositeShadowParams(
+        QPoint(0, 4),
+        ShadowParams(QPoint(0, 0), 16, 1),
+        ShadowParams(QPoint(0, -2), 8, 0.4)),
+    // Medium
+    CompositeShadowParams(
+        QPoint(0, 8),
+        ShadowParams(QPoint(0, 0), 32, 0.9),
+        ShadowParams(QPoint(0, -4), 16, 0.3)),
+    // Large
+    CompositeShadowParams(
+        QPoint(0, 12),
+        ShadowParams(QPoint(0, 0), 48, 0.8),
+        ShadowParams(QPoint(0, -6), 24, 0.2)),
+    // Very large
+    CompositeShadowParams(
+        QPoint(0, 16),
+        ShadowParams(QPoint(0, 0), 64, 0.7),
+        ShadowParams(QPoint(0, -8), 32, 0.1)),
+};
+
+inline CompositeShadowParams lookupShadowParams(int size)
+{
+    switch (size) {
+    case InternalSettings::ShadowNone:
+        return s_shadowParams[0];
+    case InternalSettings::ShadowSmall:
+        return s_shadowParams[1];
+    case InternalSettings::ShadowMedium:
+        return s_shadowParams[2];
+    default:
+    case InternalSettings::ShadowLarge:
+        return s_shadowParams[3];
+    case InternalSettings::ShadowVeryLarge:
+        return s_shadowParams[4];
+    }
+}
 
 } // anonymous namespace
 
 static int s_decoCount = 0;
+static int s_shadowSizePreset = InternalSettings::ShadowVeryLarge;
+static int s_shadowStrength = 255;
+static QColor s_shadowColor = QColor(33, 33, 33);
 static QSharedPointer<KDecoration2::DecorationShadow> s_cachedShadow;
 
 Decoration::Decoration(QObject *parent, const QVariantList &args)
@@ -329,10 +379,22 @@ void Decoration::updateButtonsGeometry()
 
 void Decoration::updateShadow()
 {
-    if (!s_cachedShadow.isNull()) {
+    const QColor shadowColor = m_internalSettings->shadowColor();
+    const int shadowStrengthInt = m_internalSettings->shadowStrength();
+    const int shadowSizePreset = m_internalSettings->shadowSize();
+
+    if (!s_cachedShadow.isNull()
+        && s_shadowColor == shadowColor
+        && s_shadowSizePreset == shadowSizePreset
+        && s_shadowStrength == shadowStrengthInt
+    ) {
         setShadow(s_cachedShadow);
         return;
     }
+
+    s_shadowColor = shadowColor;
+    s_shadowStrength = shadowStrengthInt;
+    s_shadowSizePreset = shadowSizePreset;
 
     auto withOpacity = [] (const QColor &color, qreal opacity) -> QColor {
         QColor c(color);
@@ -340,44 +402,53 @@ void Decoration::updateShadow()
         return c;
     };
 
+    const qreal shadowStrength = static_cast<qreal>(shadowStrengthInt) / 255.0;
+    const CompositeShadowParams params = lookupShadowParams(shadowSizePreset);
+
+    if (params.isNone()) { // InternalSettings::ShadowNone
+        s_cachedShadow.clear();
+        setShadow(s_cachedShadow);
+        return;
+    }
+
     // In order to properly render a box shadow with a given radius `shadowSize`,
     // the box size should be at least `2 * QSize(shadowSize, shadowSize)`.
-    const int shadowSize = qMax(s_shadowParams.shadow1.radius, s_shadowParams.shadow2.radius);
+    const int shadowSize = qMax(params.shadow1.radius, params.shadow2.radius);
     const QRect box(shadowSize, shadowSize, 2 * shadowSize + 1, 2 * shadowSize + 1);
     const QRect rect = box.adjusted(-shadowSize, -shadowSize, shadowSize, shadowSize);
 
-    QImage shadow(rect.size(), QImage::Format_ARGB32_Premultiplied);
-    shadow.fill(Qt::transparent);
+    QImage shadowTexture(rect.size(), QImage::Format_ARGB32_Premultiplied);
+    shadowTexture.fill(Qt::transparent);
 
-    QPainter painter(&shadow);
+    QPainter painter(&shadowTexture);
     painter.setRenderHint(QPainter::Antialiasing);
 
     // Draw the "shape" shadow.
     BoxShadowHelper::boxShadow(
         &painter,
         box,
-        s_shadowParams.shadow1.offset,
-        s_shadowParams.shadow1.radius,
-        withOpacity(s_shadowColor, s_shadowParams.shadow1.opacity));
+        params.shadow1.offset,
+        params.shadow1.radius,
+        withOpacity(shadowColor, params.shadow1.opacity * shadowStrength));
 
     // Draw the "contrast" shadow.
     BoxShadowHelper::boxShadow(
         &painter,
         box,
-        s_shadowParams.shadow2.offset,
-        s_shadowParams.shadow2.radius,
-        withOpacity(s_shadowColor, s_shadowParams.shadow2.opacity));
+        params.shadow2.offset,
+        params.shadow2.radius,
+        withOpacity(shadowColor, params.shadow2.opacity * shadowStrength));
 
     // Mask out inner rect.
     const QMargins padding = QMargins(
-        shadowSize - s_shadowParams.offset.x(),
-        shadowSize - s_shadowParams.offset.y(),
-        shadowSize + s_shadowParams.offset.x(),
-        shadowSize + s_shadowParams.offset.y());
+        shadowSize - params.offset.x(),
+        shadowSize - params.offset.y(),
+        shadowSize + params.offset.x(),
+        shadowSize + params.offset.y());
     const QRect innerRect = rect - padding;
 
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::black);
+    painter.setPen(withOpacity(shadowColor, 0.2 * shadowStrength));
+    painter.setBrush(Qt::NoBrush);
     painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
     painter.drawRect(innerRect);
 
@@ -385,8 +456,8 @@ void Decoration::updateShadow()
 
     s_cachedShadow = QSharedPointer<KDecoration2::DecorationShadow>::create();
     s_cachedShadow->setPadding(padding);
-    s_cachedShadow->setInnerShadowRect(QRect(shadow.rect().center(), QSize(1, 1)));
-    s_cachedShadow->setShadow(shadow);
+    s_cachedShadow->setInnerShadowRect(QRect(shadowTexture.rect().center(), QSize(1, 1)));
+    s_cachedShadow->setShadow(shadowTexture);
 
     setShadow(s_cachedShadow);
 }

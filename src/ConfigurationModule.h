@@ -20,6 +20,7 @@
 #include <KCModule>
 
 // Qt
+#include <QColor>
 #include <QWidget>
 
 namespace Material
@@ -37,6 +38,9 @@ private:
     int m_buttonSize;
     double m_activeOpacity;
     double m_inactiveOpacity;
+    int m_shadowSize;
+    int m_shadowStrength;
+    QColor m_shadowColor;
 };
 
 } // namespace Material

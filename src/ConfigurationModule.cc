@@ -22,6 +22,8 @@
 #include "InternalSettings.h"
 
 // KF
+#include <KColorButton>
+#include <KConfigSkeleton>
 #include <KCoreConfigSkeleton>
 #include <KCModule>
 #include <KLocalizedString>
@@ -35,9 +37,10 @@
 
 // QWidget
 #include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QLabel>
-#include <QDoubleSpinBox>
+#include <QSpinBox>
 #include <QWidget>
 
 namespace Material
@@ -47,6 +50,7 @@ namespace Material
 ConfigurationModule::ConfigurationModule(QWidget *parent, const QVariantList &args)
     : KCModule(parent, args)
     , m_buttonSize(InternalSettings::ButtonDefault)
+    , m_shadowSize(InternalSettings::ShadowVeryLarge)
 {
     init();
 }
@@ -60,14 +64,14 @@ void ConfigurationModule::init()
     QFormLayout *form = new QFormLayout(this);
 
     //---
-    QComboBox *sizes = new QComboBox(this);
-    sizes->addItem(i18nc("@item:inlistbox Button size:", "Tiny"));
-    sizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
-    sizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
-    sizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
-    sizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
-    sizes->setObjectName(QStringLiteral("kcfg_ButtonSize"));
-    form->addRow(i18n("Button size:"), sizes);
+    QComboBox *buttonSizes = new QComboBox(this);
+    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Tiny"));
+    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
+    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
+    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
+    buttonSizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
+    buttonSizes->setObjectName(QStringLiteral("kcfg_ButtonSize"));
+    form->addRow(i18n("Button size:"), buttonSizes);
 
     //---
     QDoubleSpinBox *activeOpacity = new QDoubleSpinBox(this);
@@ -84,6 +88,30 @@ void ConfigurationModule::init()
     inactiveOpacity->setSingleStep(0.05);
     inactiveOpacity->setObjectName(QStringLiteral("kcfg_InactiveOpacity"));
     form->addRow(i18n("Inactive Opacity:"), inactiveOpacity);
+
+    //---
+    QComboBox *shadowSizes = new QComboBox(this);
+    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "None"));
+    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
+    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
+    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
+    shadowSizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
+    shadowSizes->setObjectName(QStringLiteral("kcfg_ShadowSize"));
+    form->addRow(i18n("Shadow size:"), shadowSizes);
+
+    //---
+    QSpinBox *shadowStrength = new QSpinBox(this);
+    shadowStrength->setMinimum(25);
+    shadowStrength->setMaximum(255);
+    // shadowStrength->setSuffix(QStringLiteral("%"));
+    shadowStrength->setObjectName(QStringLiteral("kcfg_ShadowStrength"));
+    form->addRow(i18n("Shadow strength:"), shadowStrength);
+
+    //---
+    KColorButton *shadowColor = new KColorButton(this);
+    shadowColor->setObjectName(QStringLiteral("kcfg_ShadowColor"));
+    form->addRow(i18n("Shadow color:"), shadowColor);
+
 
     //---
     setLayout(form);
@@ -107,6 +135,27 @@ void ConfigurationModule::init()
         0.85,
         QStringLiteral("InactiveOpacity")
     );
+    skel->addItemInt(
+        QStringLiteral("ShadowSize"),
+        m_shadowSize,
+        InternalSettings::ShadowVeryLarge,
+        QStringLiteral("ShadowSize")
+    );
+    skel->addItemInt(
+        QStringLiteral("ShadowStrength"),
+        m_shadowStrength,
+        255,
+        QStringLiteral("ShadowStrength")
+    );
+    KConfigSkeleton::ItemColor *itemShadowColor = new KConfigSkeleton::ItemColor(
+        skel->currentGroup(),
+        QStringLiteral("ShadowColor"),
+        m_shadowColor,
+        QColor(33, 33, 33)
+    );
+    skel->addItem(itemShadowColor, QStringLiteral("ShadowColor"));
+
+    //---
     addConfig(skel, this);
 }
 

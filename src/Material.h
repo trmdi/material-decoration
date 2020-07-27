@@ -38,6 +38,4 @@ namespace Material
         static constexpr qreal Symbol = 1.01;
     }
 
-    static QColor s_shadowColor(33, 33, 33);
-
 } // namespace Material
