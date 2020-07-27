@@ -39,6 +39,7 @@ public:
     ~Button() override;
 
     Q_PROPERTY(bool animationEnabled READ animationEnabled WRITE setAnimationEnabled NOTIFY animationEnabledChanged)
+    Q_PROPERTY(int animationDuration READ animationDuration WRITE setAnimationDuration NOTIFY animationDurationChanged)
     Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
 
     // Passed to DecorationButtonGroup in Decoration
@@ -61,6 +62,9 @@ public:
     bool animationEnabled() const;
     void setAnimationEnabled(bool value);
 
+    int animationDuration() const;
+    void setAnimationDuration(int duration);
+
     qreal opacity() const;
     void setOpacity(qreal value);
 
@@ -69,6 +73,7 @@ private Q_SLOTS:
 
 signals:
     void animationEnabledChanged();
+    void animationDurationChanged();
     void opacityChanged();
 
 private:

@@ -73,8 +73,12 @@ private:
     void setButtonGroupHeight(KDecoration2::DecorationButtonGroup *buttonGroup, int buttonHeight);
     void updateButtonHeight();
     void updateButtonsGeometry();
+    void setButtonGroupAnimation(KDecoration2::DecorationButtonGroup *buttonGroup, bool enabled, int duration);
+    void updateButtonAnimation();
     void updateShadow();
 
+    bool animationsEnabled() const;
+    int animationsDuration() const;
     int buttonPadding() const;
     int titleBarHeight() const;
     int appMenuCaptionSpacing() const;

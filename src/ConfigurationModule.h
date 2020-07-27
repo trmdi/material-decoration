@@ -38,6 +38,8 @@ private:
     int m_buttonSize;
     double m_activeOpacity;
     double m_inactiveOpacity;
+    bool m_animationsEnabled;
+    int m_animationsDuration;
     int m_shadowSize;
     int m_shadowStrength;
     QColor m_shadowColor;

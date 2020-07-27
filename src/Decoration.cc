@@ -230,6 +230,7 @@ void Decoration::reconfigure()
     updateBorders();
     updateTitleBar();
     updateButtonsGeometry();
+    updateButtonAnimation();
     updateShadow();
     update();
 }
@@ -377,6 +378,24 @@ void Decoration::updateButtonsGeometry()
     update();
 }
 
+void Decoration::setButtonGroupAnimation(KDecoration2::DecorationButtonGroup *buttonGroup, bool enabled, int duration)
+{
+    for (int i = 0; i < buttonGroup->buttons().length(); i++) {
+        auto *button = qobject_cast<Button *>(buttonGroup->buttons().value(i));
+        button->setAnimationEnabled(enabled);
+        button->setAnimationDuration(duration);
+    }
+}
+
+void Decoration::updateButtonAnimation()
+{
+    const bool enabled = animationsEnabled();
+    const int duration = animationsDuration();
+    setButtonGroupAnimation(m_leftButtons, enabled, duration);
+    setButtonGroupAnimation(m_rightButtons, enabled, duration);
+    setButtonGroupAnimation(m_menuButtons, enabled, duration);
+}
+
 void Decoration::updateShadow()
 {
     const QColor shadowColor = m_internalSettings->shadowColor();
@@ -460,6 +479,17 @@ void Decoration::updateShadow()
     s_cachedShadow->setShadow(shadowTexture);
 
     setShadow(s_cachedShadow);
+}
+
+
+bool Decoration::animationsEnabled() const
+{
+    return m_internalSettings->animationsEnabled();
+}
+
+int Decoration::animationsDuration() const
+{
+    return m_internalSettings->animationsDuration();
 }
 
 int Decoration::buttonPadding() const

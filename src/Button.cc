@@ -61,7 +61,8 @@ Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, 
 
     // Animation based on SierraBreezeEnhanced
     // https://github.com/kupiqu/SierraBreezeEnhanced/blob/master/breezebutton.cpp#L45
-    m_animation->setDuration(250);
+    m_animationEnabled = decoration->animationsEnabled();
+    m_animation->setDuration(decoration->animationsDuration());
     m_animation->setStartValue(0.0);
     m_animation->setEndValue(1.0);
     m_animation->setEasingCurve(QEasingCurve::InOutQuad);
@@ -344,6 +345,19 @@ void Button::setAnimationEnabled(bool value)
     if (m_animationEnabled != value) {
         m_animationEnabled = value;
         emit animationEnabledChanged();
+    }
+}
+
+int Button::animationDuration() const
+{
+    return m_animation->duration();
+}
+
+void Button::setAnimationDuration(int value)
+{
+    if (m_animation->duration() != value) {
+        m_animation->setDuration(value);
+        emit animationDurationChanged();
     }
 }
 

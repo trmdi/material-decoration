@@ -36,6 +36,7 @@
 #include <QDebug>
 
 // QWidget
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
@@ -102,6 +103,25 @@ void ConfigurationModule::init()
     generalForm->addRow(i18n("Inactive Opacity:"), inactiveOpacity);
 
 
+    //--- Animations
+    QWidget *animationsTab = new QWidget(tabWidget);
+    tabWidget->addTab(animationsTab, i18nd("breeze_kwin_deco", "Animations"));
+    QFormLayout *animationsForm = new QFormLayout(animationsTab);
+    animationsTab->setLayout(animationsForm);
+
+    QCheckBox *animationsEnabled = new QCheckBox(animationsTab);
+    animationsEnabled->setText(i18nd("breeze_kwin_deco", "Enable animations"));
+    animationsEnabled->setObjectName(QStringLiteral("kcfg_AnimationsEnabled"));
+    animationsForm->addRow(QStringLiteral(""), animationsEnabled);
+
+    QSpinBox *animationsDuration = new QSpinBox(animationsTab);
+    animationsDuration->setMinimum(0);
+    animationsDuration->setMaximum(INT_MAX);
+    animationsDuration->setSuffix(i18nd("breeze_kwin_deco", " ms"));
+    animationsDuration->setObjectName(QStringLiteral("kcfg_AnimationsDuration"));
+    animationsForm->addRow(i18nd("breeze_kwin_deco", "Animations:"), animationsDuration);
+
+
     //--- Shadows
     QWidget *shadowTab = new QWidget(tabWidget);
     tabWidget->addTab(shadowTab, i18nd("breeze_kwin_deco", "Shadows"));
@@ -146,6 +166,18 @@ void ConfigurationModule::init()
         m_inactiveOpacity,
         0.85,
         QStringLiteral("InactiveOpacity")
+    );
+    skel->addItemBool(
+        QStringLiteral("AnimationsEnabled"),
+        m_animationsEnabled,
+        true,
+        QStringLiteral("AnimationsEnabled")
+    );
+    skel->addItemInt(
+        QStringLiteral("AnimationsDuration"),
+        m_animationsDuration,
+        150,
+        QStringLiteral("AnimationsDuration")
     );
     skel->addItemInt(
         QStringLiteral("ShadowSize"),

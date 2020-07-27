@@ -24,6 +24,14 @@
             <default>0.85</default>
         </entry>
 
+        <!-- animations -->
+        <entry name="AnimationsEnabled" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="AnimationsDuration" type="Int">
+            <default>250</default>
+        </entry>
+
         <!-- shadow -->
         <entry name="ShadowSize" type="Enum">
             <choices>
