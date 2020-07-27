@@ -27,7 +27,8 @@ Upstream LIM discussion in the KDE Bug report: https://bugs.kde.org/show_bug.cgi
   Install the `material-kwin-decoration-git` AUR package.  
   https://aur.archlinux.org/packages/material-kwin-decoration-git/
 
-- openSUSE:
+- openSUSE:  
+  https://build.opensuse.org/package/show/home:trmdi/material-decoration
 ```
 sudo zypper ar obs://home:trmdi trmdi
 sudo zypper in -r trmdi material-decoration
