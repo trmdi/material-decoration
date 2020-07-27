@@ -34,11 +34,11 @@
 #include <QDebug>
 
 // QWidget
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QComboBox>
+#include <QFormLayout>
 #include <QLabel>
+#include <QDoubleSpinBox>
+#include <QWidget>
 
 namespace Material
 {
@@ -48,38 +48,66 @@ ConfigurationModule::ConfigurationModule(QWidget *parent, const QVariantList &ar
     : KCModule(parent, args)
     , m_buttonSize(InternalSettings::ButtonDefault)
 {
-    setLayout(new QVBoxLayout(this));
     init();
 }
 
 void ConfigurationModule::init()
 {
-    QWidget *form = new QWidget(this);
-    form->setLayout(new QHBoxLayout(form));
-    QComboBox *sizes = new QComboBox(form);
+    KCoreConfigSkeleton *skel = new KCoreConfigSkeleton(KSharedConfig::openConfig(s_configFilename), this);
+    skel->setCurrentGroup(QStringLiteral("Windeco"));
+
+    //---
+    QFormLayout *form = new QFormLayout(this);
+
+    //---
+    QComboBox *sizes = new QComboBox(this);
     sizes->addItem(i18nc("@item:inlistbox Button size:", "Tiny"));
     sizes->addItem(i18nc("@item:inlistbox Button size:", "Small"));
     sizes->addItem(i18nc("@item:inlistbox Button size:", "Medium"));
     sizes->addItem(i18nc("@item:inlistbox Button size:", "Large"));
     sizes->addItem(i18nc("@item:inlistbox Button size:", "Very Large"));
     sizes->setObjectName(QStringLiteral("kcfg_ButtonSize"));
+    form->addRow(i18n("Button size:"), sizes);
 
-    QLabel *label = new QLabel(i18n("Button size:"), form);
-    label->setBuddy(sizes);
-    form->layout()->addWidget(label);
-    form->layout()->addWidget(sizes);
+    //---
+    QDoubleSpinBox *activeOpacity = new QDoubleSpinBox(this);
+    activeOpacity->setMinimum(0.0);
+    activeOpacity->setMaximum(1.0);
+    activeOpacity->setSingleStep(0.05);
+    activeOpacity->setObjectName(QStringLiteral("kcfg_ActiveOpacity"));
+    form->addRow(i18n("Active Opacity:"), activeOpacity);
 
-    layout()->addWidget(form);
+    //---
+    QDoubleSpinBox *inactiveOpacity = new QDoubleSpinBox(this);
+    inactiveOpacity->setMinimum(0.0);
+    inactiveOpacity->setMaximum(1.0);
+    inactiveOpacity->setSingleStep(0.05);
+    inactiveOpacity->setObjectName(QStringLiteral("kcfg_InactiveOpacity"));
+    form->addRow(i18n("Inactive Opacity:"), inactiveOpacity);
 
-    KCoreConfigSkeleton *skel = new KCoreConfigSkeleton(KSharedConfig::openConfig(s_configFilename), this);
-    skel->setCurrentGroup(QStringLiteral("Windeco"));
+    //---
+    setLayout(form);
+
+    //---
     skel->addItemInt(
         QStringLiteral("ButtonSize"),
         m_buttonSize,
         InternalSettings::ButtonDefault,
         QStringLiteral("ButtonSize")
     );
-    addConfig(skel, form);
+    skel->addItemDouble(
+        QStringLiteral("ActiveOpacity"),
+        m_activeOpacity,
+        0.75,
+        QStringLiteral("ActiveOpacity")
+    );
+    skel->addItemDouble(
+        QStringLiteral("InactiveOpacity"),
+        m_inactiveOpacity,
+        0.85,
+        QStringLiteral("InactiveOpacity")
+    );
+    addConfig(skel, this);
 }
 
 } // namespace Material

@@ -91,11 +91,7 @@ const CompositeShadowParams s_shadowParams = CompositeShadowParams(
 } // anonymous namespace
 
 static int s_decoCount = 0;
-static QColor s_shadowColor(33, 33, 33);
 static QSharedPointer<KDecoration2::DecorationShadow> s_cachedShadow;
-
-static qreal s_titleBarOpacityActive = 0.75;
-static qreal s_titleBarOpacityInactive = 0.85;
 
 Decoration::Decoration(QObject *parent, const QVariantList &args)
     : KDecoration2::Decoration(parent, args)
@@ -184,6 +180,7 @@ void Decoration::reconfigure()
     updateBorders();
     updateTitleBar();
     updateButtonsGeometry();
+    updateShadow();
     update();
 }
 
@@ -602,8 +599,8 @@ QColor Decoration::titleBarBackgroundColor() const
         ? KDecoration2::ColorGroup::Active
         : KDecoration2::ColorGroup::Inactive;
     const qreal opacity = decoratedClient->isActive()
-        ? s_titleBarOpacityActive
-        : s_titleBarOpacityInactive;
+        ? m_internalSettings->activeOpacity()
+        : m_internalSettings->inactiveOpacity();
     QColor color = decoratedClient->color(group, KDecoration2::ColorRole::TitleBar);
     color.setAlphaF(opacity);
     return color;

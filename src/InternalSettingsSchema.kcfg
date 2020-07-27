@@ -15,7 +15,12 @@
             </choices>
             <default>ButtonDefault</default>
         </entry>
-
+        <entry name="ActiveOpacity" type="Double">
+            <default>0.75</default>
+        </entry>
+        <entry name="InactiveOpacity" type="Double">
+            <default>0.85</default>
+        </entry>
     </group>
 
 </kcfg>
