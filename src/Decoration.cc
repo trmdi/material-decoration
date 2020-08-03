@@ -433,7 +433,8 @@ void Decoration::updateShadow()
     // In order to properly render a box shadow with a given radius `shadowSize`,
     // the box size should be at least `2 * QSize(shadowSize, shadowSize)`.
     const int shadowSize = qMax(params.shadow1.radius, params.shadow2.radius);
-    const QRect box(shadowSize, shadowSize, 2 * shadowSize + 1, 2 * shadowSize + 1);
+    const QSize boxSize = QSize(1, 1) + QSize(shadowSize*2, shadowSize*2);
+    const QRect box(QPoint(shadowSize, shadowSize), boxSize);
     const QRect rect = box.adjusted(-shadowSize, -shadowSize, shadowSize, shadowSize);
 
     QImage shadowTexture(rect.size(), QImage::Format_ARGB32_Premultiplied);
@@ -466,8 +467,9 @@ void Decoration::updateShadow()
         shadowSize + params.offset.y());
     const QRect innerRect = rect - padding;
 
-    painter.setPen(withOpacity(shadowColor, 0.2 * shadowStrength));
-    painter.setBrush(Qt::NoBrush);
+    // Mask out window+titlebar from shadow
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::black);
     painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
     painter.drawRect(innerRect);
 
