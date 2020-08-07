@@ -24,13 +24,12 @@
 // own
 #include "AppMenuModel.h"
 #include "Material.h"
+#include "BuildConfig.h"
 
-// #include <config-X11.h>
-
-// #if HAVE_X11
+#if HAVE_X11
 #include <QX11Info>
 #include <xcb/xcb.h>
-// #endif
+#endif
 
 // Qt
 #include <QAction>
@@ -51,9 +50,9 @@ namespace Material
 static const QByteArray s_x11AppMenuServiceNamePropertyName = QByteArrayLiteral("_KDE_NET_WM_APPMENU_SERVICE_NAME");
 static const QByteArray s_x11AppMenuObjectPathPropertyName = QByteArrayLiteral("_KDE_NET_WM_APPMENU_OBJECT_PATH");
 
-// #if HAVE_X11
+#if HAVE_X11
 static QHash<QByteArray, xcb_atom_t> s_atoms;
-// #endif
+#endif
 
 class KDBusMenuImporter : public DBusMenuImporter
 {
@@ -244,7 +243,7 @@ void AppMenuModel::onActiveWindowChanged(WId id)
         return;
     }
 
-// #if HAVE_X11
+#if HAVE_X11
 
     if (KWindowSystem::isPlatformX11()) {
         auto *c = QX11Info::connection();
@@ -362,7 +361,7 @@ void AppMenuModel::onActiveWindowChanged(WId id)
         emit modelNeedsUpdate();
     }
 
-// #endif
+#endif
 
 }
 
@@ -510,7 +509,7 @@ bool AppMenuModel::nativeEventFilter(const QByteArray &eventType, void *message,
         return false;
     }
 
-// #if HAVE_X11
+#if HAVE_X11
     auto e = static_cast<xcb_generic_event_t *>(message);
     const uint8_t type = e->response_type & ~0x80;
 
@@ -531,9 +530,9 @@ bool AppMenuModel::nativeEventFilter(const QByteArray &eventType, void *message,
         }
     }
 
-// #else
-//     Q_UNUSED(message);
-// #endif
+#else
+    Q_UNUSED(message);
+#endif
 
     return false;
 }
