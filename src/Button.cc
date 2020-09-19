@@ -159,6 +159,8 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
     QRectF iconRect = QRectF(0, 0, iconSize, iconSize);
     iconRect.moveCenter(buttonRect.center().toPoint());
 
+    const qreal gridUnit = iconRect.height()/10;
+
     painter->save();
 
     painter->setRenderHints(QPainter::Antialiasing, false);
@@ -200,7 +202,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
         break;
 
     case KDecoration2::DecorationButtonType::Maximize:
-        MaximizeButton::paintIcon(this, painter, iconRect);
+        MaximizeButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::Minimize:
