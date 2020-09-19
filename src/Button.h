@@ -52,7 +52,7 @@ public:
 
 
     void paint(QPainter *painter, const QRect &repaintRegion) override;
-    virtual void paintIcon(QPainter *painter, const QRectF &iconRect);
+    virtual void paintIcon(QPainter *painter, const QRectF &iconRect, const qreal gridUnit);
 
     virtual void setHeight(int buttonHeight);
 

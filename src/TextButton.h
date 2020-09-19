@@ -40,7 +40,7 @@ public:
     Q_PROPERTY(int horzPadding READ horzPadding WRITE setHorzPadding NOTIFY horzPaddingChanged)
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
-    void paintIcon(QPainter *painter, const QRectF &iconRect) override;
+    void paintIcon(QPainter *painter, const QRectF &iconRect, const qreal gridUnit) override;
     QSize getTextSize();
 
 

@@ -50,9 +50,10 @@ TextButton::~TextButton()
 {
 }
 
-void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect)
+void TextButton::paintIcon(QPainter *painter, const QRectF &iconRect, const qreal gridUnit)
 {
     Q_UNUSED(iconRect)
+    Q_UNUSED(gridUnit)
 
     // Font
     painter->setFont(decoration()->settings()->font());

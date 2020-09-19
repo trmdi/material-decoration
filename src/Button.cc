@@ -210,17 +210,18 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
         break;
 
     default:
-        paintIcon(painter, iconRect);
+        paintIcon(painter, iconRect, gridUnit);
         break;
     }
 
     painter->restore();
 }
 
-void Button::paintIcon(QPainter *painter, const QRectF &iconRect)
+void Button::paintIcon(QPainter *painter, const QRectF &iconRect, const qreal gridUnit)
 {
     Q_UNUSED(painter)
     Q_UNUSED(iconRect)
+    Q_UNUSED(gridUnit)
 }
 
 void Button::setHeight(int buttonHeight)
