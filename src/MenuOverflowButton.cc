@@ -21,6 +21,7 @@
 #include "Material.h"
 #include "AppMenuButton.h"
 #include "Decoration.h"
+#include "ApplicationMenuButton.h"
 
 // KDecoration
 #include <KDecoration2/DecoratedClient>
@@ -47,20 +48,7 @@ MenuOverflowButton::~MenuOverflowButton()
 
 void MenuOverflowButton::paintIcon(QPainter *painter, const QRectF &iconRect, const qreal gridUnit)
 {
-    QPen pen(foregroundColor());
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setJoinStyle(Qt::MiterJoin);
-    pen.setWidthF(PenWidth::Symbol * 1.75);
-    painter->setPen(pen);
-    painter->setBrush(Qt::NoBrush);
-
-    int spacing = qRound(gridUnit * 4);
-    for (int i = -1; i <= 1; ++i) {
-        const QPointF left { iconRect.left(), iconRect.center().y() + i * spacing };
-        const QPointF right { iconRect.right(), iconRect.center().y() + i * spacing };
-
-        painter->drawLine(left, right);
-    }
+    ApplicationMenuButton::paintIcon(this, painter, iconRect, gridUnit);
 }
 
 } // namespace Material

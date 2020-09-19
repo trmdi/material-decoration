@@ -182,7 +182,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
         break;
 
     case KDecoration2::DecorationButtonType::ApplicationMenu:
-        ApplicationMenuButton::paintIcon(this, painter, iconRect);
+        ApplicationMenuButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::OnAllDesktops:
