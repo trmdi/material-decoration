@@ -178,7 +178,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
     // Icon
     switch (type()) {
     case KDecoration2::DecorationButtonType::Menu:
-        AppIconButton::paintIcon(this, painter, iconRect);
+        AppIconButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::ApplicationMenu:

@@ -46,11 +46,12 @@ public:
             }
         );
     }
-    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect, const qreal gridUnit) {
         Q_UNUSED(iconRect)
 
         const QRectF buttonRect = button->geometry();
-        QRectF appIconRect = QRectF(0, 0, 16, 16);
+        int appIconSize = qMax(16, qRound(gridUnit * 16));
+        QRectF appIconRect = QRectF(0, 0, appIconSize, appIconSize);
         appIconRect.moveCenter(buttonRect.center().toPoint());
 
         const auto *deco = qobject_cast<Decoration *>(button->decoration());
