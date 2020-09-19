@@ -151,8 +151,12 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
 {
     Q_UNUSED(repaintRegion)
 
+    // Buttons are coded assuming 24 units in size.
+    // Spacing is 7 units above and below.
+    // Icon is 10 units.
     const QRectF buttonRect = geometry();
-    QRectF iconRect = QRectF(0, 0, 10, 10);
+    const int iconSize = qRound(buttonRect.height()/24 * 10);
+    QRectF iconRect = QRectF(0, 0, iconSize, iconSize);
     iconRect.moveCenter(buttonRect.center().toPoint());
 
     painter->save();
