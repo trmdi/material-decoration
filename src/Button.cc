@@ -42,6 +42,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QVariantAnimation>
+#include <QtMath> // qFloor
 
 
 namespace Material
@@ -171,7 +172,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
     painter->drawRect(buttonRect);
 
     // Foreground.
-    painter->setPen(foregroundColor());
+    setPenWidth(painter, gridUnit, 1);
     painter->setBrush(Qt::NoBrush);
 
 
@@ -228,6 +229,20 @@ void Button::setHeight(int buttonHeight)
 {
     const QSize size(qRound(buttonHeight * 1.33), buttonHeight);
     setGeometry(QRect(QPoint(0, 0), size));
+}
+
+qreal Button::iconLineWidth(const qreal gridUnit) const
+{
+    return PenWidth::Symbol * qFloor(gridUnit);
+}
+
+void Button::setPenWidth(QPainter *painter, const qreal gridUnit, const qreal scale)
+{
+    QPen pen(foregroundColor());
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+    pen.setWidthF(iconLineWidth(gridUnit) * scale);
+    painter->setPen(pen);
 }
 
 QColor Button::backgroundColor() const

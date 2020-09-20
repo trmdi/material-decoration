@@ -56,6 +56,9 @@ public:
 
     virtual void setHeight(int buttonHeight);
 
+    virtual qreal iconLineWidth(const qreal gridUnit) const;
+    void setPenWidth(QPainter *painter, const qreal gridUnit, const qreal scale);
+
     virtual QColor backgroundColor() const;
     virtual QColor foregroundColor() const;
 

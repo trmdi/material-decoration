@@ -40,12 +40,7 @@ public:
         button->setVisible(true);
     }
     static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect, const qreal gridUnit) {
-        QPen pen(button->foregroundColor());
-        pen.setCapStyle(Qt::RoundCap);
-        pen.setJoinStyle(Qt::MiterJoin);
-        pen.setWidthF(PenWidth::Symbol * 1.25);
-        painter->setPen(pen);
-        painter->setBrush(Qt::NoBrush);
+        button->setPenWidth(painter, gridUnit, 1.25);
 
         painter->translate( iconRect.topLeft() );
         painter->drawPolyline(  QVector<QPointF> {

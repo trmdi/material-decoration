@@ -45,12 +45,7 @@ public:
 
         painter->setRenderHints(QPainter::Antialiasing, true);
 
-        QPen pen(button->foregroundColor());
-        pen.setCapStyle(Qt::RoundCap);
-        pen.setJoinStyle(Qt::MiterJoin);
-        pen.setWidthF(PenWidth::Symbol * 1.10);
-        painter->setPen(pen);
-        painter->setBrush(Qt::NoBrush);
+        button->setPenWidth(painter, gridUnit, 1.10);
 
         painter->drawLine(iconRect.topLeft(), iconRect.bottomRight());
         painter->drawLine(iconRect.topRight(), iconRect.bottomLeft());
