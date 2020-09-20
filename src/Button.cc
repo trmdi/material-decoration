@@ -198,7 +198,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
         break;
 
     case KDecoration2::DecorationButtonType::Close:
-        CloseButton::paintIcon(this, painter, iconRect);
+        CloseButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::Maximize:

@@ -39,8 +39,18 @@ public:
 
         button->setVisible(decoratedClient->isCloseable());
     }
-    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect, const qreal gridUnit) {
         Q_UNUSED(button)
+        Q_UNUSED(gridUnit)
+
+        painter->setRenderHints(QPainter::Antialiasing, true);
+
+        QPen pen(button->foregroundColor());
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::MiterJoin);
+        pen.setWidthF(PenWidth::Symbol * 1.10);
+        painter->setPen(pen);
+        painter->setBrush(Qt::NoBrush);
 
         painter->drawLine(iconRect.topLeft(), iconRect.bottomRight());
         painter->drawLine(iconRect.topRight(), iconRect.bottomLeft());
