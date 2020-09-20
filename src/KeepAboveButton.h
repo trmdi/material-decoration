@@ -39,7 +39,7 @@ public:
 
         button->setVisible(true);
     }
-    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect, const qreal gridUnit) {
         QPen pen(button->foregroundColor());
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::MiterJoin);
@@ -49,15 +49,15 @@ public:
 
         painter->translate( iconRect.topLeft() );
         painter->drawPolyline(  QVector<QPointF> {
-            QPointF( 0.5, 4.75 ),
-            QPointF( 5.0, 0.25 ),
-            QPointF( 9.5, 4.75 )
+            QPointF( 0.5, 4.75 ) * gridUnit,
+            QPointF( 5.0, 0.25 ) * gridUnit,
+            QPointF( 9.5, 4.75 ) * gridUnit
         });
 
         painter->drawPolyline(  QVector<QPointF> {
-            QPointF( 0.5, 9.75 ),
-            QPointF( 5.0, 5.25 ),
-            QPointF( 9.5, 9.75 )
+            QPointF( 0.5, 9.75 ) * gridUnit,
+            QPointF( 5.0, 5.25 ) * gridUnit,
+            QPointF( 9.5, 9.75 ) * gridUnit
         });
     }
 };

@@ -39,8 +39,9 @@ public:
 
         button->setVisible(decoratedClient->isMinimizeable());
     }
-    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect) {
+    static void paintIcon(Button *button, QPainter *painter, const QRectF &iconRect, const qreal gridUnit) {
         Q_UNUSED(button)
+        Q_UNUSED(gridUnit)
 
         painter->drawLine(
             iconRect.left(), iconRect.center().y(),

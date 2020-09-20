@@ -186,15 +186,15 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
         break;
 
     case KDecoration2::DecorationButtonType::OnAllDesktops:
-        OnAllDesktopsButton::paintIcon(this, painter, iconRect);
+        OnAllDesktopsButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::KeepAbove:
-        KeepAboveButton::paintIcon(this, painter, iconRect);
+        KeepAboveButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::KeepBelow:
-        KeepBelowButton::paintIcon(this, painter, iconRect);
+        KeepBelowButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     case KDecoration2::DecorationButtonType::Close:
@@ -206,7 +206,7 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
         break;
 
     case KDecoration2::DecorationButtonType::Minimize:
-        MinimizeButton::paintIcon(this, painter, iconRect);
+        MinimizeButton::paintIcon(this, painter, iconRect, gridUnit);
         break;
 
     default:
