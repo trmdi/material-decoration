@@ -53,12 +53,19 @@ Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, 
     , m_animationEnabled(true)
     , m_animation(new QVariantAnimation(this))
     , m_opacity(0)
+    , m_isGtkButton(false)
 {
     connect(this, &Button::hoveredChanged, this,
         [this](bool hovered) {
             updateAnimationState(hovered);
             update();
         });
+
+    if (QCoreApplication::applicationName() == QStringLiteral("kded5")) {
+        // See: https://github.com/Zren/material-decoration/issues/22
+        // kde-gtk-config has a kded5 module which renders the buttons to svgs for gtk.
+        m_isGtkButton = true;
+    }
 
     // Animation based on SierraBreezeEnhanced
     // https://github.com/kupiqu/SierraBreezeEnhanced/blob/master/breezebutton.cpp#L45
@@ -153,10 +160,25 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
     Q_UNUSED(repaintRegion)
 
     // Buttons are coded assuming 24 units in size.
-    // Spacing is 7 units above and below.
-    // Icon is 10 units.
     const QRectF buttonRect = geometry();
-    const int iconSize = qRound(buttonRect.height()/24 * 10);
+    const qreal iconScale = buttonRect.height()/24;
+    int iconSize;
+    if (m_isGtkButton) {
+        // See: https://github.com/Zren/material-decoration/issues/22
+        // kde-gtk-config has a kded5 module which renders the buttons to svgs for gtk.
+        // The svgs are 50x50, located at ~/.config/gtk-3.0/assets/
+        // They are usually scaled down to just 18x18 when drawn in gtk headerbars.
+        // The Gtk theme already has a fairly large amount of padding, as
+        // the Breeze theme doesn't currently follow fitt's law. So use less padding
+        // around the icon so that the icon is 18px instead of a very tiny 8px.
+
+        // 24 = 3.5 topPadding + 17 icon + 3.5 bottomPadding
+        // 17/24 * 18 = 12.75
+        iconSize = qRound(iconScale * 17);
+    } else {
+        // 24 = 7 topPadding + 10 icon + 7 bottomPadding
+        iconSize = qRound(iconScale * 10);
+    }
     QRectF iconRect = QRectF(0, 0, iconSize, iconSize);
     iconRect.moveCenter(buttonRect.center().toPoint());
 

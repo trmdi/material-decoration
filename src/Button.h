@@ -83,6 +83,7 @@ private:
     bool m_animationEnabled;
     QVariantAnimation *m_animation;
     qreal m_opacity;
+    bool m_isGtkButton;
 };
 
 } // namespace Material
