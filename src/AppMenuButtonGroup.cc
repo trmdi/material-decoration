@@ -59,9 +59,7 @@ AppMenuButtonGroup::AppMenuButtonGroup(Decoration *decoration)
             // update();
         });
 
-    // Make sure animationsEnabled=false when initializing the opacity
-    // or it will start the opacity animation when the titlebar is created.
-    onHoveredChanged(false);
+    setOpacity(m_alwaysShow || m_hovered ? 1 : 0);
 
     m_animationEnabled = decoration->animationsEnabled();
     m_animation->setDuration(decoration->animationsDuration());

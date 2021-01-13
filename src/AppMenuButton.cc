@@ -47,6 +47,11 @@ AppMenuButton::AppMenuButton(Decoration *decoration, const int buttonIndex, QObj
 
     connect(this, &AppMenuButton::clicked,
         this, &AppMenuButton::trigger);
+
+    const auto *buttonGroup = qobject_cast<AppMenuButtonGroup *>(parent);
+    if (buttonGroup) {
+        setOpacity(buttonGroup->opacity());
+    }
 }
 
 AppMenuButton::~AppMenuButton()
