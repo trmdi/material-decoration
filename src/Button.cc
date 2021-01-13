@@ -52,7 +52,8 @@ Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, 
     : DecorationButton(type, decoration, parent)
     , m_animationEnabled(true)
     , m_animation(new QVariantAnimation(this))
-    , m_opacity(0)
+    , m_opacity(1)
+    , m_transitionValue(0)
     , m_isGtkButton(false)
 {
     connect(this, &Button::hoveredChanged, this,
@@ -75,8 +76,12 @@ Button::Button(KDecoration2::DecorationButtonType type, Decoration *decoration, 
     m_animation->setEndValue(1.0);
     m_animation->setEasingCurve(QEasingCurve::InOutQuad);
     connect(m_animation, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
-        setOpacity(value.toReal());
+        setTransitionValue(value.toReal());
     });
+    connect(this, &Button::transitionValueChanged, this, [this]() {
+        update();
+    });
+
     connect(this, &Button::opacityChanged, this, [this]() {
         update();
     });
@@ -191,6 +196,9 @@ void Button::paint(QPainter *painter, const QRect &repaintRegion)
 
     painter->setRenderHints(QPainter::Antialiasing, false);
 
+    // Opacity
+    painter->setOpacity(m_opacity);
+
     // Background.
     painter->setPen(Qt::NoPen);
     painter->setBrush(backgroundColor());
@@ -292,11 +300,11 @@ QColor Button::backgroundColor() const
                 KDecoration2::ColorGroup::Warning,
                 KDecoration2::ColorRole::Foreground
             ).lighter();
-            return KColorUtils::mix(normalColor, pressedColor, m_opacity);
+            return KColorUtils::mix(normalColor, pressedColor, m_transitionValue);
         }
 
         if (isHovered()) {
-            return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
+            return KColorUtils::mix(normalColor, hoveredColor, m_transitionValue);
         }
     }
 
@@ -309,14 +317,14 @@ QColor Button::backgroundColor() const
                 deco->titleBarBackgroundColor(),
                 deco->titleBarForegroundColor(),
                 0.7);
-            return KColorUtils::mix(normalColor, pressedColor, m_opacity);
+            return KColorUtils::mix(normalColor, pressedColor, m_transitionValue);
         }
         if (isHovered()) {
             const QColor hoveredColor = KColorUtils::mix(
                 deco->titleBarBackgroundColor(),
                 deco->titleBarForegroundColor(),
                 0.8);
-            return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
+            return KColorUtils::mix(normalColor, hoveredColor, m_transitionValue);
         }
         return normalColor;
     }
@@ -334,10 +342,10 @@ QColor Button::backgroundColor() const
             deco->titleBarBackgroundColor(),
             deco->titleBarForegroundColor(),
             0.3);
-        return KColorUtils::mix(normalColor, pressedColor, m_opacity);
+        return KColorUtils::mix(normalColor, pressedColor, m_transitionValue);
     }
     if (isHovered()) {
-        return KColorUtils::mix(normalColor, hoveredColor, m_opacity);
+        return KColorUtils::mix(normalColor, hoveredColor, m_transitionValue);
     }
     return normalColor;
 }
@@ -360,7 +368,7 @@ QColor Button::foregroundColor() const
             return KColorUtils::mix(
                 activeColor,
                 deco->titleBarBackgroundColor(),
-                m_opacity);
+                m_transitionValue);
         }
         return activeColor;
     }
@@ -375,7 +383,7 @@ QColor Button::foregroundColor() const
         return KColorUtils::mix(
             normalColor,
             deco->titleBarForegroundColor(),
-            m_opacity);
+            m_transitionValue);
     }
 
     return normalColor;
@@ -421,6 +429,18 @@ void Button::setOpacity(qreal value)
     }
 }
 
+qreal Button::transitionValue() const
+{
+    return m_transitionValue;
+}
+
+void Button::setTransitionValue(qreal value)
+{
+    if (m_transitionValue != value) {
+        m_transitionValue = value;
+        emit transitionValueChanged(value);
+    }
+}
 
 void Button::updateAnimationState(bool hovered)
 {
@@ -434,7 +454,7 @@ void Button::updateAnimationState(bool hovered)
             m_animation->start();
         }
     } else {
-        setOpacity(1);
+        setTransitionValue(1);
     }
 }
 

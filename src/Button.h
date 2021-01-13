@@ -41,6 +41,7 @@ public:
     Q_PROPERTY(bool animationEnabled READ animationEnabled WRITE setAnimationEnabled NOTIFY animationEnabledChanged)
     Q_PROPERTY(int animationDuration READ animationDuration WRITE setAnimationDuration NOTIFY animationDurationChanged)
     Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
+    Q_PROPERTY(qreal transitionValue READ transitionValue WRITE setTransitionValue NOTIFY transitionValueChanged)
 
     // Passed to DecorationButtonGroup in Decoration
     static KDecoration2::DecorationButton *create(KDecoration2::DecorationButtonType type, KDecoration2::Decoration *decoration, QObject *parent = nullptr);
@@ -71,6 +72,9 @@ public:
     qreal opacity() const;
     void setOpacity(qreal value);
 
+    qreal transitionValue() const;
+    void setTransitionValue(qreal value);
+
 private Q_SLOTS:
     void updateAnimationState(bool hovered);
 
@@ -78,11 +82,13 @@ signals:
     void animationEnabledChanged();
     void animationDurationChanged();
     void opacityChanged();
+    void transitionValueChanged(qreal);
 
 private:
     bool m_animationEnabled;
     QVariantAnimation *m_animation;
     qreal m_opacity;
+    qreal m_transitionValue;
     bool m_isGtkButton;
 };
 
