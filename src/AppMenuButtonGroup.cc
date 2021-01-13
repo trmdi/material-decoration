@@ -36,6 +36,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QPainter>
+#include <QVariantAnimation>
 
 
 namespace Material
@@ -46,7 +47,34 @@ AppMenuButtonGroup::AppMenuButtonGroup(Decoration *decoration)
     , m_appMenuModel(nullptr)
     , m_currentIndex(-1)
     , m_overflowIndex(-1)
+    , m_hovered(false)
+    , m_alwaysShow(false)
+    , m_animationEnabled(false)
+    , m_animation(new QVariantAnimation(this))
+    , m_opacity(1)
 {
+    connect(this, &AppMenuButtonGroup::hoveredChanged, this,
+        [this](bool hovered) {
+            onHoveredChanged(hovered);
+            // update();
+        });
+
+    // Make sure animationsEnabled=false when initializing the opacity
+    // or it will start the opacity animation when the titlebar is created.
+    onHoveredChanged(false);
+
+    m_animationEnabled = decoration->animationsEnabled();
+    m_animation->setDuration(decoration->animationsDuration());
+    m_animation->setStartValue(0.0);
+    m_animation->setEndValue(1.0);
+    m_animation->setEasingCurve(QEasingCurve::InOutQuad);
+    connect(m_animation, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
+        setOpacity(value.toReal());
+    });
+    connect(this, &AppMenuButtonGroup::opacityChanged, this, [this]() {
+        // update();
+    });
+
     auto *decoratedClient = decoration->client().toStrongRef().data();
     connect(decoratedClient, &KDecoration2::DecoratedClient::hasApplicationMenuChanged,
             this, &AppMenuButtonGroup::updateAppMenuModel);
@@ -85,6 +113,82 @@ void AppMenuButtonGroup::setOverflowing(bool set)
         m_overflowing = set;
         qCDebug(category) << "setOverflowing" << m_overflowing;
         emit overflowingChanged();
+    }
+}
+
+bool AppMenuButtonGroup::hovered() const
+{
+    return m_hovered;
+}
+
+void AppMenuButtonGroup::setHovered(bool value)
+{
+    if (m_hovered != value) {
+        m_hovered = value;
+        qCDebug(category) << "setHovered" << m_hovered;
+        emit hoveredChanged(value);
+    }
+}
+
+bool AppMenuButtonGroup::alwaysShow() const
+{
+    return m_alwaysShow;
+}
+
+void AppMenuButtonGroup::setAlwaysShow(bool value)
+{
+    if (m_alwaysShow != value) {
+        m_alwaysShow = value;
+        qCDebug(category) << "setAlwaysShow" << m_alwaysShow;
+        emit alwaysShowChanged(value);
+    }
+}
+
+bool AppMenuButtonGroup::animationEnabled() const
+{
+    return m_animationEnabled;
+}
+
+void AppMenuButtonGroup::setAnimationEnabled(bool value)
+{
+    if (m_animationEnabled != value) {
+        m_animationEnabled = value;
+        emit animationEnabledChanged(value);
+    }
+}
+
+int AppMenuButtonGroup::animationDuration() const
+{
+    return m_animation->duration();
+}
+
+void AppMenuButtonGroup::setAnimationDuration(int value)
+{
+    if (m_animation->duration() != value) {
+        m_animation->setDuration(value);
+        emit animationDurationChanged(value);
+    }
+}
+
+qreal AppMenuButtonGroup::opacity() const
+{
+    return m_opacity;
+}
+
+void AppMenuButtonGroup::setOpacity(qreal value)
+{
+    if (m_opacity != value) {
+        m_opacity = value;
+
+        for (int i = 0; i < buttons().length(); i++) {
+            KDecoration2::DecorationButton* decoButton = buttons().value(i);
+            auto *button = qobject_cast<Button *>(decoButton);
+            if (button) {
+                button->setOpacity(m_opacity);
+            }
+        }
+
+        emit opacityChanged(value);
     }
 }
 
@@ -402,6 +506,26 @@ void AppMenuButtonGroup::onMenuAboutToHide()
         buttons().value(m_currentIndex)->setChecked(false);
     }
     setCurrentIndex(-1);
+}
+
+void AppMenuButtonGroup::onHoveredChanged(bool hovered)
+{
+    if (m_alwaysShow) {
+        setOpacity(1);
+    } else {
+        if (m_animationEnabled) {
+            QAbstractAnimation::Direction dir = hovered ? QAbstractAnimation::Forward : QAbstractAnimation::Backward;
+            if (m_animation->state() == QAbstractAnimation::Running && m_animation->direction() != dir) {
+                m_animation->stop();
+            }
+            m_animation->setDirection(dir);
+            if (m_animation->state() != QAbstractAnimation::Running) {
+                m_animation->start();
+            }
+        } else {
+            setOpacity(hovered ? 1 : 0);
+        }
+    }
 }
 
 } // namespace Material

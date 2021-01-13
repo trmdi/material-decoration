@@ -27,6 +27,7 @@
 
 // Qt
 #include <QMenu>
+#include <QVariantAnimation>
 
 namespace Material
 {
@@ -43,12 +44,32 @@ public:
 
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
     Q_PROPERTY(int overflowing READ overflowing WRITE setOverflowing NOTIFY overflowingChanged)
+    Q_PROPERTY(bool hovered READ hovered WRITE setHovered NOTIFY hoveredChanged)
+    Q_PROPERTY(bool alwaysShow READ alwaysShow WRITE setAlwaysShow NOTIFY alwaysShowChanged)
+    Q_PROPERTY(bool animationEnabled READ animationEnabled WRITE setAnimationEnabled NOTIFY animationEnabledChanged)
+    Q_PROPERTY(int animationDuration READ animationDuration WRITE setAnimationDuration NOTIFY animationDurationChanged)
+    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
 
     int currentIndex() const;
     void setCurrentIndex(int set);
 
     bool overflowing() const;
     void setOverflowing(bool set);
+
+    bool hovered() const;
+    void setHovered(bool value);
+
+    bool alwaysShow() const;
+    void setAlwaysShow(bool value);
+
+    bool animationEnabled() const;
+    void setAnimationEnabled(bool value);
+
+    int animationDuration() const;
+    void setAnimationDuration(int duration);
+
+    qreal opacity() const;
+    void setOpacity(qreal value);
 
     KDecoration2::DecorationButton* buttonAt(int x, int y) const;
 
@@ -61,6 +82,9 @@ public slots:
     void triggerOverflow();
     void onMenuAboutToHide();
 
+private slots:
+    void onHoveredChanged(bool hovered);
+
 signals:
     void menuUpdated();
     void requestActivateIndex(int index);
@@ -68,6 +92,11 @@ signals:
 
     void currentIndexChanged();
     void overflowingChanged();
+    void hoveredChanged(bool);
+    void alwaysShowChanged(bool);
+    void animationEnabledChanged(bool);
+    void animationDurationChanged(int);
+    void opacityChanged(qreal);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
@@ -79,6 +108,11 @@ private:
     int m_currentIndex;
     int m_overflowIndex;
     bool m_overflowing;
+    bool m_hovered;
+    bool m_alwaysShow;
+    bool m_animationEnabled;
+    QVariantAnimation *m_animation;
+    qreal m_opacity;
     QPointer<QMenu> m_currentMenu;
 };
 

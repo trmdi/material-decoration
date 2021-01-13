@@ -255,15 +255,37 @@ void Decoration::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void Decoration::hoverEnterEvent(QHoverEvent *event)
+{
+    KDecoration2::Decoration::hoverEnterEvent(event);
+    qCDebug(category) << "Decoration::hoverEnterEvent" << event;
+
+    m_menuButtons->setHovered(true);
+}
+
 void Decoration::hoverMoveEvent(QHoverEvent *event)
 {
     KDecoration2::Decoration::hoverMoveEvent(event);
-    // qCDebug(category) << "Decoration::hoverMoveEvent" << event;
+    qCDebug(category) << "Decoration::hoverMoveEvent" << event;
 
     const bool dragStarted = dragMoveTick(event->pos());
     // qCDebug(category) << "    " << "dragStarted" << dragStarted;
     if (dragStarted) {
         m_menuButtons->unPressAllButtons();
+    }
+
+    const bool wasHovered = m_menuButtons->hovered();
+    // const bool contains = m_menuButtons->geometry().contains(event->posF());
+    const QRectF titleBarRect(0, 0, size().width(), titleBarHeight());
+    const bool contains = titleBarRect.contains(event->posF());
+    if (!wasHovered && contains) {
+        // HoverEnter
+        m_menuButtons->setHovered(true);
+    } else if (wasHovered && !contains) {
+        // HoverLeave
+        m_menuButtons->setHovered(false);
+    } else if (wasHovered && contains) {
+        // HoverMove
     }
 }
 
@@ -278,9 +300,11 @@ void Decoration::mouseReleaseEvent(QMouseEvent *event)
 void Decoration::hoverLeaveEvent(QHoverEvent *event)
 {
     KDecoration2::Decoration::hoverLeaveEvent(event);
-    // qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
+    qCDebug(category) << "Decoration::hoverLeaveEvent" << event;
 
     resetDragMove();
+
+    m_menuButtons->setHovered(false);
 }
 
 void Decoration::wheelEvent(QWheelEvent *event)
@@ -394,6 +418,10 @@ void Decoration::updateButtonAnimation()
     setButtonGroupAnimation(m_leftButtons, enabled, duration);
     setButtonGroupAnimation(m_rightButtons, enabled, duration);
     setButtonGroupAnimation(m_menuButtons, enabled, duration);
+
+    // Hover Animation
+    m_menuButtons->setAnimationEnabled(enabled);
+    m_menuButtons->setAnimationDuration(duration);
 }
 
 void Decoration::updateShadow()
