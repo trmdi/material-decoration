@@ -192,9 +192,6 @@ void Decoration::init()
     connect(decoratedClient, &KDecoration2::DecoratedClient::activeChanged,
             this, repaintTitleBar);
 
-    connect(this, &KDecoration2::Decoration::sectionUnderMouseChanged,
-            this, &Decoration::onSectionUnderMouseChanged);
-
     updateBorders();
     updateResizeBorders();
     updateTitleBar();
@@ -215,6 +212,10 @@ void Decoration::init()
     m_menuButtons->updateAppMenuModel();
 
     updateButtonsGeometry();
+
+    connect(this, &KDecoration2::Decoration::sectionUnderMouseChanged,
+            this, &Decoration::onSectionUnderMouseChanged);
+    updateTitleBarHoverState();
 
     // For some reason, the shadow should be installed the last. Otherwise,
     // the Window Decorations KCM crashes.
@@ -326,17 +327,7 @@ void Decoration::wheelEvent(QWheelEvent *event)
 void Decoration::onSectionUnderMouseChanged(const Qt::WindowFrameSection value)
 {
     qCDebug(category) << "onSectionUnderMouseChanged" << value;
-    const bool wasHovered = m_menuButtons->hovered();
-    const bool contains = (value == Qt::TitleBarArea);
-    if (!wasHovered && contains) {
-        // HoverEnter
-        m_menuButtons->setHovered(true);
-    } else if (wasHovered && !contains) {
-        // HoverLeave
-        m_menuButtons->setHovered(false);
-    } else if (wasHovered && contains) {
-        // HoverMove
-    }
+    updateTitleBarHoverState();
 }
 
 void Decoration::updateBorders()
@@ -363,6 +354,21 @@ void Decoration::updateTitleBar()
 {
     auto *decoratedClient = client().toStrongRef().data();
     setTitleBar(QRect(0, 0, decoratedClient->width(), titleBarHeight()));
+}
+
+void Decoration::updateTitleBarHoverState()
+{
+    const bool wasHovered = m_menuButtons->hovered();
+    const bool isHovered = titleBarIsHovered();
+    if (!wasHovered && isHovered) {
+        // HoverEnter
+        m_menuButtons->setHovered(true);
+    } else if (wasHovered && !isHovered) {
+        // HoverLeave
+        m_menuButtons->setHovered(false);
+    } else if (wasHovered && isHovered) {
+        // HoverMove
+    }
 }
 
 void Decoration::setButtonGroupHeight(KDecoration2::DecorationButtonGroup *buttonGroup, int buttonHeight)
@@ -528,7 +534,6 @@ void Decoration::updateShadow()
     setShadow(s_cachedShadow);
 }
 
-
 bool Decoration::animationsEnabled() const
 {
     return m_internalSettings->animationsEnabled();
@@ -571,6 +576,11 @@ int Decoration::appMenuCaptionSpacing() const
 int Decoration::captionMinWidth() const
 {
     return settings()->largeSpacing() * 8;
+}
+
+bool Decoration::titleBarIsHovered() const
+{
+    return sectionUnderMouse() == Qt::TitleBarArea;
 }
 
 int Decoration::getTextWidth(const QString text, bool showMnemonic) const

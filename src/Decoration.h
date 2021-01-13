@@ -74,6 +74,7 @@ private:
     void updateBorders();
     void updateResizeBorders();
     void updateTitleBar();
+    void updateTitleBarHoverState();
     void setButtonGroupHeight(KDecoration2::DecorationButtonGroup *buttonGroup, int buttonHeight);
     void updateButtonHeight();
     void updateButtonsGeometry();
@@ -87,6 +88,8 @@ private:
     int titleBarHeight() const;
     int appMenuCaptionSpacing() const;
     int captionMinWidth() const;
+
+    bool titleBarIsHovered() const;
     int getTextWidth(const QString text, bool showMnemonic = false) const;
     QPoint windowPos() const;
 
