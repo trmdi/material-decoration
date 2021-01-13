@@ -192,6 +192,9 @@ void Decoration::init()
     connect(decoratedClient, &KDecoration2::DecoratedClient::activeChanged,
             this, repaintTitleBar);
 
+    connect(this, &KDecoration2::Decoration::sectionUnderMouseChanged,
+            this, &Decoration::onSectionUnderMouseChanged);
+
     updateBorders();
     updateResizeBorders();
     updateTitleBar();
@@ -260,13 +263,13 @@ void Decoration::hoverEnterEvent(QHoverEvent *event)
     KDecoration2::Decoration::hoverEnterEvent(event);
     qCDebug(category) << "Decoration::hoverEnterEvent" << event;
 
-    m_menuButtons->setHovered(true);
+    // m_menuButtons->setHovered(true);
 }
 
 void Decoration::hoverMoveEvent(QHoverEvent *event)
 {
     KDecoration2::Decoration::hoverMoveEvent(event);
-    qCDebug(category) << "Decoration::hoverMoveEvent" << event;
+    // qCDebug(category) << "Decoration::hoverMoveEvent" << event;
 
     const bool dragStarted = dragMoveTick(event->pos());
     // qCDebug(category) << "    " << "dragStarted" << dragStarted;
@@ -274,19 +277,17 @@ void Decoration::hoverMoveEvent(QHoverEvent *event)
         m_menuButtons->unPressAllButtons();
     }
 
-    const bool wasHovered = m_menuButtons->hovered();
+    // const bool wasHovered = m_menuButtons->hovered();
     // const bool contains = m_menuButtons->geometry().contains(event->posF());
-    const QRectF titleBarRect(0, 0, size().width(), titleBarHeight());
-    const bool contains = titleBarRect.contains(event->posF());
-    if (!wasHovered && contains) {
-        // HoverEnter
-        m_menuButtons->setHovered(true);
-    } else if (wasHovered && !contains) {
-        // HoverLeave
-        m_menuButtons->setHovered(false);
-    } else if (wasHovered && contains) {
-        // HoverMove
-    }
+    // if (!wasHovered && contains) {
+    //     // HoverEnter
+    //     m_menuButtons->setHovered(true);
+    // } else if (wasHovered && !contains) {
+    //     // HoverLeave
+    //     m_menuButtons->setHovered(false);
+    // } else if (wasHovered && contains) {
+    //     // HoverMove
+    // }
 }
 
 void Decoration::mouseReleaseEvent(QMouseEvent *event)
@@ -304,7 +305,7 @@ void Decoration::hoverLeaveEvent(QHoverEvent *event)
 
     resetDragMove();
 
-    m_menuButtons->setHovered(false);
+    // m_menuButtons->setHovered(false);
 }
 
 void Decoration::wheelEvent(QWheelEvent *event)
@@ -319,6 +320,22 @@ void Decoration::wheelEvent(QWheelEvent *event)
         // Skip
     } else {
         KDecoration2::Decoration::wheelEvent(event);
+    }
+}
+
+void Decoration::onSectionUnderMouseChanged(const Qt::WindowFrameSection value)
+{
+    qCDebug(category) << "onSectionUnderMouseChanged" << value;
+    const bool wasHovered = m_menuButtons->hovered();
+    const bool contains = (value == Qt::TitleBarArea);
+    if (!wasHovered && contains) {
+        // HoverEnter
+        m_menuButtons->setHovered(true);
+    } else if (wasHovered && !contains) {
+        // HoverLeave
+        m_menuButtons->setHovered(false);
+    } else if (wasHovered && contains) {
+        // HoverMove
     }
 }
 

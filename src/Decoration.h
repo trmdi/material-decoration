@@ -67,6 +67,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 
+private slots:
+    void onSectionUnderMouseChanged(const Qt::WindowFrameSection value);
+
 private:
     void updateBorders();
     void updateResizeBorders();
