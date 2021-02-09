@@ -35,6 +35,7 @@ public:
 private:
     void init();
 
+    int m_titleAlignment;
     int m_buttonSize;
     double m_activeOpacity;
     double m_inactiveOpacity;

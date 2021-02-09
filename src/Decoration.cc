@@ -821,15 +821,35 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
     QRect captionRect;
     Qt::Alignment alignment;
 
-    if (textRect.left() < availableRect.left()) {
-        captionRect = availableRect;
-        alignment = Qt::AlignLeft | Qt::AlignVCenter;
-    } else if (availableRect.right() < textRect.right()) {
-        captionRect = availableRect;
-        alignment = Qt::AlignRight | Qt::AlignVCenter;
-    } else {
-        captionRect = titleBarRect;
-        alignment = Qt::AlignCenter;
+    switch (m_internalSettings->titleAlignment()) {
+        case InternalSettings::AlignLeft:
+            captionRect = availableRect;
+            alignment = Qt::AlignLeft | Qt::AlignVCenter;
+            break;
+
+        case InternalSettings::AlignRight:
+            captionRect = availableRect;
+            alignment = Qt::AlignRight | Qt::AlignVCenter;
+            break;
+
+        case InternalSettings::AlignCenter:
+            captionRect = availableRect;
+            alignment = Qt::AlignCenter;
+            break;
+
+        default:
+        case InternalSettings::AlignCenterFullWidth:
+            if (textRect.left() < availableRect.left()) {
+                captionRect = availableRect;
+                alignment = Qt::AlignLeft | Qt::AlignVCenter;
+            } else if (availableRect.right() < textRect.right()) {
+                captionRect = availableRect;
+                alignment = Qt::AlignRight | Qt::AlignVCenter;
+            } else {
+                captionRect = titleBarRect;
+                alignment = Qt::AlignCenter;
+            }
+            break;
     }
 
     const QString caption = painter->fontMetrics().elidedText(

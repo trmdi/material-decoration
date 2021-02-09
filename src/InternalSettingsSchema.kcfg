@@ -16,6 +16,17 @@
             <default>ButtonDefault</default>
         </entry>
 
+        <!-- title alignment -->
+        <entry name="TitleAlignment" type="Enum">
+            <choices>
+                <choice name="AlignLeft" />
+                <choice name="AlignCenter" />
+                <choice name="AlignCenterFullWidth" />
+                <choice name="AlignRight" />
+            </choices>
+            <default>AlignCenterFullWidth</default>
+        </entry>
+
         <!-- opacity -->
         <entry name="ActiveOpacity" type="Double">
             <default>0.75</default>

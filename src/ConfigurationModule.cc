@@ -54,6 +54,7 @@ namespace Material
 
 ConfigurationModule::ConfigurationModule(QWidget *parent, const QVariantList &args)
     : KCModule(parent, args)
+    , m_titleAlignment(InternalSettings::AlignCenterFullWidth)
     , m_buttonSize(InternalSettings::ButtonDefault)
     , m_shadowSize(InternalSettings::ShadowVeryLarge)
 {
@@ -80,6 +81,14 @@ void ConfigurationModule::init()
     tabWidget->addTab(generalTab, i18nd("breeze_kwin_deco", "General"));
     QFormLayout *generalForm = new QFormLayout(generalTab);
     generalTab->setLayout(generalForm);
+
+    QComboBox *titleAlignment = new QComboBox(generalTab);
+    titleAlignment->addItem(i18nd("breeze_kwin_deco", "Left"));
+    titleAlignment->addItem(i18nd("breeze_kwin_deco", "Center"));
+    titleAlignment->addItem(i18nd("breeze_kwin_deco", "Center (Full Width)"));
+    titleAlignment->addItem(i18nd("breeze_kwin_deco", "Right"));
+    titleAlignment->setObjectName(QStringLiteral("kcfg_TitleAlignment"));
+    generalForm->addRow(i18nd("breeze_kwin_deco", "Tit&le alignment:"), titleAlignment);
 
     QComboBox *buttonSizes = new QComboBox(generalTab);
     buttonSizes->addItem(i18nd("breeze_kwin_deco", "Tiny"));
@@ -181,6 +190,12 @@ void ConfigurationModule::init()
     shadowForm->addRow(i18nd("breeze_kwin_deco", "Color:"), shadowColor);
 
     //--- Config Bindings
+    skel->addItemInt(
+        QStringLiteral("TitleAlignment"),
+        m_titleAlignment,
+        InternalSettings::AlignCenterFullWidth,
+        QStringLiteral("TitleAlignment")
+    );
     skel->addItemInt(
         QStringLiteral("ButtonSize"),
         m_buttonSize,
