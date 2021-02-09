@@ -24,6 +24,11 @@
             <default>0.85</default>
         </entry>
 
+        <!-- menu -->
+        <entry name="MenuAlwaysShow" type="Bool">
+            <default>true</default>
+        </entry>
+
         <!-- animations -->
         <entry name="AnimationsEnabled" type="Bool">
             <default>true</default>

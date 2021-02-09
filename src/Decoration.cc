@@ -207,6 +207,7 @@ void Decoration::init()
         &Button::create);
 
     m_menuButtons = new AppMenuButtonGroup(this);
+    m_menuButtons->setAlwaysShow(m_internalSettings->menuAlwaysShow());
     connect(m_menuButtons, &AppMenuButtonGroup::menuUpdated,
             this, &Decoration::updateButtonsGeometry);
     connect(m_menuButtons, &AppMenuButtonGroup::opacityChanged,
@@ -235,6 +236,7 @@ void Decoration::reconfigure()
 
     updateBorders();
     updateTitleBar();
+    m_menuButtons->setAlwaysShow(m_internalSettings->menuAlwaysShow());
     updateButtonsGeometry();
     updateButtonAnimation();
     updateShadow();

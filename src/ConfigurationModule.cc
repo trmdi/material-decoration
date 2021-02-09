@@ -36,11 +36,13 @@
 #include <QDebug>
 
 // QWidget
+#include <QButtonGroup>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QLabel>
+#include <QRadioButton>
 #include <QSpinBox>
 #include <QTabWidget>
 #include <QWidget>
@@ -101,6 +103,36 @@ void ConfigurationModule::init()
     inactiveOpacity->setSingleStep(0.05);
     inactiveOpacity->setObjectName(QStringLiteral("kcfg_InactiveOpacity"));
     generalForm->addRow(i18n("Inactive Opacity:"), inactiveOpacity);
+
+
+    //--- Menu
+    QWidget *menuTab = new QWidget(tabWidget);
+    tabWidget->addTab(menuTab, i18n("Menu"));
+    QFormLayout *menuForm = new QFormLayout(menuTab);
+    menuTab->setLayout(menuForm);
+
+    QLabel *menuLabel = new QLabel(menuTab);
+    menuLabel->setText(i18n("To enable the Locally Integrated Menus in the titlebar:\nSystem Settings > Window Decorations > Titlebar Buttons Tab\nDrag the 'Application Menu' button to bar."));
+    menuForm->addRow(QStringLiteral(""), menuLabel);
+
+    QRadioButton *menuAlwaysShow = new QRadioButton(menuTab);
+    menuAlwaysShow->setText(i18n("Always Show Menu"));
+    menuAlwaysShow->setObjectName(QStringLiteral("kcfg_MenuAlwaysShow"));
+    menuForm->addRow(QStringLiteral(""), menuAlwaysShow);
+
+    // Since there's no easy way to bind this to !MenuAlwaysShow, we
+    // workaround this by marking the button as checked on init.
+    // When the config is loaded:
+    // * If menuAlwaysShow is toggled true, this will be toggled false.
+    // * If menuAlwaysShow is left false, then this remains true.
+    QRadioButton *menuRevealOnHover = new QRadioButton(menuTab);
+    menuRevealOnHover->setText(i18n("Reveal Menu on Hover"));
+    menuRevealOnHover->setChecked(true);
+    menuForm->addRow(QStringLiteral(""), menuRevealOnHover);
+
+    QButtonGroup *menuAlwaysShowGroup = new QButtonGroup(menuTab);
+    menuAlwaysShowGroup->addButton(menuAlwaysShow);
+    menuAlwaysShowGroup->addButton(menuRevealOnHover);
 
 
     //--- Animations
@@ -166,6 +198,12 @@ void ConfigurationModule::init()
         m_inactiveOpacity,
         0.85,
         QStringLiteral("InactiveOpacity")
+    );
+    skel->addItemBool(
+        QStringLiteral("MenuAlwaysShow"),
+        m_menuAlwaysShow,
+        true,
+        QStringLiteral("MenuAlwaysShow")
     );
     skel->addItemBool(
         QStringLiteral("AnimationsEnabled"),
