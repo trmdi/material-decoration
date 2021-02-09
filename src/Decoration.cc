@@ -811,7 +811,7 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
 
     const QRect availableRect = titleBarRect.adjusted(
             + leftButtonsWidth
-            + m_menuButtons->alwaysShow() ? 0 : menuButtonsWidth,
+            + (m_menuButtons->alwaysShow() ? menuButtonsWidth : 0),
         0,
         -m_rightButtons->geometry().width()
             - settings()->smallSpacing(),
