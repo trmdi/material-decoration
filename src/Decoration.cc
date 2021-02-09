@@ -209,6 +209,8 @@ void Decoration::init()
     m_menuButtons = new AppMenuButtonGroup(this);
     connect(m_menuButtons, &AppMenuButtonGroup::menuUpdated,
             this, &Decoration::updateButtonsGeometry);
+    connect(m_menuButtons, &AppMenuButtonGroup::opacityChanged,
+            this, repaintTitleBar);
     m_menuButtons->updateAppMenuModel();
 
     updateButtonsGeometry();
@@ -807,7 +809,7 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
 
     const QRect availableRect = titleBarRect.adjusted(
             + leftButtonsWidth
-            + menuButtonsWidth,
+            + m_menuButtons->alwaysShow() ? 0 : menuButtonsWidth,
         0,
         -m_rightButtons->geometry().width()
             - settings()->smallSpacing(),
@@ -842,7 +844,10 @@ void Decoration::paintCaption(QPainter *painter, const QRect &repaintRegion) con
         const int textRight = textRect.right();
         // qCDebug(category) << "textLeft" << textLeft << "menuRight" << menuRight;
 
-        if (m_menuButtons->overflowing()) { // hide caption leaving "whitespace" to easily grab.
+        if (!m_menuButtons->alwaysShow()) { // caption fades away revealing menu
+            painter->setOpacity(1.0 - m_menuButtons->opacity());
+            painter->setPen(titleBarForegroundColor());
+        } else if (m_menuButtons->overflowing()) { // hide caption leaving "whitespace" to easily grab.
             painter->setPen(Qt::transparent);
         } else if (textRight < menuRight) { // menuButtons completely coveres caption
             painter->setPen(Qt::transparent);
