@@ -212,6 +212,8 @@ void Decoration::init()
             this, &Decoration::updateButtonsGeometry);
     connect(m_menuButtons, &AppMenuButtonGroup::opacityChanged,
             this, repaintTitleBar);
+    connect(m_menuButtons, &AppMenuButtonGroup::alwaysShowChanged,
+            this, repaintTitleBar);
     m_menuButtons->updateAppMenuModel();
 
     updateButtonsGeometry();

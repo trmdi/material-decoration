@@ -80,6 +80,7 @@ public slots:
     void updateOverflow(QRectF availableRect);
     void trigger(int index);
     void triggerOverflow();
+    void updateOpacity();
     void onMenuAboutToHide();
 
 private slots:

@@ -59,7 +59,9 @@ AppMenuButtonGroup::AppMenuButtonGroup(Decoration *decoration)
             // update();
         });
 
-    setOpacity(m_alwaysShow || m_hovered ? 1 : 0);
+    updateOpacity();
+    connect(this, &AppMenuButtonGroup::alwaysShowChanged,
+            this, &AppMenuButtonGroup::updateOpacity);
 
     m_animationEnabled = decoration->animationsEnabled();
     m_animation->setDuration(decoration->animationsDuration());
@@ -260,6 +262,7 @@ void AppMenuButtonGroup::updateAppMenuModel()
             TextButton *b = new TextButton(deco, row, this);
             b->setText(itemLabel);
             b->setAction(itemAction);
+            b->setOpacity(m_opacity);
 
             // Skip items with empty labels (The first item in a Gtk app)
             if (itemLabel.isEmpty()) {
@@ -496,6 +499,11 @@ void AppMenuButtonGroup::unPressAllButtons()
         button->setEnabled(!button->isEnabled());
         button->setEnabled(!button->isEnabled());
     }
+}
+
+void AppMenuButtonGroup::updateOpacity()
+{
+    setOpacity(m_alwaysShow || m_hovered ? 1 : 0);
 }
 
 void AppMenuButtonGroup::onMenuAboutToHide()
