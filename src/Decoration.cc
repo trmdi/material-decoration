@@ -369,7 +369,7 @@ void Decoration::updateTitleBarHoverState()
     if (!wasHovered && isHovered) {
         // HoverEnter
         m_menuButtons->setHovered(true);
-    } else if (wasHovered && !isHovered) {
+    } else if (wasHovered && (!isHovered && m_menuButtons->currentIndex() == -1) ) {
         // HoverLeave
         m_menuButtons->setHovered(false);
     } else if (wasHovered && isHovered) {
